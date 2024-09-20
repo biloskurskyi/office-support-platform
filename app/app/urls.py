@@ -19,7 +19,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('api/', include('user.urls', namespace='user'))
+    path('api/', include('user.urls', namespace='user'))
 ]
 
 # source venv/bin/activate

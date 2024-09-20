@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'core',
+    'user',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -85,7 +87,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-# AUTH_USER_MODEL = 'core.User'
+AUTH_USER_MODEL = 'core.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
