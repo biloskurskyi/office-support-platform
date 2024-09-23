@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     'core',
     'user',
+    'company',
     'rest_framework',
 ]
 

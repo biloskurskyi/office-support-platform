@@ -73,6 +73,12 @@ class User(AbstractUser):
         verbose_name = "User"
         verbose_name_plural = "Users"
 
+    def is_owner(self):
+        return self.user_type == self.OWNER_USER
+
+    def is_manager(self):
+        return self.user_type == self.MANAGER_USER
+
     def save(self, *args, **kwargs):
         if self.user_type == self.ADMIN_USER:
             if User.objects.filter(user_type=self.ADMIN_USER).exclude(id=self.id).exists():
@@ -97,3 +103,18 @@ class User(AbstractUser):
     #         raise ValidationError("Password must contain at least one uppercase letter.")
     #
     #     super().set_password(raw_password)
+
+
+class Company(models.Model):
+    name = models.CharField(max_length=255)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_companies')
+    description = models.TextField(blank=True, null=True)
+    website = models.URLField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Company"
+        verbose_name_plural = "Companies"
+
+    def __str__(self):
+        return f"Company {self.name} with owner {self.owner}. {self.description}. Website: {self.website}"
