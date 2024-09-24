@@ -5,12 +5,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.models import User
+from core.models import Company, User
 
 from .serializers import CompanySerializer
 
 
 class CompanyView(APIView):
+    """
+    View for creating and retrieving companies, restricted to owner users only.
+    """
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
@@ -24,3 +27,15 @@ class CompanyView(APIView):
             serializer.save(owner=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=400)
+
+    def get(self, request):
+        if request.user.user_type != User.OWNER_USER:
+            return Response({'detail': 'You do not have permission to create a company.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        companies = Company.objects.filter(owner=request.user.id)
+        serializer = CompanySerializer(companies, many=True)
+        if not companies.exists():
+            return Response({"message": "No posts found for this user"}, status=200)
+
+        return Response(serializer.data)
