@@ -107,6 +107,7 @@ class User(AbstractUser):
 
 class Company(models.Model):
     name = models.CharField(max_length=255)
+    legal_name = models.CharField(max_length=255, unique=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_companies')
     description = models.TextField(blank=True, null=True)
     website = models.URLField(max_length=255, blank=True, null=True)

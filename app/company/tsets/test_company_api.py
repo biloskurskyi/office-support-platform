@@ -19,6 +19,7 @@ class CompanyApiTestBase(UserApiTestsBase, TestCase):
         """Helper method to add a company."""
         data = {
             "name": "Test company",
+            "legal_name": "Test legal name",
             "description": "Test description",
             "website": "https://www.testwebsite.com/"
         }
