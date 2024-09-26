@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -39,3 +39,22 @@ class CompanyView(APIView):
             return Response({"message": "No posts found for this user"}, status=200)
 
         return Response(serializer.data)
+
+
+class CompanyDetailView(APIView):
+    """
+    View to retrieve, update, or delete a specific company.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        """
+        Retrieve a specific company by ID.
+        """
+        try:
+            company = Company.objects.get(pk=pk)
+        except Company.DoesNotExist:
+            return Response({"message": "Company not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CompanySerializer(company)
+        return Response(serializer.data, status=status.HTTP_200_OK)
