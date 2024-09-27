@@ -30,7 +30,7 @@ class CompanyView(APIView):
 
     def get(self, request):
         if request.user.user_type != User.OWNER_USER:
-            return Response({'detail': 'You do not have permission to create a company.'},
+            return Response({'detail': 'You do not have permission to get a companies.'},
                             status=status.HTTP_403_FORBIDDEN)
 
         companies = Company.objects.filter(owner=request.user.id)
@@ -51,10 +51,36 @@ class CompanyDetailView(APIView):
         """
         Retrieve a specific company by ID.
         """
+        if request.user.user_type != User.OWNER_USER:
+            return Response({'detail': 'You do not have permission to get a company.'},
+                            status=status.HTTP_403_FORBIDDEN)
         try:
             company = Company.objects.get(pk=pk)
+            if company.owner != request.user:
+                return Response(
+                    {'detail': 'Company does not exist or You do not have permission to access this company.'},
+                    status=status.HTTP_403_FORBIDDEN)
         except Company.DoesNotExist:
             return Response({"message": "Company not found"}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = CompanySerializer(company)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk):
+        """
+        Delete a specific company by ID.
+        """
+        if request.user.user_type != User.OWNER_USER:
+            return Response({'detail': 'You do not have permission to delete a company.'},
+                            status=status.HTTP_403_FORBIDDEN)
+        try:
+            company = Company.objects.get(pk=pk)
+            if company.owner != request.user:
+                return Response(
+                    {'detail': 'Company does not exist or You do not have permission to access this company.'},
+                    status=status.HTTP_403_FORBIDDEN)
+        except Company.DoesNotExist:
+            return Response({"message": "Company not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        company.delete()
+        return Response({'message': 'Company deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
