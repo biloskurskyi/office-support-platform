@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 
 from core.models import Company, User
 
+from .mixixns import CompanyDetailMixin
 from .serializers import CompanySerializer
 
 
@@ -41,7 +42,7 @@ class CompanyView(APIView):
         return Response(serializer.data)
 
 
-class CompanyDetailView(APIView):
+class CompanyDetailView(CompanyDetailMixin, APIView):
     """
     View to retrieve, update, or delete a specific company.
     """
@@ -51,36 +52,68 @@ class CompanyDetailView(APIView):
         """
         Retrieve a specific company by ID.
         """
-        if request.user.user_type != User.OWNER_USER:
-            return Response({'detail': 'You do not have permission to get a company.'},
-                            status=status.HTTP_403_FORBIDDEN)
-        try:
-            company = Company.objects.get(pk=pk)
-            if company.owner != request.user:
-                return Response(
-                    {'detail': 'Company does not exist or You do not have permission to access this company.'},
-                    status=status.HTTP_403_FORBIDDEN)
-        except Company.DoesNotExist:
-            return Response({"message": "Company not found"}, status=status.HTTP_404_NOT_FOUND)
+        permission_response = self.check_permissions(request)
+        if permission_response:
+            return permission_response
+
+        company = self.get_company_with_owner_check(request, pk)
+        if isinstance(company, Response):
+            return company
 
         serializer = CompanySerializer(company)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request, pk):
+        """
+        Update a specific company by ID(partially).
+        Only accessible by users with OWNER_USER type.
+        """
+        permission_response = self.check_permissions(request)
+        if permission_response:
+            return permission_response
+
+        company = self.get_company_with_owner_check(request, pk)
+        if isinstance(company, Response):
+            return company
+
+        serializer = CompanySerializer(company, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+        """
+        Update a specific company by ID(fully).
+        Only accessible by users with OWNER_USER type.
+        """
+        permission_response = self.check_permissions(request)
+        if permission_response:
+            return permission_response
+
+        company = self.get_company_with_owner_check(request, pk)
+        if isinstance(company, Response):
+            return company
+
+        serializer = CompanySerializer(company, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         """
         Delete a specific company by ID.
         """
-        if request.user.user_type != User.OWNER_USER:
-            return Response({'detail': 'You do not have permission to delete a company.'},
-                            status=status.HTTP_403_FORBIDDEN)
-        try:
-            company = Company.objects.get(pk=pk)
-            if company.owner != request.user:
-                return Response(
-                    {'detail': 'Company does not exist or You do not have permission to access this company.'},
-                    status=status.HTTP_403_FORBIDDEN)
-        except Company.DoesNotExist:
-            return Response({"message": "Company not found"}, status=status.HTTP_404_NOT_FOUND)
+        permission_response = self.check_permissions(request)
+        if permission_response:
+            return permission_response
+
+        company = self.get_company_with_owner_check(request, pk)
+        if isinstance(company, Response):
+            return company
 
         company.delete()
         return Response({'message': 'Company deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)

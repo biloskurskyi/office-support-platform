@@ -87,4 +87,64 @@ class CompanyDetailApiTests(UserApiTestsBase, TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data['detail'],
-                         'Company does not exist or You do not have permission to access this company.')
+                         'You do not have permission to access this company.')
+
+    @patch('django.core.mail.send_mail')
+    def test_patch_update_company_success(self, mock_send_mail):
+        """Ensure an owner user can update company details."""
+        mock_send_mail.return_value = 1
+        self.register_user()
+
+        user = User.objects.get(email=self.user_data['email'])
+        user.is_active = True
+        user.save()
+
+        token = self.get_token()
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+
+        company = self.add_company_to_db(user)
+        update_data = {'description': 'description update by patch'}
+
+        response = self.client.patch(self.get_company_url(company.id), update_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['description'], 'description update by patch')
+        updated_company = Company.objects.get(id=company.id)
+        self.assertEqual(updated_company.description, 'description update by patch')
+
+    @patch('django.core.mail.send_mail')
+    def test_update_company_success(self, mock_send_mail):
+        """Ensure an owner user can update company details using PUT."""
+        mock_send_mail.return_value = 1
+        self.register_user()
+
+        user = User.objects.get(email=self.user_data['email'])
+        user.is_active = True
+        user.save()
+
+        token = self.get_token()
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+
+        company = self.add_company_to_db(user)
+
+        update_data = {
+            'name': 'Updated Company Name',
+            'legal_name': 'TOV Updated Company Name',
+            'description': 'Updated description for the company.',
+        }
+
+        response = self.client.put(self.get_company_url(company.id), update_data, format='json')
+
+        if response.status_code != status.HTTP_200_OK:
+            print(f"Response data: {response.data}")
+            print(f"Response content: {response.content}")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.data['name'], 'Updated Company Name')
+        self.assertEqual(response.data['legal_name'], 'TOV Updated Company Name')
+        self.assertEqual(response.data['description'], 'Updated description for the company.')
+
+        updated_company = Company.objects.get(id=company.id)
+        self.assertEqual(updated_company.name, 'Updated Company Name')
+        self.assertEqual(updated_company.legal_name, 'TOV Updated Company Name')
+        self.assertEqual(updated_company.description, 'Updated description for the company.')
