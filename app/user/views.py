@@ -1,4 +1,6 @@
 import datetime
+import random
+import string
 
 import jwt
 from django.conf import settings
@@ -11,7 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.models import User
+from core.models import Company, User
 
 from .serializers import UserSerializer
 
@@ -24,6 +26,14 @@ class RegisterView(APIView):
     """
 
     def post(self, request):
+        user_type = request.data.get('user_type')
+
+        if user_type is not None and int(user_type) != User.OWNER_USER:
+            return Response(
+                {"detail": "Only owner users can register directly."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -112,3 +122,71 @@ class LogoutView(APIView):
             'message': 'success'
         }
         return response
+
+
+class CreateManagerView(APIView):
+    """
+    Allows owners to create manager users.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        owner = request.user
+        if not owner.is_owner():
+            return Response({'detail': 'You do not have permission to create a manager.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        data = request.data
+
+        if 'company' not in data:
+            return Response({'detail': 'Company ID is required for manager creation.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            company = Company.objects.get(id=data['company'])
+        except Company.DoesNotExist:
+            return Response({'detail': 'Company not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if company.owner.id != owner.id:
+            return Response({'detail': 'You can only assign managers to your own company.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        data['user_type'] = User.MANAGER_USER
+
+        random_password = self.generate_random_password()
+
+        data['password'] = random_password
+
+        serializer = UserSerializer(data=data)
+        if serializer.is_valid():
+            manager = serializer.save()
+
+            activation_link = f'http://localhost:8765/api/activate/{manager.id}/'
+
+            subject = 'Manager Account Has Been Created. Activate Your Account!'
+            message = (
+                f"Hello {manager.name},\n\nYour account has been created. Here is your password: {random_password}"
+                f"\nPlease change it after logging in."
+                f"Please activate your account using the following link:\n{activation_link}\n\n"
+                f"Make sure to change your password after logging in.")
+
+            from_email = settings.EMAIL_HOST_USER
+            recipient_list = [manager.email]
+
+            try:
+                send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+                email_message = 'Email sent successfully.'
+            except Exception as e:
+                email_message = f'Error sending email: {e}'
+
+            return Response({"message": "Manager created successfully.", "email_status": email_message},
+                            status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def generate_random_password(self, length=10):
+        """
+        Generate a random password consisting of letters and digits.
+        """
+        characters = string.ascii_letters + string.digits
+        return ''.join(random.choice(characters) for i in range(length))
