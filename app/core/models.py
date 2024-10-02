@@ -120,10 +120,19 @@ class Company(models.Model):
     def __str__(self):
         return f"Company {self.name} with owner {self.owner}. {self.description}. Website: {self.website}"
 
-# class Office(models.Model):
-#     address = models.CharField(max_length=255)
-#     city = models.CharField(max_length=100)
-#     country = models.CharField(max_length=100)
-#     postal_code = models.CharField(max_length=20, null=True, blank=True)
-#     phone_number = models.CharField(max_length=20)
-#     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='')
+
+class Office(models.Model):
+    address = models.CharField(max_length=255)
+    city = models.CharField(max_length=100)
+    country = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=20, null=True, blank=True)
+    phone_number = models.CharField(max_length=20, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Office"
+        verbose_name_plural = "Offices"
+
+    def __str__(self):
+        return f"Office for {self.company.name} on {self.address}, city: {self.city}, country: {self.country}"
