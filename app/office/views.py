@@ -45,3 +45,20 @@ class OfficeCreateView(APIView):
             serializer.save()
             return Response({"message": "Office created successfully."}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        if request.user.user_type != User.OWNER_USER:
+            return Response({'detail': 'You do not have permission to get an office.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            offices = Office.objects.filter(company__owner=request.user.id)
+        except Company.DoesNotExist:
+            return Response({"error": "Company does not exist or you do not own this company."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = OfficeSerializer(offices, many=True)
+        if not offices.exists():
+            return Response({"message": "No posts found for this user"}, status=200)
+
+        return Response(serializer.data)

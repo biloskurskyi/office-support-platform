@@ -59,3 +59,21 @@ class OfficeApiTest(OfficeApiOwnerTests):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn('message', response.data)
         self.assertEqual(response.data['message'], 'Office created successfully.')
+
+    @patch('django.core.mail.send_mail')
+    def test_get_all_offices(self, mock_send_mail):
+        """Test that all offices are returned to the owner user."""
+        mock_send_mail.return_value = 1
+        self.register_user()
+
+        user = User.objects.get(email=self.user_data['email'])
+        user.is_active = True
+        user.save()
+
+        token = self.get_token()
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+
+        response = self.client.get(self.office_url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
