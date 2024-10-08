@@ -1,4 +1,4 @@
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,7 +8,7 @@ from core.models import Company, Office, User
 from .serializers import OfficeSerializer
 
 
-class OfficeCreateView(APIView):
+class OfficeView(APIView):
     """
     Allows only owners to create an office. The owner must create the office for a company
     they own and can assign a manager who belongs to the same company.
@@ -55,10 +55,38 @@ class OfficeCreateView(APIView):
             offices = Office.objects.filter(company__owner=request.user.id)
         except Company.DoesNotExist:
             return Response({"error": "Company does not exist or you do not own this company."},
-                            status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_404_NOT_FOUND)
 
         serializer = OfficeSerializer(offices, many=True)
         if not offices.exists():
             return Response({"message": "No posts found for this user"}, status=200)
+
+        return Response(serializer.data)
+
+
+class OfficeDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        """
+        View to retrieve, update, or delete a specific company.
+        """
+        if request.user.user_type not in [User.OWNER_USER, User.MANAGER_USER]:
+            return Response({'detail': 'You do not have permission to get an office.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            office = Office.objects.get(
+                pk=pk,
+                company__owner=request.user
+            ) if request.user.user_type == User.OWNER_USER else Office.objects.get(
+                pk=pk,
+                manager=request.user
+            )
+        except Office.DoesNotExist:
+            return Response({"error": "Office does not exist or you do not have access."},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        serializer = OfficeSerializer(office, many=False)
 
         return Response(serializer.data)
