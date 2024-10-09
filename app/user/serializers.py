@@ -1,3 +1,4 @@
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 from core.models import User
@@ -7,6 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
     """
     Serializes User data including password handling.
     """
+
     class Meta:
         model = User
         fields = ['id', 'surname', 'name', 'email', 'password', 'user_type', 'info', 'company']
@@ -22,3 +24,27 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_password = serializers.CharField(required=True)
+
+    def validate_new_password(self, value):
+        validate_password(value)
+        return value
+
+    def validate(self, data):
+        user = self.context['request'].user
+
+        if not user.check_password(data['old_password']):
+            raise serializers.ValidationError({"old_password": "Old password is incorrect."})
+
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError({"confirm_password": "Passwords do not match."})
+
+        if data['old_password'] == data['new_password']:
+            raise serializers.ValidationError({"new_password": "New password cannot be the same as the old password."})
+
+        return data

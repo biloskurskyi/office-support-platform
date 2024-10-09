@@ -15,7 +15,7 @@ from rest_framework.views import APIView
 
 from core.models import Company, User
 
-from .serializers import UserSerializer
+from .serializers import ChangePasswordSerializer, UserSerializer
 
 
 class RegisterView(APIView):
@@ -190,3 +190,17 @@ class CreateManagerView(APIView):
         """
         characters = string.ascii_letters + string.digits
         return ''.join(random.choice(characters) for i in range(length))
+
+
+class ChangePasswordView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        user = request.user
+        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+
+        if serializer.is_valid():
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+            return Response({"message": "Password updated successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
