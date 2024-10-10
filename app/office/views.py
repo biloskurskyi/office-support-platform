@@ -26,7 +26,7 @@ class OfficeView(APIView):
         manager_id = data.get('manager')
 
         try:
-            company = Company.objects.get(id=company_id, owner=user)
+            company = Company.objects.get(id=company_id, owner=user.id)
         except Company.DoesNotExist:
             return Response({"error": "Company does not exist or you do not own this company."},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -90,3 +90,24 @@ class OfficeDetailView(APIView):
         serializer = OfficeSerializer(office, many=False)
 
         return Response(serializer.data)
+
+    def delete(self, request, pk):
+        """
+        Delete a specific company by ID.
+        """
+        permission_response = self.check_permissions(request)
+        if permission_response:
+            return permission_response
+
+        try:
+            if request.user.user_type == User.OWNER_USER:
+                office = Office.objects.get(pk=pk, company__owner=request.user)
+            else:
+                return Response({"error": "You do not have access to delete this office."},
+                                status=status.HTTP_403_FORBIDDEN)
+        except Office.DoesNotExist:
+            return Response({"error": "Office not found or you do not have permission."},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        office.delete()
+        return Response({'message': 'Office deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
