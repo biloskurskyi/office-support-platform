@@ -91,9 +91,34 @@ class OfficeDetailView(APIView):
 
         return Response(serializer.data)
 
+    def put(self, request, pk):
+        """
+        Update a specific office by ID (full update).
+        """
+        user = request.user
+
+        try:
+            if user.user_type == User.OWNER_USER:
+                office = Office.objects.get(pk=pk, company__owner=user)
+            elif user.user_type == User.MANAGER_USER:
+                office = Office.objects.get(pk=pk, manager=user)
+            else:
+                return Response({"error": "You do not have permission to update this office."},
+                                status=status.HTTP_403_FORBIDDEN)
+        except Office.DoesNotExist:
+            return Response({"error": "Office not found or you do not have permission."},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        serializer = OfficeSerializer(office, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def delete(self, request, pk):
         """
-        Delete a specific company by ID.
+        Delete a specific office by ID.
         """
         permission_response = self.check_permissions(request)
         if permission_response:
