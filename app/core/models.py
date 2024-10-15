@@ -136,3 +136,21 @@ class Office(models.Model):
 
     def __str__(self):
         return f"Office for {self.company.name} on {self.address}, city: {self.city}, country: {self.country}"
+
+
+class Utilities(models.Model):
+    HEATING = 0
+    WATER_SUPPLY = 1
+    GAS_SUPPLY = 2
+    ELECTRICITY_SUPPLY = 3
+    WASTE_COLLECTION = 4
+    UTILITIES_TYPE_CHOICES = ((HEATING, 'Heating'),
+                              (WATER_SUPPLY, 'Water Supply'),
+                              (GAS_SUPPLY, 'Gas Supply'),
+                              (ELECTRICITY_SUPPLY, 'Electricity Supply'),
+                              (WASTE_COLLECTION, 'Waste Collection'),)
+    utilities_type = models.SmallIntegerField(choices=UTILITIES_TYPE_CHOICES)
+    date = models.DateField()
+    counter = models.PositiveIntegerField()
+    price = models.FloatField()
+    office = models.ForeignKey(Office, on_delete=models.CASCADE)
