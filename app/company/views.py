@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from core.models import Company, User
 
-from .mixixns import CompanyDetailMixin
+from .mixins import CompanyDetailMixin
 from .serializers import CompanySerializer
 
 

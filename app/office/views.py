@@ -1,44 +1,42 @@
-from rest_framework import status, viewsets
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import Company, Office, User
 
+from .mixins import OfficeMixin
 from .serializers import OfficeSerializer
 
 
-class OfficeView(APIView):
+class OfficeView(OfficeMixin, APIView):
     """
     Allows only owners to create an office. The owner must create the office for a company
     they own and can assign a manager who belongs to the same company.
     """
-    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         user = request.user
 
-        if user.user_type != User.OWNER_USER:
-            return Response({"error": "Only owner users can create an office."}, status=status.HTTP_403_FORBIDDEN)
+        # Validate permissions
+        permission_response = self.validate_owner_permission(user)
+        if permission_response:
+            return permission_response
 
         data = request.data
         company_id = data.get('company')
         manager_id = data.get('manager')
 
-        try:
-            company = Company.objects.get(id=company_id, owner=user.id)
-        except Company.DoesNotExist:
+        company = self.get_company(user, company_id)
+        if not company:
             return Response({"error": "Company does not exist or you do not own this company."},
                             status=status.HTTP_400_BAD_REQUEST)
 
         if manager_id:
-            try:
-                manager = User.objects.get(id=manager_id)
-                if manager.company != company.name:
-                    return Response({"error": "Manager does not belong to this company."},
-                                    status=status.HTTP_400_BAD_REQUEST)
-            except User.DoesNotExist:
-                return Response({"error": "Manager does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            manager = self.get_manager(manager_id)
+            if not manager or manager.company != company.name:
+                return Response({"error": "Manager does not belong to this company."},
+                                status=status.HTTP_400_BAD_REQUEST)
 
         serializer = OfficeSerializer(data=data)
         if serializer.is_valid():
@@ -47,20 +45,19 @@ class OfficeView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        if request.user.user_type != User.OWNER_USER:
-            return Response({'detail': 'You do not have permission to get an office.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        user = request.user
 
-        try:
-            offices = Office.objects.filter(company__owner=request.user.id)
-        except Company.DoesNotExist:
-            return Response({"error": "Company does not exist or you do not own this company."},
-                            status=status.HTTP_404_NOT_FOUND)
+        # Validate permissions
+        permission_response = self.validate_owner_permission(user)
+        if permission_response:
+            return permission_response
+
+        # Retrieve offices for the company
+        offices = Office.objects.filter(company__owner=user.id)
+        if not offices.exists():
+            return Response({"message": "No offices found for this user"}, status=200)
 
         serializer = OfficeSerializer(offices, many=True)
-        if not offices.exists():
-            return Response({"message": "No posts found for this user"}, status=200)
-
         return Response(serializer.data)
 
 
