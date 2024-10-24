@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -30,6 +31,15 @@ class UtilityView(APIView):
 
         serializer = UtilitySerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Utility created successfully."}, status=status.HTTP_201_CREATED)
+            try:
+                serializer.save()
+                return Response({"message": "Utility created successfully."}, status=status.HTTP_201_CREATED)
+            except IntegrityError as e:
+                if 'duplicate key value violates unique constraint' in str(e):
+                    return Response(
+                        {"error": "Utilities for this office and type already exist for this month."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                return Response({"error": "An unexpected error occurred."},
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
