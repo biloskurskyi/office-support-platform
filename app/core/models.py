@@ -155,11 +155,11 @@ class Utilities(models.Model):
     price = models.FloatField()
     office = models.ForeignKey(Office, on_delete=models.CASCADE)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['office', 'utilities_type'],
-                condition=models.Q(date__year=models.F('date__year'), date__month=models.F('date__month')),
-                name='unique_utility_per_month'
-            )
-        ]
+    # class Meta:
+    #     constraints = [
+    #         models.UniqueConstraint(
+    #             fields=['office', 'utilities_type'],
+    #             condition=models.Q(date__year=models.F('date__year'), date__month=models.F('date__month')),
+    #             name='unique_utility_per_month'
+    #         )
+    #     ]
