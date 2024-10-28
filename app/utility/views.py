@@ -104,3 +104,39 @@ class GetUtilityView(OfficeMixin, APIView):
 
         serializer = UtilitySerializer(utility, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetUtilitiesByTypeView(OfficeMixin, APIView):
+    def get(self, request, office_id, utility_type):
+        user = request.user
+
+        try:
+            office = Office.objects.get(pk=office_id)
+        except Office.DoesNotExist:
+            return Response(
+                {"error": "Office not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if user.user_type == User.OWNER_USER:
+            if not Office.objects.filter(company__owner=user.id, id=office.id).exists():
+                return Response(
+                    {"error": "Owners can only access utilities within their own company."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            permission_response = self.validate_owner_permission(user)
+        else:
+            permission_response = self.validate_manager_permission(user, office)
+
+        if permission_response:
+            return permission_response
+
+        utilities = Utilities.objects.filter(office=office, utilities_type=utility_type)
+        if not utilities.exists():
+            return Response(
+                {"error": "No utilities of this type found for the specified office."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = UtilitySerializer(utilities, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
