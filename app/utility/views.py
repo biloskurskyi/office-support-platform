@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from core.models import Company, Office, User, Utilities
 from office.mixins import OfficeMixin
 
-from .mixins import OfficePermissionMixin
+from .mixins import OfficePermissionMixin, UtilityPermissionMixin
 from .serializers import UtilitySerializer
 
 
@@ -53,41 +53,32 @@ class GetAllUtilitiesView(OfficeMixin, OfficePermissionMixin, APIView):
         if permission_response:
             return permission_response
 
-        # Fetch and serialize all utilities for the office
         utilities = Utilities.objects.filter(office=office)
         serializer = UtilitySerializer(utilities, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class GetUtilityView(OfficeMixin, APIView):
+class UtilityDetailView(OfficeMixin, UtilityPermissionMixin, APIView):
+
     def get(self, request, pk):
-        user = request.user
-
-        try:
-            utility = Utilities.objects.get(pk=pk)
-        except Utilities.DoesNotExist:
-            return Response(
-                {"error": "Utility not found."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        office = utility.office
-
-        if user.user_type == User.OWNER_USER:
-            if not Office.objects.filter(company__owner=user.id, id=office.id).exists():
-                return Response(
-                    {"error": "Owners can only access utilities within their own company."},
-                    status=status.HTTP_403_FORBIDDEN
-                )
-            permission_response = self.validate_owner_permission(user)
-        else:
-            permission_response = self.validate_manager_permission(user, office)
-
+        utility, permission_response = self.get_utility_with_permission_check(request, pk)
         if permission_response:
             return permission_response
 
         serializer = UtilitySerializer(utility, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk):
+        utility, permission_response = self.get_utility_with_permission_check(request, pk)
+        if permission_response:
+            return permission_response
+
+        serializer = UtilitySerializer(utility, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetUtilitiesByTypeView(OfficeMixin, OfficePermissionMixin, APIView):
@@ -96,7 +87,6 @@ class GetUtilitiesByTypeView(OfficeMixin, OfficePermissionMixin, APIView):
         if permission_response:
             return permission_response
 
-        # Fetch and serialize utilities for the office of the specified type
         utilities = Utilities.objects.filter(office=office, utilities_type=utility_type)
         if not utilities.exists():
             return Response(

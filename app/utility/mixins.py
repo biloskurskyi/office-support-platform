@@ -24,10 +24,40 @@ class OfficePermissionMixin:
                 )
             permission_response = self.validate_owner_permission(user)
         else:
-            # Manager access check
             permission_response = self.validate_manager_permission(user, office)
 
         if permission_response:
             return None, permission_response
 
         return office, None
+
+
+class UtilityPermissionMixin:
+    def get_utility_with_permission_check(self, request, pk):
+        """Retrieve utility and check permissions for the requesting user."""
+        user = request.user
+
+        try:
+            utility = Utilities.objects.get(pk=pk)
+        except Utilities.DoesNotExist:
+            return None, Response(
+                {"error": "Utility not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        office = utility.office
+
+        if user.user_type == User.OWNER_USER:
+            if not Office.objects.filter(company__owner=user.id, id=office.id).exists():
+                return None, Response(
+                    {"error": "Owners can only access utilities within their own company."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            permission_response = self.validate_owner_permission(user)
+        else:
+            permission_response = self.validate_manager_permission(user, office)
+
+        if permission_response:
+            return None, permission_response
+
+        return utility, None

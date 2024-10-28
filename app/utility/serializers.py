@@ -22,12 +22,15 @@ class UtilitySerializer(serializers.ModelSerializer):
 
         # Check for existing utilities with the same office, type, and month/year
 
+        # Check if we're updating an existing instance
+        instance_id = self.instance.id if self.instance else None
+
         if Utilities.objects.filter(
                 office=office,
                 utilities_type=utilities_type,
                 date__year=year,
                 date__month=month
-        ).exists():
+        ).exclude(id=instance_id).exists():
             raise serializers.ValidationError({
                 "error": "Utilities for this office and type already exist for this month."
             })
