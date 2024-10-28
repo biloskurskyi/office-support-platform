@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from core.models import Company, Office, User, Utilities
 from office.mixins import OfficeMixin
 
+from .mixins import OfficePermissionMixin
 from .serializers import UtilitySerializer
 
 
@@ -46,30 +47,13 @@ class UtilityView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GetAllUtilitiesView(OfficeMixin, APIView):
+class GetAllUtilitiesView(OfficeMixin, OfficePermissionMixin, APIView):
     def get(self, request, pk):
-        user = request.user
-        try:
-            office = Office.objects.get(pk=pk)
-        except Office.DoesNotExist:
-            return Response(
-                {"error": "Office not found."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        if user.user_type == User.OWNER_USER:
-            if not Office.objects.filter(company__owner=user.id, id=office.id).exists():
-                return Response(
-                    {"error": "Owners can only access offices within their own company."},
-                    status=status.HTTP_403_FORBIDDEN
-                )
-            permission_response = self.validate_owner_permission(user)
-        else:
-            permission_response = self.validate_manager_permission(user, office)
-
+        office, permission_response = self.get_office_and_check_permissions(request, pk)
         if permission_response:
             return permission_response
 
+        # Fetch and serialize all utilities for the office
         utilities = Utilities.objects.filter(office=office)
         serializer = UtilitySerializer(utilities, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -106,31 +90,13 @@ class GetUtilityView(OfficeMixin, APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class GetUtilitiesByTypeView(OfficeMixin, APIView):
+class GetUtilitiesByTypeView(OfficeMixin, OfficePermissionMixin, APIView):
     def get(self, request, office_id, utility_type):
-        user = request.user
-
-        try:
-            office = Office.objects.get(pk=office_id)
-        except Office.DoesNotExist:
-            return Response(
-                {"error": "Office not found."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        if user.user_type == User.OWNER_USER:
-            if not Office.objects.filter(company__owner=user.id, id=office.id).exists():
-                return Response(
-                    {"error": "Owners can only access utilities within their own company."},
-                    status=status.HTTP_403_FORBIDDEN
-                )
-            permission_response = self.validate_owner_permission(user)
-        else:
-            permission_response = self.validate_manager_permission(user, office)
-
+        office, permission_response = self.get_office_and_check_permissions(request, office_id)
         if permission_response:
             return permission_response
 
+        # Fetch and serialize utilities for the office of the specified type
         utilities = Utilities.objects.filter(office=office, utilities_type=utility_type)
         if not utilities.exists():
             return Response(
