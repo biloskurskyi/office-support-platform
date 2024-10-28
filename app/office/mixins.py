@@ -28,3 +28,18 @@ class OfficeMixin:
             return Response({"error": "Only owner users can perform this action."},
                             status=status.HTTP_403_FORBIDDEN)
         return None
+
+    def validate_manager_permission(self, user, office):
+        if user.user_type == User.MANAGER_USER:
+            if office.manager == user:
+                return None
+            else:
+                return Response(
+                    {"error": "Managers can only access utilities for their assigned office."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        else:
+            return Response(
+                {"error": "Only manager users assigned to this office can perform this action."},
+                status=status.HTTP_403_FORBIDDEN
+            )

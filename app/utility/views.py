@@ -3,7 +3,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.models import Company, Office, User
+from core.models import Company, Office, User, Utilities
+from office.mixins import OfficeMixin
 
 from .serializers import UtilitySerializer
 
@@ -43,3 +44,32 @@ class UtilityView(APIView):
                 return Response({"error": "An unexpected error occurred."},
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetAllUtilitiesView(OfficeMixin, APIView):
+    def get(self, request, pk):
+        user = request.user
+        try:
+            office = Office.objects.get(pk=pk)
+        except Office.DoesNotExist:
+            return Response(
+                {"error": "Office not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if user.user_type == User.OWNER_USER:
+            if not Office.objects.filter(company__owner=user.id, id=office.id).exists():
+                return Response(
+                    {"error": "Owners can only access offices within their own company."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            permission_response = self.validate_owner_permission(user)
+        else:
+            permission_response = self.validate_manager_permission(user, office)
+
+        if permission_response:
+            return permission_response
+
+        utilities = Utilities.objects.filter(office=office)
+        serializer = UtilitySerializer(utilities, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
