@@ -80,6 +80,14 @@ class UtilityDetailView(OfficeMixin, UtilityPermissionMixin, APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, pk):
+        utility, permission_response = self.get_utility_with_permission_check(request, pk)
+        if permission_response:
+            return permission_response
+
+        utility.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class GetUtilitiesByTypeView(OfficeMixin, OfficePermissionMixin, APIView):
     def get(self, request, office_id, utility_type):
