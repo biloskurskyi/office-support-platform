@@ -155,11 +155,34 @@ class Utilities(models.Model):
     price = models.FloatField()
     office = models.ForeignKey(Office, on_delete=models.CASCADE)
 
-    # class Meta:
-    #     constraints = [
-    #         models.UniqueConstraint(
-    #             fields=['office', 'utilities_type'],
-    #             condition=models.Q(date__year=models.F('date__year'), date__month=models.F('date__month')),
-    #             name='unique_utility_per_month'
-    #         )
-    #     ]
+
+class Provider(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="providers")
+    name = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
+    phone_number = models.CharField(max_length=15, null=True, blank=True, unique=True)
+    email = models.EmailField(max_length=255, null=True, blank=True, unique=True)
+    bank_account_number_IBAN = models.CharField(max_length=29, unique=True)  # Consider IBAN formatting
+
+    def clean(self):
+        if not self.phone_number and not self.email:
+            raise ValidationError("At least one of phone number or email must be provided.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name} used by {self.company.name}"
+
+
+class Record(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE, related_name="records")
+    deal_value = models.IntegerField(null=True, blank=True)
+    file = models.FileField(upload_to="records/pdfs/")
+    office = models.ForeignKey(Office, on_delete=models.CASCADE, related_name="records")
+
+    def __str__(self):
+        return f"{self.title} ({self.office.name})"
