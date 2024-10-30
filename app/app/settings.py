@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'user',
     'company',
     'office',
+    'utility',
+    'provider',
     'rest_framework',
 ]
 

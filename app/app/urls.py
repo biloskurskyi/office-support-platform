@@ -22,7 +22,8 @@ urlpatterns = [
     path('api/', include('user.urls', namespace='user')),
     path('api/', include('company.urls', namespace='company')),
     path('api/', include('office.urls', namespace='office')),
-    path('api/', include('utility.urls', namespace='utility'))
+    path('api/', include('utility.urls', namespace='utility')),
+    path('api/', include('provider.urls', namespace='provider'))
 ]
 
 # source venv/bin/activate

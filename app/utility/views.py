@@ -1,5 +1,6 @@
 from django.db import IntegrityError
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -11,6 +12,8 @@ from .serializers import UtilitySerializer
 
 
 class UtilityView(APIView):
+    permission_classes = (IsAuthenticated, )
+
     def post(self, request):
         data = request.data
         office_id = data.get('office')

@@ -5,6 +5,7 @@ from decouple import config
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q, UniqueConstraint
 from django.utils import timezone
 
 from app import settings
@@ -160,11 +161,30 @@ class Provider(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="providers")
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
-    phone_number = models.CharField(max_length=15, null=True, blank=True, unique=True)
-    email = models.EmailField(max_length=255, null=True, blank=True, unique=True)
-    bank_account_number_IBAN = models.CharField(max_length=29, unique=True)  # Consider IBAN formatting
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
+    email = models.EmailField(max_length=255, null=True, blank=True)
+    bank_account_number_IBAN = models.CharField(max_length=29)
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['company', 'phone_number'],
+                name='unique_phone_number_per_company',
+                condition=Q(phone_number__isnull=False)
+            ),
+            UniqueConstraint(
+                fields=['company', 'email'],
+                name='unique_email_per_company',
+                condition=Q(email__isnull=False)
+            ),
+            UniqueConstraint(
+                fields=['company', 'bank_account_number_IBAN'],
+                name='unique_iban_per_company'
+            ),
+        ]
 
     def clean(self):
+        # Ensure at least one of phone_number or email is provided
         if not self.phone_number and not self.email:
             raise ValidationError("At least one of phone number or email must be provided.")
 
