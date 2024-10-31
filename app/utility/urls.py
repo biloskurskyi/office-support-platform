@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views import GetAllUtilitiesView, UtilityDetailView, UtilityView, GetUtilitiesByTypeView
+from .views import (GetAllUtilitiesView, GetUtilitiesByTypeView,
+                    UtilityDetailView, UtilityView)
 
 app_name = 'utility'
 
