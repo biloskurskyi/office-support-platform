@@ -196,7 +196,7 @@ class Provider(models.Model):
         return f"{self.name} used by {self.company.name}"
 
 
-class Record(models.Model):
+class Order(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE, related_name="records")
