@@ -149,3 +149,79 @@ class ProviderDetailView(APIView):
 
         serializer = ProviderSerializer(provider)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk):
+        user = request.user
+
+        try:
+            provider = Provider.objects.get(pk=pk)
+        except Provider.DoesNotExist:
+            return Response(
+                {"error": "The specified office does not exist."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Owner check: verify if this provider belongs to a company owned by the user
+        if user.user_type == User.OWNER_USER:
+            if provider.company.owner != user:
+                return Response(
+                    {"error": "You do not own this provider or it does not exist."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+        # Manager check: verify if the provider is associated with this office
+        elif user.user_type == User.MANAGER_USER:
+            if not Office.objects.filter(manager=user, company=provider.company).exists():
+                return Response(
+                    {"error": "You do not manage an office in the company associated with this provider."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+        else:
+            return Response(
+                {"detail": "You do not have permission to access providers."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = ProviderSerializer(provider, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        user = request.user
+
+        try:
+            provider = Provider.objects.get(pk=pk)
+        except Provider.DoesNotExist:
+            return Response(
+                {"error": "The specified office does not exist."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Owner check: verify if this provider belongs to a company owned by the user
+        if user.user_type == User.OWNER_USER:
+            if provider.company.owner != user:
+                return Response(
+                    {"error": "You do not own this provider or it does not exist."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+        # Manager check: verify if the provider is associated with this office
+        elif user.user_type == User.MANAGER_USER:
+            if not Office.objects.filter(manager=user, company=provider.company).exists():
+                return Response(
+                    {"error": "You do not manage an office in the company associated with this provider."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+        else:
+            return Response(
+                {"detail": "You do not have permission to access providers."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        provider.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
