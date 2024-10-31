@@ -159,11 +159,11 @@ class Utilities(models.Model):
 
 class Provider(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="providers")
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=64)
     address = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     email = models.EmailField(max_length=255, null=True, blank=True)
-    bank_account_number_IBAN = models.CharField(max_length=29)
+    bank_details = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         constraints = [
@@ -178,7 +178,7 @@ class Provider(models.Model):
                 condition=Q(email__isnull=False)
             ),
             UniqueConstraint(
-                fields=['company', 'bank_account_number_IBAN'],
+                fields=['company', 'bank_details'],
                 name='unique_iban_per_company'
             ),
         ]

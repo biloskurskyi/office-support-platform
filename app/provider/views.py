@@ -70,6 +70,8 @@ class ProviderCreateView(APIView):
 
 
 class GetProvidersView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, pk):
         user = request.user
 
@@ -106,4 +108,44 @@ class GetProvidersView(APIView):
         # Retrieve all providers linked to the company of the specified office
         providers = Provider.objects.filter(company=office.company)
         serializer = ProviderSerializer(providers, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ProviderDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        user = request.user
+
+        try:
+            provider = Provider.objects.get(pk=pk)
+        except Provider.DoesNotExist:
+            return Response(
+                {"error": "The specified office does not exist."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Owner check: verify if this provider belongs to a company owned by the user
+        if user.user_type == User.OWNER_USER:
+            if provider.company.owner != user:
+                return Response(
+                    {"error": "You do not own this provider or it does not exist."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+        # Manager check: verify if the provider is associated with this office
+        elif user.user_type == User.MANAGER_USER:
+            if not Office.objects.filter(manager=user, company=provider.company).exists():
+                return Response(
+                    {"error": "You do not manage an office in the company associated with this provider."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+        else:
+            return Response(
+                {"detail": "You do not have permission to access providers."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = ProviderSerializer(provider)
         return Response(serializer.data, status=status.HTTP_200_OK)
