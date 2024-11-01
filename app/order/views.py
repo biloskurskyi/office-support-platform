@@ -84,6 +84,120 @@ class GetOrdersForOfficeView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class OrderDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        user = request.user
+        order_id = pk
+
+        try:
+            order = Order.objects.get(pk=order_id)
+        except Order.DoesNotExist:
+            return Response(
+                {"error": "Order not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if user.user_type == User.OWNER_USER:
+            if not Office.objects.filter(pk=order.office.pk, company__owner=user).exists():
+                return Response(
+                    {"error": "You do not own the office associated with this order."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+        elif user.user_type == User.MANAGER_USER:
+            if not Office.objects.filter(pk=order.office.pk, manager=user).exists():
+                return Response(
+                    {"error": "You do not manage the office associated with this order."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+        else:
+            return Response(
+                {"detail": "You do not have permission to access this order."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Serialize and return the order details
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk):
+        user = request.user
+        order_id = pk
+
+        try:
+            order = Order.objects.get(pk=order_id)
+        except Order.DoesNotExist:
+            return Response(
+                {"error": "Order not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if user.user_type == User.OWNER_USER:
+            if not Office.objects.filter(pk=order.office.pk, company__owner=user).exists():
+                return Response(
+                    {"error": "You do not own the office associated with this order."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+        elif user.user_type == User.MANAGER_USER:
+            if not Office.objects.filter(pk=order.office.pk, manager=user).exists():
+                return Response(
+                    {"error": "You do not manage the office associated with this order."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+        else:
+            return Response(
+                {"detail": "You do not have permission to access this order."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = OrderSerializer(order, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        user = request.user
+        order_id = pk
+
+        try:
+            order = Order.objects.get(pk=order_id)
+        except Order.DoesNotExist:
+            return Response(
+                {"error": "Order not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if user.user_type == User.OWNER_USER:
+            if not Office.objects.filter(pk=order.office.pk, company__owner=user).exists():
+                return Response(
+                    {"error": "You do not own the office associated with this order."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+        elif user.user_type == User.MANAGER_USER:
+            if not Office.objects.filter(pk=order.office.pk, manager=user).exists():
+                return Response(
+                    {"error": "You do not manage the office associated with this order."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+        else:
+            return Response(
+                {"detail": "You do not have permission to access this order."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        order.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class GetOrdersProviderOfficeView(APIView):
     permission_classes = (IsAuthenticated,)
 
