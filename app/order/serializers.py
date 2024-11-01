@@ -1,4 +1,5 @@
 import uuid
+import mimetypes
 
 from django.core.files.storage import default_storage
 from rest_framework import serializers
@@ -23,6 +24,18 @@ class OrderSerializer(serializers.ModelSerializer):
         if provider and office and provider.company != office.company:
             raise serializers.ValidationError("The provider must belong to the same company as the office.")
         return data
+
+    def validate_file(self, file):
+        # Check the file extension
+        if not file.name.endswith('.pdf'):
+            raise serializers.ValidationError("Only PDF files are allowed.")
+
+        # Check MIME type
+        mimetype, _ = mimetypes.guess_type(file.name)
+        if mimetype != 'application/pdf':
+            raise serializers.ValidationError("The file must be a PDF document.")
+
+        return file
 
     def create(self, validated_data):
         # Handle the file upload
