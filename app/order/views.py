@@ -75,10 +75,63 @@ class GetOrdersForOfficeView(APIView):
 
         else:
             return Response(
-                {"detail": "You do not have permission to create an order."},
+                {"detail": "You do not have permission to get an orders."},
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        order = Order.objects.filter(office=office_id)
-        serializer = OrderSerializer(order, many=True)
+        orders = Order.objects.filter(office=office_id)
+        serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetOrdersProviderOfficeView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, office_pk, provider_pk):
+        user = request.user
+        office_id = office_pk
+        provider_id = provider_pk
+
+        try:
+            office = Office.objects.get(pk=office_id)
+            provider = Provider.objects.get(pk=provider_id)
+
+            if provider.company != office.company:
+                return Response(
+                    {"error": "This provider does not belong to the company that owns the requested office."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            if user.user_type == User.OWNER_USER:
+                if office.company.owner != user:
+                    return Response(
+                        {"error": "You do not own the company that owns this office."},
+                        status=status.HTTP_403_FORBIDDEN
+                    )
+
+            elif user.user_type == User.MANAGER_USER:
+                if office.manager != user:
+                    return Response(
+                        {"error": "You do not manage this office."},
+                        status=status.HTTP_403_FORBIDDEN
+                    )
+            else:
+                return Response(
+                    {"detail": "You do not have permission to access orders for this office."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            orders = Order.objects.filter(office=office, provider=provider)
+            serializer = OrderSerializer(orders, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Office.DoesNotExist:
+            return Response(
+                {"error": "The specified office does not exist."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Provider.DoesNotExist:
+            return Response(
+                {"error": "The specified provider does not exist."},
+                status=status.HTTP_404_NOT_FOUND
+            )
