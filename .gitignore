@@ -156,6 +156,14 @@ cython_debug/
 
 app/records/
 
+
+# Node modules for frontend (in case you accidentally commit frontend dependencies)
+frontend/node_modules/
+fronted/node_modules/
+# Vite (for frontend)
+frontend/dist/
+frontend/.vite/
+
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
