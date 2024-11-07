@@ -1,7 +1,6 @@
 import React from 'react';
 import {Box, Typography, Stack, IconButton} from '@mui/material';
 import FacebookIcon from '@mui/icons-material/Facebook';
-import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
@@ -10,11 +9,16 @@ const Footer = () => {
         <Box
             component="footer"
             sx={{
-                backgroundColor: 'primary.main',
                 color: 'white',
                 py: 3,
                 px: 2,
                 mt: 'auto',
+                borderRadius: '14px',
+                marginLeft: '10px',
+                marginRight: '10px',
+                position: 'relative',  // додаємо позиціонування
+                marginBottom: '10px',  // додатковий відступ для футера
+                backgroundColor: '#596177'
             }}
         >
             {/* Contact Info */}
