@@ -1,7 +1,11 @@
 // src/components/BackgroundImage/UI/WelcomeText.tsx
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 
-const WelcomeText = () => {
+interface WelcomeTextProps {
+    text: string;
+}
+
+const WelcomeText: React.FC<WelcomeTextProps> = ({text}) => {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
     useEffect(() => {
@@ -33,15 +37,7 @@ const WelcomeText = () => {
                 fontSize: fontSize,
             }}
         >
-            Вітаємо у системі для ефективного управління офісами! За допомогою нашої платформи ви можете:
-            <br/>
-            • Створювати та управляти офісами компанії.
-            <br/>
-            • Легко створювати замовлення для офісів.
-            <br/>
-            • Слідкувати за комунальними послугами і отримувати статистику витрат.
-            <br/>
-            Ваші офіси — в надійних руках!
+            {text}
         </div>
     );
 };

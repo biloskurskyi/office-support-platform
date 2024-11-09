@@ -1,5 +1,6 @@
 import React from 'react';
-import { Typography } from '@mui/material';
+import {Typography} from '@mui/material';
+import {Link} from 'react-router-dom';
 
 const Title = () => (
     <Typography
@@ -17,7 +18,9 @@ const Title = () => (
             color: '#ffffff',
         }}
     >
-        Офісна Мозаїка
+        <Link style={{color: 'white', textDecoration: 'none'}} to="/home">
+            Офісна Мозаїка
+        </Link>
     </Typography>
 );
 
