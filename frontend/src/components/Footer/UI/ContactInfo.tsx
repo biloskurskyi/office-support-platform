@@ -2,7 +2,7 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 
-const ContactInfo = () => (
+const ContactInfo: React.FC = () => (
     <>
         <Typography variant="h6" textAlign="center" gutterBottom>
             Зв'яжіться з нами

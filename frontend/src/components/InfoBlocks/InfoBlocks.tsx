@@ -6,7 +6,7 @@ interface BlockData {
     content: string;
 }
 
-const InfoBlocks = () => {
+const InfoBlocks: React.FC = () => {
     // Масив з даними для кожного блоку
     const blocks: BlockData[] = [
         {

@@ -5,7 +5,7 @@ import MenuButton from './UI/MenuButton';
 import Title from './UI/Title';
 import AuthButtons from './UI/AuthButtons';
 
-const Header = () => {
+const Header: React.FC = () => {
     return (
         <AppBar position="sticky" sx={{
             borderRadius: '14px',

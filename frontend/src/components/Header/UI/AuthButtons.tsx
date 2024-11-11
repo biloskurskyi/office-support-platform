@@ -3,7 +3,7 @@ import React from 'react';
 import {Box, Button} from '@mui/material';
 import {Link} from 'react-router-dom';
 
-const AuthButtons = () => (
+const AuthButtons: React.FC = () => (
     <Box>
         <Link to="/login">
             <Button color="inherit" sx={{color: 'white'}}>Вхід</Button>

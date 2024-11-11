@@ -5,7 +5,7 @@ import ContactInfo from './UI/ContactInfo';
 import SocialIcons from './UI/SocialIcons';
 import Copyright from './UI/Copyright';
 
-const Footer = () => {
+const Footer: React.FC = () => {
     return (
         <Box
             component="footer"

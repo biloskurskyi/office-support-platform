@@ -2,11 +2,11 @@
 import React, {useState, useEffect} from 'react';
 
 interface WelcomeTextProps {
-    text: string;
+    text: React.ReactNode;
 }
 
 const WelcomeText: React.FC<WelcomeTextProps> = ({text}) => {
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
     useEffect(() => {
         const handleResize = () => {
@@ -17,7 +17,42 @@ const WelcomeText: React.FC<WelcomeTextProps> = ({text}) => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const fontSize = windowWidth < 500 ? '12px' : windowWidth < 800 ? '14px' : '18px';
+    const getTextLength = (node: React.ReactNode): number => {
+        if (typeof node === 'string') {
+            return node.length;
+        } else if (React.isValidElement(node)) {
+            return React.Children.toArray(node.props.children).reduce(
+                (acc, child) => acc + getTextLength(child), // Рекурсивно обробляємо всі діти
+                0
+            );
+        }
+        return 0;
+    };
+
+    const textLength: number = getTextLength(text);
+    let fontSize: string;
+
+    if (textLength > 450) {
+        if (windowWidth < 500) {
+            fontSize = '9px';
+        } else if (windowWidth < 800) {
+            fontSize = '10px';
+
+        } else if (windowWidth < 1025) {
+            fontSize = '15px';
+
+        } else {
+            fontSize = '18px';
+        }
+    } else {
+        if (windowWidth < 500) {
+            fontSize = '12px';
+        } else if (windowWidth < 800) {
+            fontSize = '14px';
+        } else {
+            fontSize = '18px';
+        }
+    }
 
     return (
         <div
