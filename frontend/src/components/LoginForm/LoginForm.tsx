@@ -1,11 +1,11 @@
 // src/components/LoginForm.tsx
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Box, Grid, Typography} from '@mui/material';
 import FormPaper from './UI/FormPaper';
 import TextFieldWithLabel from './UI/TextFieldWithLabel';
 import SubmitButton from './UI/SubmitButton';
 import axios from 'axios';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
 
 const LoginForm = () => {
     const [formData, setFormData] = useState({
@@ -14,7 +14,18 @@ const LoginForm = () => {
     });
 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const message = queryParams.get('message');
+    if (message === 'User created successfully.') {
+        setSuccessMessage('Ви успішно створили акаунт! Перейдіть на свою пошту та підтвердіть дані, тільки після цього ви зможете увійти в систему.');
+    }
+}, [location]);
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -25,6 +36,11 @@ const LoginForm = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!formData.email || !formData.password) {
+            setErrorMessage('Будь ласка, заповніть усі поля');
+            return;
+        }
 
         try {
             const response = await axios.post('http://localhost:8765/api/login/', formData);
@@ -44,6 +60,12 @@ const LoginForm = () => {
             }}
         >
             <FormPaper title="Вхід до системи">
+                {successMessage && (
+                    <Typography color="success" sx={{marginTop: '10px'}}>
+                        {successMessage}
+                    </Typography>
+                )}
+                <div style={{height: '10px'}}/>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         {/* Емейл */}
