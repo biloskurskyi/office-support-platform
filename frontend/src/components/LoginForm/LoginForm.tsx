@@ -44,7 +44,7 @@ const LoginForm = () => {
 
         try {
             const response = await axios.post('http://localhost:8765/api/login/', formData);
-            localStorage.setItem('jwtToken', response.data.token);
+            localStorage.setItem('jwtToken', response.data.jwt);
             navigate('/main');
         } catch (error) {
             setErrorMessage('Невірний логін або пароль');
