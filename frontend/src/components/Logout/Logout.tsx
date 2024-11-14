@@ -7,6 +7,7 @@ const Logout = () => {
 
     const handleLogout = (): void => {
         localStorage.removeItem('jwtToken');
+        localStorage.removeItem('user_type');
         navigate('/login');
     };
 

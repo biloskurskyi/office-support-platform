@@ -25,7 +25,9 @@ const MenuButton: React.FC = () => {
         const fetchCompanies = async () => {
             try {
                 const token = localStorage.getItem('jwtToken');
+                const user_type = localStorage.getItem('user_type');
                 console.log('Token:', token);
+                console.log('User Type:', user_type);
 
                 if (!token) {
                     console.error('Токен не знайдений');

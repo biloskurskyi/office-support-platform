@@ -32,7 +32,7 @@ const WelcomeText: React.FC<WelcomeTextProps> = ({text}) => {
     const textLength: number = getTextLength(text);
     let fontSize: string;
 
-    if (textLength > 450) {
+    if (textLength > 350) {
         if (windowWidth < 500) {
             fontSize = '9px';
         } else if (windowWidth < 800) {
