@@ -15,7 +15,8 @@ from rest_framework.views import APIView
 
 from core.models import Company, User
 
-from .serializers import ChangePasswordSerializer, UserSerializer
+from .serializers import (ChangePasswordSerializer, GetManagerUserSerializer,
+                          GetOwnerUserSerializer, UserSerializer)
 
 
 class RegisterView(APIView):
@@ -204,3 +205,17 @@ class ChangePasswordView(APIView):
             user.save()
             return Response({"message": "Password updated successfully"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetUserView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user = request.user
+        if user.user_type == 1:
+            serializer = GetOwnerUserSerializer(user)
+        elif user.user_type == 2:
+            serializer = GetManagerUserSerializer(user)
+        else:
+            return Response({"error": "Invalid user type."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_200_OK)

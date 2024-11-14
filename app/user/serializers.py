@@ -48,3 +48,15 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({"new_password": "New password cannot be the same as the old password."})
 
         return data
+
+
+class GetOwnerUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['surname', 'name', 'email', 'date_joined', 'user_type', 'info']
+
+
+class GetManagerUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['surname', 'name', 'email', 'date_joined', 'user_type', 'info', 'company', 'is_active']
