@@ -27,8 +27,6 @@ const MainPage = () => {
             <Header/>
             <div style={{height: '500px'}}>
             </div>
-            {/*<LoginForm/>*/}
-            {/*<div style={{height: '50px'}}/>*/}
             <Footer/>
         </div>
     );

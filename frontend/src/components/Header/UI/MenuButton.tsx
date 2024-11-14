@@ -2,6 +2,8 @@ import React, {useState, useEffect} from 'react';
 import {Button, Menu, MenuItem} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import axios, {AxiosResponse} from 'axios';
+import {Link} from 'react-router-dom';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 interface Company {
     id: number;
@@ -68,6 +70,8 @@ const MenuButton: React.FC = () => {
         setSubmenuAnchorEl(null);
     };
 
+    const isSmallScreen = useMediaQuery('(max-width:500px)');
+
     return (
         <div>
             <Button color="inherit" startIcon={<MenuIcon/>} onClick={handleMenuClick}>
@@ -76,12 +80,32 @@ const MenuButton: React.FC = () => {
 
             {/* Main Menu */}
             <Menu anchorEl={anchorEl} open={Boolean(!!anchorEl)} onClose={handleMenuClose}>
-                {companies.map((company) => (
-                    <MenuItem key={company.id} onClick={(e) => handleCompanyClick(e, company.name)}>
-                        {company.name}
+                {localStorage.getItem('jwtToken') ? (
+                    companies.length > 0 ? (
+                        companies.map((company) => (
+                            <MenuItem key={company.id} onClick={(e) => handleCompanyClick(e, company.name)}>
+                                {company.name}
+                            </MenuItem>
+                        ))
+                    ) : (
+                        <MenuItem onClick={handleMenuClose}>
+                            {isSmallScreen
+                                ? <>Створіть компанію,<br/>щоб почати управляти вже зараз</>
+                                : 'Створіть компанію, щоб почати управляти вже зараз'}
+                        </MenuItem>
+                    )
+                ) : (
+                    <MenuItem onClick={handleMenuClose}>
+                        <Link to="/login" style={{textDecoration: 'none', color: 'inherit'}}>
+                            {isSmallScreen
+                                ? <>Увійдіть,<br/>щоб побачити перелік можливостей</>
+                                : 'Увійдіть, щоб побачити перелік можливостей'}
+                        </Link>
                     </MenuItem>
-                ))}
+
+                )}
             </Menu>
+
 
             {/* Submenu for selected company */}
             <Menu
