@@ -16,14 +16,14 @@ const AuthButtons: React.FC = () => {
                 <>
                     {isSmallScreen ? (
                         // Якщо екран маленький, відображаємо іконку
-                        <Link to="/account">
+                        <Link to="/user">
                             <IconButton color="inherit" sx={{color: 'white'}}>
                                 <AccountCircle/>
                             </IconButton>
                         </Link>
                     ) : (
                         // Якщо екран більший, відображаємо текстову кнопку
-                        <Link to="/account">
+                        <Link to="/user">
                             <Button color="inherit" sx={{color: 'white'}}>
                                 Особистий акаунт
                             </Button>

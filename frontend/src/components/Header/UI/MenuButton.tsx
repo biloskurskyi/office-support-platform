@@ -15,33 +15,59 @@ interface Company {
     created_at: string;
 }
 
+interface Office {
+    id: number;
+    address: string;
+    city: string;
+    country: string;
+    postal_code: string;
+    phone_number: string;
+    manager: number;
+    company: number;
+}
+
 const MenuButton: React.FC = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [submenuAnchorEl, setSubmenuAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
     const [companies, setCompanies] = useState<Company[]>([]);
+    const [offices, setOffices] = useState<Office[]>([]);
+    const [isManagerWithoutOffices, setIsManagerWithoutOffices] = useState<boolean>(false);
+
 
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
                 const token = localStorage.getItem('jwtToken');
-                const user_type = localStorage.getItem('user_type');
-                console.log('Token:', token);
-                console.log('User Type:', user_type);
+                const userType = localStorage.getItem('user_type');
+                console.log(userType)
 
                 if (!token) {
                     console.error('Токен не знайдений');
                     return;
                 }
-                if (token) {
+
+                if (userType === '1') { // Власник
                     const response: AxiosResponse<any> = await axios.get('http://localhost:8765/api/company/', {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
                     });
                     setCompanies(response.data);
+                } else if (userType === '2') { // Менеджер
+                    const response: AxiosResponse<any> = await axios.get('http://localhost:8765/api/office-list/', {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    setOffices(response.data);
+
+                    // Якщо менеджер не має офісів
+                    if (response.data.length === 0) {
+                        setIsManagerWithoutOffices(true);
+                    }
                 } else {
-                    console.error("Токен не знайдено");
+                    console.error('Невідомий тип користувача');
                 }
             } catch (error) {
                 console.error("Помилка завантаження компаній", error);
@@ -72,6 +98,11 @@ const MenuButton: React.FC = () => {
         setSubmenuAnchorEl(null);
     };
 
+    const handleOfficeClick = (event: React.MouseEvent<HTMLElement>) => {
+        setSubmenuAnchorEl(event.currentTarget);
+    };
+
+
     const isSmallScreen = useMediaQuery('(max-width:500px)');
 
     return (
@@ -83,18 +114,36 @@ const MenuButton: React.FC = () => {
             {/* Main Menu */}
             <Menu anchorEl={anchorEl} open={Boolean(!!anchorEl)} onClose={handleMenuClose}>
                 {localStorage.getItem('jwtToken') ? (
-                    companies.length > 0 ? (
-                        companies.map((company) => (
-                            <MenuItem key={company.id} onClick={(e) => handleCompanyClick(e, company.name)}>
-                                {company.name}
+                    localStorage.getItem('user_type') === '2' ? (
+                        offices.length > 0 ? (
+                            offices.map((office) => (
+                                <MenuItem key={office.id} onClick={handleOfficeClick}>
+                                    {isSmallScreen
+                                        ? <>{office.city}, {office.country},<br/>{office.address}</>
+                                        : <>{office.city}, {office.country}, {office.address}</>}
+                                </MenuItem>
+                            ))
+                        ) : (
+                            <MenuItem onClick={handleMenuClose}>
+                                {isSmallScreen
+                                    ? <>Ви ще не прив'язані до офісу.</>
+                                    : 'Ви ще не прив\'язані до офісу.'}
                             </MenuItem>
-                        ))
+                        )
                     ) : (
-                        <MenuItem onClick={handleMenuClose}>
-                            {isSmallScreen
-                                ? <>Створіть компанію,<br/>щоб почати управляти вже зараз</>
-                                : 'Створіть компанію, щоб почати управляти вже зараз'}
-                        </MenuItem>
+                        companies.length > 0 ? (
+                            companies.map((company) => (
+                                <MenuItem key={company.id} onClick={(e) => handleCompanyClick(e, company.name)}>
+                                    {company.name}
+                                </MenuItem>
+                            ))
+                        ) : (
+                            <MenuItem onClick={handleMenuClose}>
+                                {isSmallScreen
+                                    ? <>Створіть компанію,<br/>щоб почати управляти вже зараз</>
+                                    : 'Створіть компанію, щоб почати управляти вже зараз'}
+                            </MenuItem>
+                        )
                     )
                 ) : (
                     <MenuItem onClick={handleMenuClose}>
@@ -104,7 +153,6 @@ const MenuButton: React.FC = () => {
                                 : 'Увійдіть, щоб побачити перелік можливостей'}
                         </Link>
                     </MenuItem>
-
                 )}
             </Menu>
 
@@ -117,12 +165,25 @@ const MenuButton: React.FC = () => {
                 anchorOrigin={{vertical: 'top', horizontal: 'right'}}
                 transformOrigin={{vertical: 'top', horizontal: 'left'}}
             >
-                <MenuItem onClick={handleSubmenuClose}>Менеджери</MenuItem>
-                <MenuItem onClick={handleSubmenuClose}>Офіси</MenuItem>
-                <MenuItem onClick={handleSubmenuClose}>Комунальні послуги</MenuItem>
-                <MenuItem onClick={handleSubmenuClose}>Замовлення</MenuItem>
-                <MenuItem onClick={handleSubmenuClose}>Провайдери</MenuItem>
-                <MenuItem onClick={handleSubmenuClose}>Налаштування компанії</MenuItem>
+                {localStorage.getItem('user_type') === '1' ? (
+                    [
+                        <MenuItem key="managers" onClick={handleSubmenuClose}>Менеджери</MenuItem>,
+                        <MenuItem key="offices" onClick={handleSubmenuClose}>Офіси</MenuItem>,
+                        <MenuItem key="communal" onClick={handleSubmenuClose}>Комунальні послуги</MenuItem>,
+                        <MenuItem key="orders" onClick={handleSubmenuClose}>Замовлення</MenuItem>,
+                        <MenuItem key="providers" onClick={handleSubmenuClose}>Провайдери</MenuItem>,
+                        <MenuItem key="company-settings" onClick={handleSubmenuClose}>Налаштування компанії</MenuItem>,
+                    ]
+                ) : localStorage.getItem('user_type') === '2' ? (
+                    [
+                        <MenuItem key="communal" onClick={handleSubmenuClose}>Комунальні послуги</MenuItem>,
+                        <MenuItem key="orders" onClick={handleSubmenuClose}>Замовлення</MenuItem>,
+                        <MenuItem key="providers" onClick={handleSubmenuClose}>Провайдери</MenuItem>,
+                        <MenuItem key="office-settings" onClick={handleSubmenuClose}>Налаштування офісу</MenuItem>,
+                    ]
+                ) : (
+                    <MenuItem onClick={handleSubmenuClose}>Немає доступу</MenuItem>
+                )}
             </Menu>
         </div>
     );

@@ -4,6 +4,7 @@ import HomePage from "../pages/HomePage.tsx";
 import SignUpPage from "../pages/SignUpPage.tsx";
 import LogIn from "../pages/LogIn.tsx";
 import MainPage from "../pages/MainPage.tsx";
+import UserPage from "../pages/UserPage.tsx";
 
 
 const rootLoader = async (): Promise<null | Response> => {
@@ -32,6 +33,10 @@ const routes: RouteObject[] = [
             {
                 path: "/main",
                 element: <MainPage/>,
+            },
+            {
+                path: "/user",
+                element: <UserPage/>,
             },
         ],
     },
