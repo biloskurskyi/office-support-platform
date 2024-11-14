@@ -133,3 +133,15 @@ class OfficeDetailView(APIView):
 
         office.delete()
         return Response({'message': 'Office deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class OfficeListForManager(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user = request.user
+        offices = Office.objects.filter(manager=user.id)
+        if not offices.exists():
+            return Response({"message": "No offices found for you"}, status=200)
+        serializer = OfficeSerializer(offices, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
