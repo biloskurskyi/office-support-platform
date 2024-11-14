@@ -54,9 +54,11 @@ class GetOwnerUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['surname', 'name', 'email', 'date_joined', 'user_type', 'info']
+        read_only_fields = ['email', 'date_joined', 'user_type']
 
 
 class GetManagerUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['surname', 'name', 'email', 'date_joined', 'user_type', 'info', 'company', 'is_active']
+        read_only_fields = ['email', 'date_joined', 'user_type', 'company']

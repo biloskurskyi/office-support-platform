@@ -219,3 +219,26 @@ class GetUserView(APIView):
         else:
             return Response({"error": "Invalid user type."}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UpdateUserView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def patch(self, request):
+        # Access the current authenticated user
+        user = request.user
+
+        # Serialize the user data and validate the request data
+
+        if user.user_type == 1:
+            serializer = GetOwnerUserSerializer(user, data=request.data, partial=True)
+        elif user.user_type == 2:
+            serializer = GetManagerUserSerializer(user, data=request.data, partial=True)
+        else:
+            return Response({"error": "Invalid user type."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if serializer.is_valid():
+            serializer.save()  # Save the updated data
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {TextField, Grid, Box, Typography, Button} from '@mui/material';
 import useUserData from "../../hooks/useUserData.tsx"; // Хук для отримання даних користувача
 import FormPaper from "../../components/LoginForm/UI/FormPaper.tsx"; // Ваш компонент FormPaper (якщо є)
+import axios from 'axios'; // Підключаємо axios для запитів
 
 const UserForm = () => {
     const {userData, loading, error} = useUserData();
@@ -30,10 +31,21 @@ const UserForm = () => {
     };
 
     // Обробка submit форми
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Тут можна додати логіку для оновлення даних користувача
-        console.log(formData);
+        try {
+            // Надсилаємо запит на оновлення даних користувача
+            const response = await axios.patch('http://localhost:8765/api/update-user/', formData, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`, // Додаємо токен авторизації
+                },
+            });
+            console.log('Data updated successfully:', response.data);
+            // Тут можна додати повідомлення про успішне оновлення
+        } catch (err) {
+            console.error('Error updating data:', err);
+            // Тут можна додати обробку помилки
+        }
     };
 
     if (loading) return <div>Loading...</div>;
@@ -44,7 +56,7 @@ const UserForm = () => {
 
     return (
         <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '10px'}}>
-            <FormPaper title="Редагування профілю">
+            <FormPaper title="Оновити дані користувача">
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         {/* Прізвище */}
@@ -55,7 +67,6 @@ const UserForm = () => {
                                 value={formData.surname}
                                 onChange={handleInputChange}
                                 fullWidth
-                                disabled
                                 InputProps={{
                                     style: {color: '#000'}, // Колір тексту в полі
                                 }}
@@ -75,7 +86,6 @@ const UserForm = () => {
                                 value={formData.name}
                                 onChange={handleInputChange}
                                 fullWidth
-                                disabled
                                 InputProps={{
                                     style: {color: '#000'}, // Колір тексту в полі
                                 }}
@@ -95,7 +105,6 @@ const UserForm = () => {
                                 value={formData.email}
                                 onChange={handleInputChange}
                                 fullWidth
-                                disabled
                                 InputProps={{
                                     style: {color: '#000'}, // Колір тексту в полі
                                 }}
@@ -186,7 +195,8 @@ const UserForm = () => {
                         )}
                     </Grid>
 
-                    <Box sx={{marginTop: '10px', marginBottom: '30px'}}>
+                    {/* Кнопка для оновлення даних */}
+                    <Box sx={{marginTop: '20px'}}>
                         <Button variant="contained" color="primary" fullWidth type="submit">
                             Оновити дані
                         </Button>
@@ -215,6 +225,7 @@ const UserForm = () => {
                             Змінити пароль
                         </Button>
                     </Box>
+
                 </form>
             </FormPaper>
         </Box>

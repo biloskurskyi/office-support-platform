@@ -25,7 +25,7 @@ const AuthButtons: React.FC = () => {
                         // Якщо екран більший, відображаємо текстову кнопку
                         <Link to="/user">
                             <Button color="inherit" sx={{color: 'white'}}>
-                                Особистий акаунт
+                                профіль<AccountCircle/>
                             </Button>
                         </Link>
                     )}

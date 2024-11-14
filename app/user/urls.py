@@ -1,7 +1,8 @@
 from django.urls import path
 
 from .views import (ActivateUserView, ChangePasswordView, CreateManagerView,
-                    GetUserView, LoginView, LogoutView, RegisterView)
+                    GetUserView, LoginView, LogoutView, RegisterView,
+                    UpdateUserView)
 
 app_name = 'user'
 
@@ -12,5 +13,6 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('register-manager/', CreateManagerView.as_view(), name='register-manager'),
     path('change-password/', ChangePasswordView.as_view(), name='change-password'),
-    path('get-user/', GetUserView.as_view(), name='get-user')
+    path('get-user/', GetUserView.as_view(), name='get-user'),
+    path('update-user/', UpdateUserView.as_view(), name='update-user')
 ]
