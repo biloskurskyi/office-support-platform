@@ -1,8 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {TextField, Grid, Box, Typography, Button} from '@mui/material';
 import useUserData from "../../hooks/useUserData.tsx"; // Хук для отримання даних користувача
-import FormPaper from "../../components/LoginForm/UI/FormPaper.tsx"; // Ваш компонент FormPaper (якщо є)
-import axios from 'axios'; // Підключаємо axios для запитів
+import FormPaper from "../../components/LoginForm/UI/FormPaper.tsx";
+import axios from 'axios';
+import UpdateButton from "./UI/UpdateButton.tsx";
+import ChangePassword from "./UI/ChangePassword.tsx";
+import CustomTextField from "./UI/CustomTextField.tsx"
 
 const UserForm = () => {
     const {userData, loading, error} = useUserData();
@@ -11,6 +14,9 @@ const UserForm = () => {
         name: '',
         email: '',
     });
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
 
     useEffect(() => {
         if (userData) {
@@ -37,14 +43,16 @@ const UserForm = () => {
             // Надсилаємо запит на оновлення даних користувача
             const response = await axios.patch('http://localhost:8765/api/update-user/', formData, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`, // Додаємо токен авторизації
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
                 },
             });
             console.log('Data updated successfully:', response.data);
-            // Тут можна додати повідомлення про успішне оновлення
+            setSuccessMessage('Дані оновлено успішно');
+            setErrorMessage('');
         } catch (err) {
             console.error('Error updating data:', err);
-            // Тут можна додати обробку помилки
+            setErrorMessage('Помилка оновлення даних.');
+            setSuccessMessage('');
         }
     };
 
@@ -54,177 +62,82 @@ const UserForm = () => {
     const isOwner = userData?.user_type === 1;
     const isManager = userData?.user_type === 2;
 
+
+
+
     return (
         <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '10px'}}>
             <FormPaper title="Оновити дані користувача">
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         {/* Прізвище */}
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Прізвище"
-                                name="surname"
-                                value={formData.surname}
-                                onChange={handleInputChange}
-                                fullWidth
-                                InputProps={{
-                                    style: {color: '#000'}, // Колір тексту в полі
-                                }}
-                                InputLabelProps={{
-                                    style: {color: '#000'}, // Колір лейблу
-                                }}
-                                sx={{
-                                    marginBottom: '10px',
-                                }}
-                            />
-                        </Grid>
+                        <CustomTextField
+                            label="Прізвище"
+                            name="surname"
+                            value={formData.surname}
+                            onChange={handleInputChange}
+                        />
                         {/* Ім'я */}
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Ім'я"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                fullWidth
-                                InputProps={{
-                                    style: {color: '#000'}, // Колір тексту в полі
-                                }}
-                                InputLabelProps={{
-                                    style: {color: '#000'}, // Колір лейблу
-                                }}
-                                sx={{
-                                    marginBottom: '10px',
-                                }}
-                            />
-                        </Grid>
+                        <CustomTextField
+                            label="Ім'я"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                        />
                         {/* Емейл */}
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Емейл"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                fullWidth
-                                InputProps={{
-                                    style: {color: '#000'}, // Колір тексту в полі
-                                }}
-                                InputLabelProps={{
-                                    style: {color: '#000'}, // Колір лейблу
-                                }}
-                                sx={{
-                                    marginBottom: '10px',
-                                }}
-                            />
-                        </Grid>
+                        <CustomTextField
+                            label="Емейл"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                        />
                         {/* Дата реєстрації */}
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Дата реєстрації"
-                                value={new Date(userData.date_joined).toLocaleDateString()}
-                                fullWidth
-                                disabled
-                                InputProps={{
-                                    style: {color: '#000'}, // Колір тексту в полі
-                                }}
-                                InputLabelProps={{
-                                    style: {color: '#000'}, // Колір лейблу
-                                }}
-                                sx={{
-                                    marginBottom: '10px',
-                                }}
-                            />
-                        </Grid>
+                        <CustomTextField
+                            label="Дата реєстрації"
+                            value={new Date(userData.date_joined).toLocaleDateString()}
+                            disabled
+                        />
                         {/* Тип користувача */}
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Тип користувача"
-                                value={isOwner ? 'Власник' : isManager ? 'Менеджер' : 'Невідомий'}
-                                fullWidth
-                                disabled
-                                InputProps={{
-                                    style: {color: '#000'}, // Колір тексту в полі
-                                }}
-                                InputLabelProps={{
-                                    style: {color: '#000'}, // Колір лейблу
-                                }}
-                                sx={{
-                                    marginBottom: '10px',
-                                }}
-                            />
-                        </Grid>
+                        <CustomTextField
+                            label="Тип користувача"
+                            value={isOwner ? 'Власник' : isManager ? 'Менеджер' : 'Невідомий'}
+                            disabled
+                        />
 
                         {isManager && (
                             <>
                                 {/* Компанія */}
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="Компанія"
-                                        value={userData.company || "Немає компанії"}
-                                        fullWidth
-                                        disabled
-                                        InputProps={{
-                                            style: {color: '#000'}, // Колір тексту в полі
-                                        }}
-                                        InputLabelProps={{
-                                            style: {color: '#000'}, // Колір лейблу
-                                        }}
-                                        sx={{
-                                            marginBottom: '10px',
-                                        }}
-                                    />
-                                </Grid>
+                                <CustomTextField
+                                    label="Компанія"
+                                    value={userData.company || 'Немає компанії'}
+                                    disabled
+                                />
                                 {/* Активність */}
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="Активність"
-                                        value={userData.is_active ? "Активний" : "Неактивний"}
-                                        fullWidth
-                                        disabled
-                                        InputProps={{
-                                            style: {color: '#000'}, // Колір тексту в полі
-                                        }}
-                                        InputLabelProps={{
-                                            style: {color: '#000'}, // Колір лейблу
-                                        }}
-                                        sx={{
-                                            marginBottom: '10px',
-                                        }}
-                                    />
-                                </Grid>
+                                <CustomTextField
+                                    label="Активність"
+                                    value={userData.is_active ? 'Активний' : 'Неактивний'}
+                                    disabled
+                                />
                             </>
                         )}
                     </Grid>
 
-                    {/* Кнопка для оновлення даних */}
-                    <Box sx={{marginTop: '20px'}}>
-                        <Button variant="contained" color="primary" fullWidth type="submit">
-                            Оновити дані
-                        </Button>
-                    </Box>
+                    {successMessage && (
+                        <Typography color="success.main" sx={{marginTop: '10px'}}>
+                            {successMessage}
+                        </Typography>
+                    )}
+                    {errorMessage && (
+                        <Typography color="error.main" sx={{marginTop: '10px'}}>
+                            {errorMessage}
+                        </Typography>
+                    )}
+
+                    <UpdateButton/>
 
                     <hr/>
 
-                    <Box sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        marginTop: '30px',
-                    }}>
-                        <Button
-                            variant="outlined"
-                            color="secondary"
-                            fullWidth
-                            sx={{
-                                backgroundColor: '#f44336', // Червоний колір для виділення
-                                color: '#fff',
-                                fontWeight: 'bold',
-                                '&:hover': {
-                                    backgroundColor: '#d32f2f', // Трохи темніший колір при наведенні
-                                }
-                            }}
-                        >
-                            Змінити пароль
-                        </Button>
-                    </Box>
+                    <ChangePassword/>
 
                 </form>
             </FormPaper>

@@ -10,7 +10,7 @@ const UserPage = () => {
             <BackgroundImage text={<><h1>Особиста сторінка</h1></>} />
             <Header />
             <div style={{ height: '500px' }} />
-            <UserForm /> {/* Додаємо форму */}
+            <UserForm />
             <div style={{ height: '50px' }} />
             <Footer />
         </div>
