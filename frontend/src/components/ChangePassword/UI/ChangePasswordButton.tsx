@@ -1,14 +1,14 @@
 import React from 'react';
 import {Box, Button} from "@mui/material";
 
-const UpdateButton = () => {
+const ChangePasswordButton = () => {
     return (
-        <Box sx={{marginTop: '20px', marginBottom: '30px'}}>
+        <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
             <Button variant="contained" color="primary" fullWidth type="submit">
-                Оновити дані
+                Змінити пароль
             </Button>
         </Box>
     );
 };
 
-export default UpdateButton;
+export default ChangePasswordButton;

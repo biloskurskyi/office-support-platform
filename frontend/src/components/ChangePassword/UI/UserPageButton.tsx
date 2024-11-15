@@ -1,34 +1,33 @@
 import React from 'react';
+import {Link} from "react-router-dom";
 import {Box, Button} from "@mui/material";
-import {Link} from 'react-router-dom';
+import {AccountCircle} from "@mui/icons-material";
 
-const ChangePassword = () => {
+const UserPageButton = () => {
     return (
-        <Link to="/change-password" style={{textDecoration: 'none', color: 'inherit'}}>
+        <Link to="/user" style={{textDecoration: 'none', color: 'inherit'}}>
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'center',
                 marginTop: '30px',
             }}>
-
                 <Button
                     variant="outlined"
-                    color="secondary"
                     fullWidth
                     sx={{
-                        backgroundColor: '#f44336',
-                        color: '#fff',
+                        backgroundColor: '#0dde38', // Зелений фон
+                        color: '#fff', // Білий текст
                         fontWeight: 'bold',
                         '&:hover': {
-                            backgroundColor: '#d32f2f',
+                            backgroundColor: '#0bbe30', // Трохи темніший зелений на hover
                         }
                     }}
                 >
-                    Змінити пароль
+                    Профіль<AccountCircle/>
                 </Button>
             </Box>
         </Link>
     );
 };
 
-export default ChangePassword;
+export default UserPageButton;

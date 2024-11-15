@@ -4,7 +4,7 @@ import Header from "../components/Header/Header.tsx";
 import Footer from "../components/Footer/Footer.tsx";
 import LoginForm from "../components/LoginForm/LoginForm.tsx";
 
-const LogIn = () => {
+const LogInPage = () => {
     return (
         <div style={{position: 'relative'}}>
             <BackgroundImage text={
@@ -22,4 +22,4 @@ const LogIn = () => {
     );
 };
 
-export default LogIn;
+export default LogInPage;

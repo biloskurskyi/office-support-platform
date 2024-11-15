@@ -2,9 +2,10 @@ import {createBrowserRouter, Navigate, redirect, RouteObject} from 'react-router
 import App from "../App.tsx";
 import HomePage from "../pages/HomePage.tsx";
 import SignUpPage from "../pages/SignUpPage.tsx";
-import LogIn from "../pages/LogIn.tsx";
+import LogInPage from "../pages/LogInPage.tsx";
 import MainPage from "../pages/MainPage.tsx";
 import UserPage from "../pages/UserPage.tsx";
+import ChangePasswordPage from "../pages/ChangePasswordPage.tsx";
 
 
 const rootLoader = async (): Promise<null | Response> => {
@@ -38,6 +39,10 @@ const routes: RouteObject[] = [
                 path: "/user",
                 element: <UserPage/>,
             },
+            {
+                path: '/change-password',
+                element: <ChangePasswordPage/>
+            }
         ],
     },
     {
@@ -46,7 +51,7 @@ const routes: RouteObject[] = [
     },
     {
         path: "/login",
-        element: <LogIn/>,
+        element: <LogInPage/>,
     },
     {
         path: "/signup",
