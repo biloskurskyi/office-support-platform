@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import BackgroundImage from "../components/BackgroundImage/BackgroundImage.tsx";
 import Header from "../components/Header/Header.tsx";
 import Footer from "../components/Footer/Footer.tsx";
 import useUserType from "../hooks/useUserType";
+import {useOutletContext} from "react-router-dom";
 
 const MainPage = () => {
     const userType = useUserType();
@@ -42,17 +43,22 @@ const MainPage = () => {
         </>
     );
 
+    const { setText } = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
+
+    useEffect(() => {
+        if (userType === '1') {
+            setText(ownerText);
+        } else if (userType === '2') {
+            setText(managerText);
+        } else {
+            setText(<>Сталася помилка. Невідомий тип користувача.</>);
+        }
+    }, [userType, setText, ownerText, managerText]);
+
     return (
         <div style={{position: 'relative'}}>
-            <BackgroundImage text={
-                userType === '1' ? ownerText :
-                    userType === '2' ? managerText :
-                        <>error</>
-            }/>
-            <Header/>
             <div style={{height: '500px'}}>
             </div>
-            <Footer/>
         </div>
     );
 };
