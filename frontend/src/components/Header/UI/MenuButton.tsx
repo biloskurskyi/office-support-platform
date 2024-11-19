@@ -1,83 +1,20 @@
-import React, {useState, useEffect} from 'react';
-import {Button, Menu, MenuItem} from '@mui/material';
+import React, { useState } from 'react';
+import { Button, Menu, MenuItem } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import axios, {AxiosResponse} from 'axios';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
-
-interface Company {
-    id: number;
-    name: string;
-    legal_name: string;
-    owner: number;
-    description: string;
-    website: string;
-    created_at: string;
-}
-
-interface Office {
-    id: number;
-    address: string;
-    city: string;
-    country: string;
-    postal_code: string;
-    phone_number: string;
-    manager: number;
-    company: number;
-}
+import {useDataCompanyOffice} from "../../../context/useDataCompanyOffice.tsx";
 
 const MenuButton: React.FC = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [submenuAnchorEl, setSubmenuAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
-    const [companies, setCompanies] = useState<Company[]>([]);
-    const [offices, setOffices] = useState<Office[]>([]);
-    const [isManagerWithoutOffices, setIsManagerWithoutOffices] = useState<boolean>(false);
 
+    // Use data from context
+    const { companies, offices, isManagerWithoutOffices, loading } =
+        useDataCompanyOffice();
 
-    useEffect(() => {
-        const fetchCompanies = async () => {
-            try {
-                const token = localStorage.getItem('jwtToken');
-                const userType = localStorage.getItem('user_type');
-                console.log(userType)
-
-                if (!token) {
-                    console.error('Токен не знайдений');
-                    return;
-                }
-
-                if (userType === '1') { // Власник
-                    const response: AxiosResponse<any> = await axios.get('http://localhost:8765/api/company/', {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-                    setCompanies(response.data);
-                } else if (userType === '2') { // Менеджер
-                    const response: AxiosResponse<any> = await axios.get('http://localhost:8765/api/office-list/', {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-                    setOffices(response.data);
-
-                    // Якщо менеджер не має офісів
-                    if (response.data.length === 0) {
-                        setIsManagerWithoutOffices(true);
-                    }
-                } else {
-                    console.error('Невідомий тип користувача');
-                }
-            } catch (error) {
-                console.error("Помилка завантаження компаній", error);
-            }
-        };
-
-        fetchCompanies().catch((error) => {
-            console.error('Promise rejected:', error);
-        });
-    }, []);
+    const isSmallScreen = useMediaQuery('(max-width:500px)');
 
     // Main menu handlers
     const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -102,24 +39,21 @@ const MenuButton: React.FC = () => {
         setSubmenuAnchorEl(event.currentTarget);
     };
 
-
-    const isSmallScreen = useMediaQuery('(max-width:500px)');
-
     return (
         <div>
-            <Button color="inherit" startIcon={<MenuIcon/>} onClick={handleMenuClick}>
+            <Button color="inherit" startIcon={<MenuIcon />} onClick={handleMenuClick}>
                 Меню
             </Button>
 
             {/* Main Menu */}
-            <Menu anchorEl={anchorEl} open={Boolean(!!anchorEl)} onClose={handleMenuClose}>
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
                 {localStorage.getItem('jwtToken') ? (
                     localStorage.getItem('user_type') === '2' ? (
                         offices.length > 0 ? (
                             offices.map((office) => (
                                 <MenuItem key={office.id} onClick={handleOfficeClick}>
                                     {isSmallScreen
-                                        ? <>{office.city}, {office.country},<br/>{office.address}</>
+                                        ? <>{office.city}, {office.country},<br />{office.address}</>
                                         : <>{office.city}, {office.country}, {office.address}</>}
                                 </MenuItem>
                             ))
@@ -140,30 +74,29 @@ const MenuButton: React.FC = () => {
                         ) : (
                             <MenuItem onClick={handleMenuClose}>
                                 {isSmallScreen
-                                    ? <>Створіть компанію,<br/>щоб почати управляти вже зараз</>
+                                    ? <>Створіть компанію,<br />щоб почати управляти вже зараз</>
                                     : 'Створіть компанію, щоб почати управляти вже зараз'}
                             </MenuItem>
                         )
                     )
                 ) : (
                     <MenuItem onClick={handleMenuClose}>
-                        <Link to="/login" style={{textDecoration: 'none', color: 'inherit'}}>
+                        <Link to="/login" style={{ textDecoration: 'none', color: 'inherit' }}>
                             {isSmallScreen
-                                ? <>Увійдіть,<br/>щоб побачити перелік можливостей</>
+                                ? <>Увійдіть,<br />щоб побачити перелік можливостей</>
                                 : 'Увійдіть, щоб побачити перелік можливостей'}
                         </Link>
                     </MenuItem>
                 )}
             </Menu>
 
-
             {/* Submenu for selected company */}
             <Menu
                 anchorEl={submenuAnchorEl}
-                open={Boolean(!!submenuAnchorEl)}
+                open={Boolean(submenuAnchorEl)}
                 onClose={handleSubmenuClose}
-                anchorOrigin={{vertical: 'top', horizontal: 'right'}}
-                transformOrigin={{vertical: 'top', horizontal: 'left'}}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
             >
                 {localStorage.getItem('user_type') === '1' ? (
                     [

@@ -1,9 +1,10 @@
 // src/components/Header/Header.tsx
 import React from 'react';
-import { AppBar, Toolbar } from '@mui/material';
+import {AppBar, Toolbar} from '@mui/material';
 import MenuButton from './UI/MenuButton';
 import Title from './UI/Title';
 import AuthButtons from './UI/AuthButtons';
+import {DataProvider} from "../../context/useDataCompanyOffice.tsx";
 
 const Header: React.FC = () => {
     return (
@@ -16,10 +17,12 @@ const Header: React.FC = () => {
             marginRight: '10px',
             backgroundColor: '#596177'
         }}>
-            <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <MenuButton />
-                <Title />
-                <AuthButtons />
+            <Toolbar sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <DataProvider>
+                    <MenuButton/>
+                </DataProvider>
+                <Title/>
+                <AuthButtons/>
             </Toolbar>
         </AppBar>
     );

@@ -4,18 +4,21 @@ import {Outlet} from "react-router-dom";
 import Footer from "./components/Footer/Footer.tsx";
 import BackgroundImage from './components/BackgroundImage/BackgroundImage.tsx';
 import Header from "./components/Header/Header.tsx";
+import {DataProvider} from "./context/useDataCompanyOffice.tsx";
 
 const App = () => {
     const [text, setText] = useState<React.ReactNode>(<></>);
     console.log(text)
 
     return (
-        <div>
-            <BackgroundImage text={text} />
-            <Header/>
-            <Outlet context={{ setText }} />
-            <Footer />
-        </div>
+        <DataProvider>
+            <div>
+                <BackgroundImage text={text}/>
+                <Header/>
+                <Outlet context={{setText}}/>
+                <Footer/>
+            </div>
+        </DataProvider>
     );
 };
 

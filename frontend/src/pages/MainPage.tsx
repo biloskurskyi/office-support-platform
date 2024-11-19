@@ -4,6 +4,7 @@ import Header from "../components/Header/Header.tsx";
 import Footer from "../components/Footer/Footer.tsx";
 import useUserType from "../hooks/useUserType";
 import {useOutletContext} from "react-router-dom";
+import {useDataCompanyOffice} from "../context/useDataCompanyOffice.tsx";
 
 const MainPage = () => {
     const userType = useUserType();
@@ -43,7 +44,7 @@ const MainPage = () => {
         </>
     );
 
-    const { setText } = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
+    const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
 
     useEffect(() => {
         if (userType === '1') {
@@ -55,9 +56,36 @@ const MainPage = () => {
         }
     }, [userType, setText, ownerText, managerText]);
 
+
+    const {companies, offices, isManagerWithoutOffices, loading} =
+        useDataCompanyOffice();
+
+    if (loading) {
+        return <p>Завантаження...</p>;
+    }
+
     return (
         <div style={{position: 'relative'}}>
             <div style={{height: '500px'}}>
+            </div>
+            <div>
+                <h1>Головна сторінка</h1>
+                <h2>Компанії:</h2>
+                <ul>
+                    {companies.map((company) => (
+                        <li key={company.id}>{company.name}</li>
+                    ))}
+                </ul>
+                <h2>Офіси:</h2>
+                {isManagerWithoutOffices ? (
+                    <p>Менеджер без офісів</p>
+                ) : (
+                    <ul>
+                        {offices.map((office) => (
+                            <li key={office.id}>{office.city}, {office.address}</li>
+                        ))}
+                    </ul>
+                )}
             </div>
         </div>
     );
