@@ -2,7 +2,7 @@ import React from 'react';
 import Header from '../components/Header/Header.tsx';
 import Footer from '../components/Footer/Footer.tsx';
 import BackgroundImage from '../components/BackgroundImage/BackgroundImage.tsx';
-import InfoBlocks from '../components/InfoBlocks/InfoBlocks.tsx';
+import InfoBlocks from '../components/HomeInfoBlocks/InfoBlocks.tsx';
 
 const HomePage = () => {
     return (

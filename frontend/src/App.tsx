@@ -8,7 +8,6 @@ import {DataProvider} from "./context/useDataCompanyOffice.tsx";
 
 const App = () => {
     const [text, setText] = useState<React.ReactNode>(<></>);
-    console.log(text)
 
     return (
         <DataProvider>

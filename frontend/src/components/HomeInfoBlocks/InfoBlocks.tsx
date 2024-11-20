@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Paper, Typography, Box } from '@mui/material';
+import {Grid, Paper, Typography, Box} from '@mui/material';
 
 interface BlockData {
     title: string;
@@ -34,7 +34,7 @@ const InfoBlocks: React.FC = () => {
                 marginBottom: '100px', // Відступ знизу
             }}
         >
-            <Grid container spacing={2} justifyContent="center">
+            <Grid container spacing={5} justifyContent="center">
                 {/* Мапимо блоки на основі масиву */}
                 {blocks.map((block, index) => (
                     <Grid item xs={12} sm={4} key={index}>
@@ -59,12 +59,13 @@ const InfoBlocks: React.FC = () => {
                             >
                                 {block.title}
                             </Typography>
-                            <Typography sx={{ paddingTop: '8px' }}>{block.content}</Typography> {/* Додаємо відступ для тексту */}
+                            <Typography
+                                sx={{paddingTop: '8px'}}>{block.content}</Typography> {/* Додаємо відступ для тексту */}
                         </Paper>
                     </Grid>
                 ))}
             </Grid>
-             <Typography
+            <Typography
                 variant="body1"
                 sx={{
                     marginTop: '60px',
@@ -75,7 +76,8 @@ const InfoBlocks: React.FC = () => {
                     fontWeight: 'bold',
                 }}
             >
-                Не гайте часу! Зареєструйтесь або увійдіть у свій акаунт, щоб отримати доступ до всіх можливостей платформи та розпочати ефективне керування офісами вже сьогодні!
+                Не гайте часу! Зареєструйтесь або увійдіть у свій акаунт, щоб отримати доступ до всіх можливостей
+                платформи та розпочати ефективне керування офісами вже сьогодні!
             </Typography>
         </Box>
     );

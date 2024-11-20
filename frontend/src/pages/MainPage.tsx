@@ -5,6 +5,9 @@ import Footer from "../components/Footer/Footer.tsx";
 import useUserType from "../hooks/useUserType";
 import {useOutletContext} from "react-router-dom";
 import {useDataCompanyOffice} from "../context/useDataCompanyOffice.tsx";
+import {Grid, Paper, Typography, Box, Button} from '@mui/material';
+import PageWrapper from "../components/MainPageComponents/PageWrapper.tsx";
+import InfoBlocks from "../components/MainPageComponents/UI/InfoBlocks.tsx";
 
 const MainPage = () => {
     const userType = useUserType();
@@ -54,7 +57,7 @@ const MainPage = () => {
         } else {
             setText(<>Сталася помилка. Невідомий тип користувача.</>);
         }
-    }, [userType, setText, ownerText, managerText]);
+    }, [userType, setText]);
 
 
     const {companies, offices, isManagerWithoutOffices, loading} =
@@ -64,30 +67,38 @@ const MainPage = () => {
         return <p>Завантаження...</p>;
     }
 
+    const blocksData = companies.length
+        ? companies.map(company => ({
+            title: company.name,
+            content: (
+                <>
+                    <p><strong>Юридична назва:</strong> {company.legal_name}</p>
+                    <p><strong>Опис:</strong> {company.description}</p>
+                    <p><strong>Сайт:</strong> <a href={company.website} target="_blank" rel="noopener noreferrer">{company.website}</a></p>
+                    <p><strong>Дата створення:</strong> {new Date(company.created_at).toLocaleDateString()}</p>
+                </>
+            ),
+        }))
+        : offices.length
+            ? offices.map(office => ({
+                title: office.city,
+                content: (
+                    <>
+                        <p><strong>Адреса:</strong> {office.address}</p>
+                        <p><strong>Країна:</strong> {office.country}</p>
+                        <p><strong>Поштовий індекс:</strong> {office.postal_code}</p>
+                        <p><strong>Телефон:</strong> {office.phone_number}</p>
+                    </>
+                ),
+            }))
+            : null;
+
+
     return (
-        <div style={{position: 'relative'}}>
-            <div style={{height: '500px'}}>
-            </div>
-            <div>
-                <h1>Головна сторінка</h1>
-                <h2>Компанії:</h2>
-                <ul>
-                    {companies.map((company) => (
-                        <li key={company.id}>{company.name}</li>
-                    ))}
-                </ul>
-                <h2>Офіси:</h2>
-                {isManagerWithoutOffices ? (
-                    <p>Менеджер без офісів</p>
-                ) : (
-                    <ul>
-                        {offices.map((office) => (
-                            <li key={office.id}>{office.city}, {office.address}</li>
-                        ))}
-                    </ul>
-                )}
-            </div>
-        </div>
+        <PageWrapper>
+            <div style={{height: '500px'}}/>
+            <InfoBlocks blocksData={blocksData}/>
+        </PageWrapper>
     );
 };
 
