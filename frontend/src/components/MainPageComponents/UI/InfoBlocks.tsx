@@ -1,9 +1,10 @@
 import React from 'react';
-import {Grid, Paper, Typography, Box, Button} from '@mui/material';
+import {Grid, Box, Typography, Button} from '@mui/material';
+import InfoBlock from './InfoBlock';
 
 interface Block {
     title: string;
-    content: string;
+    content: React.ReactNode;
 }
 
 interface InfoBlocksProps {
@@ -40,62 +41,20 @@ const InfoBlocks: React.FC<InfoBlocksProps> = ({blocksData}) => {
         );
     }
 
-    return (
-        <Box
-            sx={{
-                padding: '0 10px',
-                marginBottom: '100px',
-                display: 'flex',
-                justifyContent: blocksData.length === 1 ? 'center' : 'flex-start',
-                alignItems: blocksData.length === 1 ? 'center' : 'flex-start',
 
-            }}
-        >
-            <Grid container spacing={2} justifyContent={blocksData.length === 1 ? 'center' : 'flex-start'}>
+    return (
+        <Box sx={{
+            padding: '0 10px',
+            marginBottom: '100px',
+            display: 'flex',
+            justifyContent: blocksData.length === 1 ? 'center' : 'flex-start',
+            alignItems: blocksData.length === 1 ? 'center' : 'flex-start',
+
+        }}>
+            <Grid container spacing={6} justifyContent={blocksData.length === 1 ? 'center' : 'flex-start'}>
                 {blocksData.map((block, index) => (
                     <Grid item xs={12} sm={6} key={index}>
-                        <Paper
-                            elevation={3}
-                            sx={{
-                                padding: 2,
-                                textAlign: 'center',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'flex-start',
-                                height: '100%',
-                            }}
-                        >
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    borderBottom: '2px solid #ccc',
-                                    paddingBottom: '8px',
-                                    marginBottom: '12px',
-                                }}
-                            >
-                                {block.title}
-                            </Typography>
-                            <Typography>{block.content}</Typography>
-                            <Typography>
-                                <Button
-                                    variant="outlined"
-                                    sx={{
-                                        marginTop: '16px',
-                                        padding: '6px 16px',
-                                        fontSize: '0.875rem',
-                                        borderRadius: '4px',
-                                        borderColor: '#000',
-                                        color: '#000',
-                                        '&:hover': {
-                                            borderColor: '#333',
-                                            backgroundColor: '#f5f5f5',
-                                        },
-                                    }}
-                                >
-                                    Переглянути сторінку
-                                </Button>
-                            </Typography>
-                        </Paper>
+                        <InfoBlock title={block.title} content={block.content}/>
                     </Grid>
                 ))}
             </Grid>

@@ -8,57 +8,17 @@ import {useDataCompanyOffice} from "../context/useDataCompanyOffice.tsx";
 import {Grid, Paper, Typography, Box, Button} from '@mui/material';
 import PageWrapper from "../components/MainPageComponents/PageWrapper.tsx";
 import InfoBlocks from "../components/MainPageComponents/UI/InfoBlocks.tsx";
+import UserWelcomeText from "../components/MainPageComponents/UI/UserWelcomeText.tsx";
 
 const MainPage = () => {
-    const userType = useUserType();
-    const ownerText = (
-        <>
-            Вітаємо у системі управління!
-            <br/>
-            Ви успішно увійшли як власник. Тепер ви маєте доступ до
-            повного функціоналу для ефективного керування компанією:
-            <br/>
-            • Керуйте інформацією про Компанію та налаштовуйте дані про Офіси.
-            <br/>
-            • Контролюйте Комунальні послуги та оптимізуйте витрати.
-            <br/>
-            • Створюйте та обробляйте Замовлення, управляйте Провайдерами послуг.
-            <br/>
-            • Налаштовуйте свій Особистий акаунт для більш персоналізованого досвіду.
-            <br/>
-            Бажаємо продуктивної роботи з нашою платформою!
-        </>
-    );
-
-    const managerText = (
-        <>
-            Вітаємо у системі управління!
-            <br/>
-            Ви успішно увійшли як менеджер. Тепер ви маєте доступ до
-            основних функцій для підтримки роботи офісу:
-            <br/>
-            • Контролюйте Комунальні послуги та оптимізуйте витрати.
-            <br/>
-            • Створюйте та обробляйте Замовлення, управляйте Провайдерами послуг.
-            <br/>
-            • Налаштовуйте свій Особистий акаунт для більш персоналізованого досвіду.
-            <br/>
-            Бажаємо продуктивної роботи з нашою платформою!
-        </>
-    );
+    const userType: string|null = useUserType();
 
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
 
     useEffect(() => {
-        if (userType === '1') {
-            setText(ownerText);
-        } else if (userType === '2') {
-            setText(managerText);
-        } else {
-            setText(<>Сталася помилка. Невідомий тип користувача.</>);
-        }
+        setText(<UserWelcomeText userType={userType}/>);
+        console.log(typeof userType)
     }, [userType, setText]);
-
 
     const {companies, offices, isManagerWithoutOffices, loading} =
         useDataCompanyOffice();
@@ -74,7 +34,8 @@ const MainPage = () => {
                 <>
                     <p><strong>Юридична назва:</strong> {company.legal_name}</p>
                     <p><strong>Опис:</strong> {company.description}</p>
-                    <p><strong>Сайт:</strong> <a href={company.website} target="_blank" rel="noopener noreferrer">{company.website}</a></p>
+                    <p><strong>Сайт:</strong> <a href={company.website} target="_blank"
+                                                 rel="noopener noreferrer">{company.website}</a></p>
                     <p><strong>Дата створення:</strong> {new Date(company.created_at).toLocaleDateString()}</p>
                 </>
             ),
