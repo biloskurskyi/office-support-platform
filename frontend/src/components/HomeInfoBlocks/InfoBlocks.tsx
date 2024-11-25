@@ -51,6 +51,7 @@ const InfoBlocks: React.FC = () => {
                         >
                             <Typography
                                 variant="h6"
+                                component="div"
                                 sx={{
                                     borderBottom: '2px solid #ccc', // Тонка лінія між заголовком та текстом
                                     paddingBottom: '8px', // Відступ між лінією і текстом
@@ -59,8 +60,8 @@ const InfoBlocks: React.FC = () => {
                             >
                                 {block.title}
                             </Typography>
-                            <Typography
-                                sx={{paddingTop: '8px'}}>{block.content}</Typography> {/* Додаємо відступ для тексту */}
+                            <Typography component="div"
+                                        sx={{paddingTop: '8px'}}>{block.content}</Typography> {/* Додаємо відступ для тексту */}
                         </Paper>
                     </Grid>
                 ))}

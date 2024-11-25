@@ -7,6 +7,9 @@ interface InfoBlockProps {
 }
 
 const InfoBlock: React.FC<InfoBlockProps> = ({title, content}) => {
+    // Обгортаємо content в <div>, щоб уникнути проблеми з вкладеними <p> тегами
+    const renderContent = React.isValidElement(content) ? content : <Typography>{content}</Typography>;
+
     return (
         <Paper
             elevation={3}
@@ -21,6 +24,7 @@ const InfoBlock: React.FC<InfoBlockProps> = ({title, content}) => {
         >
             <Typography
                 variant="h6"
+                component="h2"
                 sx={{
                     borderBottom: '2px solid #ccc',
                     paddingBottom: '8px',
@@ -29,7 +33,7 @@ const InfoBlock: React.FC<InfoBlockProps> = ({title, content}) => {
             >
                 {title}
             </Typography>
-            <Typography>{content}</Typography>
+            {renderContent}
         </Paper>
     );
 };

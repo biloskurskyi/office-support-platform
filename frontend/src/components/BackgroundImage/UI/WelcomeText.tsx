@@ -1,5 +1,6 @@
 // src/components/BackgroundImage/UI/WelcomeText.tsx
 import React, {useState, useEffect} from 'react';
+import ReactDOMServer from 'react-dom/server'
 
 interface WelcomeTextProps {
     text: React.ReactNode;
@@ -17,19 +18,39 @@ const WelcomeText: React.FC<WelcomeTextProps> = ({text}) => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const getTextLength = (node: React.ReactNode): number => {
-        if (typeof node === 'string') {
-            return node.length;
-        } else if (React.isValidElement(node)) {
-            return React.Children.toArray(node.props.children).reduce(
-                (acc, child) => acc + getTextLength(child), // Рекурсивно обробляємо всі діти
-                0
-            );
-        }
-        return 0;
+    // const getTextLength = (node: React.ReactNode): number => {
+    //     if (typeof node === 'string') {
+    //         return node.length;
+    //     } else if (React.isValidElement(node)) {
+    //         // Перевіряємо, чи у елемента є дочірні елементи
+    //         return React.Children.toArray(node.props.children).reduce(
+    //             (acc, child) => acc + getTextLength(child),
+    //             0
+    //         );
+    //     } else if (Array.isArray(node)) {
+    //         // Якщо це масив дочірніх елементів, рекурсивно обробляємо його
+    //         return node.reduce((acc, child) => acc + getTextLength(child), 0);
+    //     }
+    //     return 0; // Ігноруємо boolean, null, undefined
+    // };
+    // const textLength: number = getTextLength(text);
+    //
+    // console.log("Text Length:", textLength);
+
+    const extractText = (node: React.ReactNode): string => {
+        // Рендеримо React-елемент у строку
+        const rendered = ReactDOMServer.renderToStaticMarkup(node);
+        // Видаляємо всі HTML-теги, залишаючи тільки текст
+        return rendered.replace(/<[^>]*>/g, '').trim();
     };
 
-    const textLength: number = getTextLength(text);
+    const extractedText: string = extractText(text);
+    const textLength: number = extractedText.length;
+
+    console.log("Text:", text);
+    console.log("Text length:", textLength);
+
+
     let fontSize: string;
 
     if (textLength > 350) {

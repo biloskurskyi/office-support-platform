@@ -109,8 +109,10 @@ const MenuButton: React.FC = () => {
                         <MenuItem key="communal" onClick={handleSubmenuItemClick}>Комунальні послуги</MenuItem>,
                         <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>,
                         <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>,
-                        <Link to={`/company/${companies.find(c => c.name === selectedCompany)?.id}`}
-                              style={{textDecoration: 'none', color: 'inherit'}}>
+                        <Link
+                            to={`/company/${companies && Array.isArray(companies) ? companies.find(c => c.name === selectedCompany)?.id : ''}`}
+                            key="company-settings"
+                            style={{textDecoration: 'none', color: 'inherit'}}>
                             <MenuItem key="company-settings" onClick={handleSubmenuItemClick}>
                                 Налаштування компанії
                             </MenuItem>

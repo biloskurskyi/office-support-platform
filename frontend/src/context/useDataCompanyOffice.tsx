@@ -44,7 +44,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({children}
                 const userType = localStorage.getItem('user_type');
 
                 if (!token) {
-                    console.error('Токен не знайдений');
+                    if (!window.__loggedNoToken) {
+                        console.error('Токен не знайдений');
+                        window.__loggedNoToken = true;
+                    }
                     return;
                 }
 

@@ -9,6 +9,7 @@ import {Grid, Paper, Typography, Box, Button} from '@mui/material';
 import PageWrapper from "../components/MainPageComponents/PageWrapper.tsx";
 import InfoBlocks from "../components/MainPageComponents/UI/InfoBlocks.tsx";
 import UserWelcomeText from "../components/MainPageComponents/UI/UserWelcomeText.tsx";
+import CreateCompanyButton from "../components/MainPageComponents/UI/CreateCompanyButton.tsx";
 
 const MainPage = () => {
     const userType: string | null = useUserType();
@@ -17,13 +18,11 @@ const MainPage = () => {
 
     useEffect(() => {
         setText(<UserWelcomeText userType={userType}/>);
-        console.log(typeof userType)
     }, [userType, setText]);
+
 
     const {companies, offices, isManagerWithoutOffices, loading} =
         useDataCompanyOffice();
-
-    console.log(companies)
 
     if (loading) {
         return <p>Завантаження...</p>;
@@ -60,6 +59,7 @@ const MainPage = () => {
                             </Button>
                         </Link>
                     </Typography>
+
                 </>
             ),
         }))
@@ -100,6 +100,14 @@ const MainPage = () => {
         <PageWrapper>
             <div style={{height: '500px'}}/>
             <InfoBlocks blocksData={blocksData}/>
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+            }}>
+                <CreateCompanyButton/>
+            </Box>
         </PageWrapper>
     );
 };
