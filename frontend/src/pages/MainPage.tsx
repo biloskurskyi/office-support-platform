@@ -3,7 +3,7 @@ import BackgroundImage from "../components/BackgroundImage/BackgroundImage.tsx";
 import Header from "../components/Header/Header.tsx";
 import Footer from "../components/Footer/Footer.tsx";
 import useUserType from "../hooks/useUserType";
-import {useOutletContext} from "react-router-dom";
+import {useOutletContext, Link} from "react-router-dom";
 import {useDataCompanyOffice} from "../context/useDataCompanyOffice.tsx";
 import {Grid, Paper, Typography, Box, Button} from '@mui/material';
 import PageWrapper from "../components/MainPageComponents/PageWrapper.tsx";
@@ -11,7 +11,7 @@ import InfoBlocks from "../components/MainPageComponents/UI/InfoBlocks.tsx";
 import UserWelcomeText from "../components/MainPageComponents/UI/UserWelcomeText.tsx";
 
 const MainPage = () => {
-    const userType: string|null = useUserType();
+    const userType: string | null = useUserType();
 
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
 
@@ -22,6 +22,8 @@ const MainPage = () => {
 
     const {companies, offices, isManagerWithoutOffices, loading} =
         useDataCompanyOffice();
+
+    console.log(companies)
 
     if (loading) {
         return <p>Завантаження...</p>;
@@ -37,6 +39,27 @@ const MainPage = () => {
                     <p><strong>Сайт:</strong> <a href={company.website} target="_blank"
                                                  rel="noopener noreferrer">{company.website}</a></p>
                     <p><strong>Дата створення:</strong> {new Date(company.created_at).toLocaleDateString()}</p>
+                    <Typography>
+                        <Link to={`/company/${company.id}`} style={{textDecoration: 'none'}}>
+                            <Button
+                                variant="outlined"
+                                sx={{
+                                    marginTop: '16px',
+                                    padding: '6px 16px',
+                                    fontSize: '0.875rem',
+                                    borderRadius: '4px',
+                                    borderColor: '#000',
+                                    color: '#000',
+                                    '&:hover': {
+                                        borderColor: '#333',
+                                        backgroundColor: '#f5f5f5',
+                                    },
+                                }}
+                            >
+                                Переглянути сторінку
+                            </Button>
+                        </Link>
+                    </Typography>
                 </>
             ),
         }))
@@ -49,11 +72,29 @@ const MainPage = () => {
                         <p><strong>Країна:</strong> {office.country}</p>
                         <p><strong>Поштовий індекс:</strong> {office.postal_code}</p>
                         <p><strong>Телефон:</strong> {office.phone_number}</p>
+                        <Typography>
+                            <Button
+                                variant="outlined"
+                                sx={{
+                                    marginTop: '16px',
+                                    padding: '6px 16px',
+                                    fontSize: '0.875rem',
+                                    borderRadius: '4px',
+                                    borderColor: '#000',
+                                    color: '#000',
+                                    '&:hover': {
+                                        borderColor: '#333',
+                                        backgroundColor: '#f5f5f5',
+                                    },
+                                }}
+                            >
+                                Переглянути сторінку
+                            </Button>
+                        </Typography>
                     </>
                 ),
             }))
             : null;
-
 
     return (
         <PageWrapper>

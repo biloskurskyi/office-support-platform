@@ -6,6 +6,7 @@ import LogInPage from "../pages/LogInPage.tsx";
 import MainPage from "../pages/MainPage.tsx";
 import UserPage from "../pages/UserPage.tsx";
 import ChangePasswordPage from "../pages/ChangePasswordPage.tsx";
+import CompanyEditPage from "../pages/CompanyEditPage.tsx";
 
 
 const rootLoader = async (): Promise<null | Response> => {
@@ -42,7 +43,11 @@ const routes: RouteObject[] = [
             {
                 path: '/change-password',
                 element: <ChangePasswordPage/>
-            }
+            },
+            {
+                path: '/company/:id',
+                element: <CompanyEditPage/>
+            },
         ],
     },
     {

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Button, Menu, MenuItem } from '@mui/material';
+import React, {useState} from 'react';
+import {Button, Menu, MenuItem} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useDataCompanyOffice} from "../../../context/useDataCompanyOffice.tsx";
 
@@ -11,7 +11,7 @@ const MenuButton: React.FC = () => {
     const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
 
     // Use data from context
-    const { companies, offices, isManagerWithoutOffices, loading } =
+    const {companies, offices, isManagerWithoutOffices, loading} =
         useDataCompanyOffice();
 
     const isSmallScreen = useMediaQuery('(max-width:500px)');
@@ -39,21 +39,25 @@ const MenuButton: React.FC = () => {
         setSubmenuAnchorEl(event.currentTarget);
     };
 
+    const handleSubmenuItemClick = () => {
+        handleMenuClose(); // Закриваємо обидва меню
+    };
+
     return (
         <div>
-            <Button color="inherit" startIcon={<MenuIcon />} onClick={handleMenuClick}>
+            <Button color="inherit" startIcon={<MenuIcon/>} onClick={handleMenuClick}>
                 Меню
             </Button>
 
             {/* Main Menu */}
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+            <Menu anchorEl={anchorEl} open={Boolean(!!anchorEl)} onClose={handleMenuClose}>
                 {localStorage.getItem('jwtToken') ? (
                     localStorage.getItem('user_type') === '2' ? (
                         offices.length > 0 ? (
                             offices.map((office) => (
                                 <MenuItem key={office.id} onClick={handleOfficeClick}>
                                     {isSmallScreen
-                                        ? <>{office.city}, {office.country},<br />{office.address}</>
+                                        ? <>{office.city}, {office.country},<br/>{office.address}</>
                                         : <>{office.city}, {office.country}, {office.address}</>}
                                 </MenuItem>
                             ))
@@ -74,16 +78,16 @@ const MenuButton: React.FC = () => {
                         ) : (
                             <MenuItem onClick={handleMenuClose}>
                                 {isSmallScreen
-                                    ? <>Створіть компанію,<br />щоб почати управляти вже зараз</>
+                                    ? <>Створіть компанію,<br/>щоб почати управляти вже зараз</>
                                     : 'Створіть компанію, щоб почати управляти вже зараз'}
                             </MenuItem>
                         )
                     )
                 ) : (
                     <MenuItem onClick={handleMenuClose}>
-                        <Link to="/login" style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <Link to="/login" style={{textDecoration: 'none', color: 'inherit'}}>
                             {isSmallScreen
-                                ? <>Увійдіть,<br />щоб побачити перелік можливостей</>
+                                ? <>Увійдіть,<br/>щоб побачити перелік можливостей</>
                                 : 'Увійдіть, щоб побачити перелік можливостей'}
                         </Link>
                     </MenuItem>
@@ -93,29 +97,34 @@ const MenuButton: React.FC = () => {
             {/* Submenu for selected company */}
             <Menu
                 anchorEl={submenuAnchorEl}
-                open={Boolean(submenuAnchorEl)}
+                open={Boolean(!!submenuAnchorEl)}
                 onClose={handleSubmenuClose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+                transformOrigin={{vertical: 'top', horizontal: 'left'}}
             >
                 {localStorage.getItem('user_type') === '1' ? (
                     [
-                        <MenuItem key="managers" onClick={handleSubmenuClose}>Менеджери</MenuItem>,
-                        <MenuItem key="offices" onClick={handleSubmenuClose}>Офіси</MenuItem>,
-                        <MenuItem key="communal" onClick={handleSubmenuClose}>Комунальні послуги</MenuItem>,
-                        <MenuItem key="orders" onClick={handleSubmenuClose}>Замовлення</MenuItem>,
-                        <MenuItem key="providers" onClick={handleSubmenuClose}>Провайдери</MenuItem>,
-                        <MenuItem key="company-settings" onClick={handleSubmenuClose}>Налаштування компанії</MenuItem>,
+                        <MenuItem key="managers" onClick={handleSubmenuItemClick}>Менеджери</MenuItem>,
+                        <MenuItem key="offices" onClick={handleSubmenuItemClick}>Офіси</MenuItem>,
+                        <MenuItem key="communal" onClick={handleSubmenuItemClick}>Комунальні послуги</MenuItem>,
+                        <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>,
+                        <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>,
+                        <Link to={`/company/${companies.find(c => c.name === selectedCompany)?.id}`}
+                              style={{textDecoration: 'none', color: 'inherit'}}>
+                            <MenuItem key="company-settings" onClick={handleSubmenuItemClick}>
+                                Налаштування компанії
+                            </MenuItem>
+                        </Link>
                     ]
                 ) : localStorage.getItem('user_type') === '2' ? (
                     [
-                        <MenuItem key="communal" onClick={handleSubmenuClose}>Комунальні послуги</MenuItem>,
-                        <MenuItem key="orders" onClick={handleSubmenuClose}>Замовлення</MenuItem>,
-                        <MenuItem key="providers" onClick={handleSubmenuClose}>Провайдери</MenuItem>,
-                        <MenuItem key="office-settings" onClick={handleSubmenuClose}>Налаштування офісу</MenuItem>,
+                        <MenuItem key="communal" onClick={handleSubmenuItemClick}>Комунальні послуги</MenuItem>,
+                        <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>,
+                        <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>,
+                        <MenuItem key="office-settings" onClick={handleSubmenuItemClick}>Налаштування офісу</MenuItem>,
                     ]
                 ) : (
-                    <MenuItem onClick={handleSubmenuClose}>Немає доступу</MenuItem>
+                    <MenuItem onClick={handleSubmenuItemClick}>Немає доступу</MenuItem>
                 )}
             </Menu>
         </div>

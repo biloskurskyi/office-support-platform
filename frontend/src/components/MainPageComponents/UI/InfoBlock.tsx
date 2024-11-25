@@ -30,25 +30,6 @@ const InfoBlock: React.FC<InfoBlockProps> = ({title, content}) => {
                 {title}
             </Typography>
             <Typography>{content}</Typography>
-            <Typography>
-                <Button
-                    variant="outlined"
-                    sx={{
-                        marginTop: '16px',
-                        padding: '6px 16px',
-                        fontSize: '0.875rem',
-                        borderRadius: '4px',
-                        borderColor: '#000',
-                        color: '#000',
-                        '&:hover': {
-                            borderColor: '#333',
-                            backgroundColor: '#f5f5f5',
-                        },
-                    }}
-                >
-                    Переглянути сторінку
-                </Button>
-            </Typography>
         </Paper>
     );
 };
