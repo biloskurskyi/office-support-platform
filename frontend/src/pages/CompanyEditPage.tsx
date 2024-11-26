@@ -2,11 +2,9 @@ import {Link, useOutletContext, useParams} from 'react-router-dom';
 import React, {useState, useEffect} from 'react';
 import FormPaper from "../components/LoginForm/UI/FormPaper.tsx";
 import axios from 'axios';
-import {TextField, Button, Grid, Box, Typography} from '@mui/material';
+import {Button, Grid, Box, Typography} from '@mui/material';
 import CustomTextField from "../components/UserForm/UI/CustomTextField.tsx"
-import updateButton from "../components/UserForm/UI/UpdateButton.tsx";
 import UpdateButton from "../components/UserForm/UI/UpdateButton.tsx";
-import MainPage from "./MainPage.tsx";
 
 const CompanyEditPage = () => {
     const { setText } = useOutletContext<{ setText: (text: React.ReactNode) => void }>();

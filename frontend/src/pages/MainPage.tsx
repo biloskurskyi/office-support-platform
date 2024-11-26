@@ -106,7 +106,7 @@ const MainPage = () => {
                 alignItems: 'center',
                 width: '100%',
             }}>
-                <CreateCompanyButton/>
+                <Link to="/company-create">{userType === '1' && <CreateCompanyButton />}</Link>
             </Box>
         </PageWrapper>
     );
