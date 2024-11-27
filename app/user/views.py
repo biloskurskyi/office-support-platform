@@ -13,6 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from app.settings import FRONTEND_BASE_URL
 from core.models import Company, User
 
 from .serializers import (ChangePasswordSerializer, GetManagerUserSerializer,
@@ -41,10 +42,13 @@ class RegisterView(APIView):
 
         email_message = ""
 
+        frontend_base_url = FRONTEND_BASE_URL
+
         if user.email:
             subject = 'Activate your account'
-            message = (f'Hello {user.name},\n\nPlease activate your account using the following link:'
-                       f' http://localhost:8765/api/activate/{user.id}/')
+            activation_link = f'{frontend_base_url}/activate-user/{user.id}/'
+            message = (
+                f'Hello {user.name},\n\nPlease activate your account using the following link:\n{activation_link}')
             from_email = settings.EMAIL_HOST_USER
             recipient_list = [user.email]
 
@@ -71,15 +75,21 @@ class ActivateUserView(APIView):
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            return JsonResponse({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse({'error': 'Користувача не знайдено.'}, status=status.HTTP_404_NOT_FOUND)
 
         if user.is_active:
-            return HttpResponse("User is active.")
+            return JsonResponse({
+                'message': "Ви вже успішно активували свій акаунт раніше.\n"
+                           "Тепер ви можете увійти до системи та використовувати її функціонал."
+            })
 
         user.is_active = True
         user.save()
 
-        return HttpResponse("User activated successfully.")
+        return JsonResponse({
+            'message': "Вітаємо! Ви успішно активували свій акаунт.\n"
+                       "Тепер ви можете увійти до системи та використовувати її функціонал."
+        })
 
 
 class LoginView(APIView):

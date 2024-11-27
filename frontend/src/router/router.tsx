@@ -8,6 +8,7 @@ import UserPage from "../pages/UserPage.tsx";
 import ChangePasswordPage from "../pages/ChangePasswordPage.tsx";
 import CompanyEditPage from "../pages/CompanyEditPage.tsx";
 import CreateCompanyPage from "../pages/CreateCompanyPage.tsx";
+import ActivateUserPage from "../pages/ActivateUserPage.tsx";
 
 
 const rootLoader = async (): Promise<null | Response> => {
@@ -67,6 +68,10 @@ const routes: RouteObject[] = [
         path: "/signup",
         element: <SignUpPage/>,
     },
+    {
+        path: "/activate-user/:id",
+        element: <ActivateUserPage/>,
+    }
 ];
 
 
