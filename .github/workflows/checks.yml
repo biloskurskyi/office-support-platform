@@ -55,6 +55,7 @@ jobs:
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          FRONTEND_BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
 
       - name: Lint
         run: docker-compose run --rm app sh -c "flake8"
