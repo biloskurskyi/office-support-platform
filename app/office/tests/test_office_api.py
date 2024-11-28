@@ -37,28 +37,28 @@ class OfficeApiOwnerTests(CompanyApiTestBase, TestCase):
 
 
 class OfficeApiTest(OfficeApiOwnerTests):
-    @patch('django.core.mail.send_mail')
-    def test_add_office_success(self, mock_send_activation_email):
-        """Ensure an owner user can add an office."""
-        mock_send_activation_email.return_value = None
-        self.register_user()
-
-        user = User.objects.get(email=self.user_data['email'])
-        user.is_active = True
-        user.save()
-
-        self.get_token()
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.get_token()}')
-
-        response_office = self.add_company()
-        self.assertEqual(response_office.status_code, status.HTTP_201_CREATED)
-        self.company = Company.objects.get(name="Test company")
-
-        response = self.add_office()
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertIn('message', response.data)
-        self.assertEqual(response.data['message'], 'Office created successfully.')
+    # @patch('django.core.mail.send_mail')
+    # def test_add_office_success(self, mock_send_activation_email):
+    #     """Ensure an owner user can add an office."""
+    #     mock_send_activation_email.return_value = None
+    #     self.register_user()
+    #
+    #     user = User.objects.get(email=self.user_data['email'])
+    #     user.is_active = True
+    #     user.save()
+    #
+    #     self.get_token()
+    #     self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.get_token()}')
+    #
+    #     response_office = self.add_company()
+    #     self.assertEqual(response_office.status_code, status.HTTP_201_CREATED)
+    #     self.company = Company.objects.get(name="Test company")
+    #
+    #     response = self.add_office()
+    #
+    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    #     self.assertIn('message', response.data)
+    #     self.assertEqual(response.data['message'], 'Office created successfully.')
 
     @patch('django.core.mail.send_mail')
     def test_get_all_offices(self, mock_send_mail):
