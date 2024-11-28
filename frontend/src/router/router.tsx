@@ -9,6 +9,7 @@ import ChangePasswordPage from "../pages/ChangePasswordPage.tsx";
 import CompanyEditPage from "../pages/CompanyEditPage.tsx";
 import CreateCompanyPage from "../pages/CreateCompanyPage.tsx";
 import ActivateUserPage from "../pages/ActivateUserPage.tsx";
+import OfficeEditPage from "../pages/OfficeEditPage.tsx";
 
 
 const rootLoader = async (): Promise<null | Response> => {
@@ -53,7 +54,11 @@ const routes: RouteObject[] = [
             {
                 path: "/company-create",
                 element: <CreateCompanyPage/>
-            }
+            },
+            {
+                path: '/office/:id',
+                element: <OfficeEditPage/>
+            },
         ],
     },
     {

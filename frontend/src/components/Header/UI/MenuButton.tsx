@@ -9,6 +9,8 @@ const MenuButton: React.FC = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [submenuAnchorEl, setSubmenuAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
+    const [selectedOffice, setSelectedOffice] = useState<number | null>(null);
+
 
     // Use data from context
     const {companies, offices, isManagerWithoutOffices, loading} =
@@ -42,6 +44,7 @@ const MenuButton: React.FC = () => {
     const handleSubmenuItemClick = () => {
         handleMenuClose(); // Закриваємо обидва меню
     };
+
 
     return (
         <div>
@@ -123,7 +126,17 @@ const MenuButton: React.FC = () => {
                         <MenuItem key="communal" onClick={handleSubmenuItemClick}>Комунальні послуги</MenuItem>,
                         <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>,
                         <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>,
-                        <MenuItem key="office-settings" onClick={handleSubmenuItemClick}>Налаштування офісу</MenuItem>,
+                        <Link
+                            to={`/office/${selectedOffice}`} // Використовуємо ID вибраного офісу
+                            key="office-settings"
+                            style={{textDecoration: 'none', color: 'inherit'}}
+                        >
+                            <MenuItem key="office-settings" onClick={handleSubmenuItemClick}>
+                                Налаштування офісу
+                            </MenuItem>
+                        </Link>
+
+
                     ]
                 ) : (
                     <MenuItem onClick={handleSubmenuItemClick}>Немає доступу</MenuItem>

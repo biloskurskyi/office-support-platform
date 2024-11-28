@@ -73,23 +73,25 @@ const MainPage = () => {
                         <p><strong>Поштовий індекс:</strong> {office.postal_code}</p>
                         <p><strong>Телефон:</strong> {office.phone_number}</p>
                         <Typography>
-                            <Button
-                                variant="outlined"
-                                sx={{
-                                    marginTop: '16px',
-                                    padding: '6px 16px',
-                                    fontSize: '0.875rem',
-                                    borderRadius: '4px',
-                                    borderColor: '#000',
-                                    color: '#000',
-                                    '&:hover': {
-                                        borderColor: '#333',
-                                        backgroundColor: '#f5f5f5',
-                                    },
-                                }}
-                            >
-                                Переглянути сторінку
-                            </Button>
+                            <Link to={`/office/${office.id}`} style={{textDecoration: 'none'}}>
+                                <Button
+                                    variant="outlined"
+                                    sx={{
+                                        marginTop: '16px',
+                                        padding: '6px 16px',
+                                        fontSize: '0.875rem',
+                                        borderRadius: '4px',
+                                        borderColor: '#000',
+                                        color: '#000',
+                                        '&:hover': {
+                                            borderColor: '#333',
+                                            backgroundColor: '#f5f5f5',
+                                        },
+                                    }}
+                                >
+                                    Переглянути сторінку
+                                </Button>
+                            </Link>
                         </Typography>
                     </>
                 ),
@@ -106,7 +108,7 @@ const MainPage = () => {
                 alignItems: 'center',
                 width: '100%',
             }}>
-                <Link to="/company-create">{userType === '1' && <CreateCompanyButton />}</Link>
+                <Link to="/company-create">{userType === '1' && <CreateCompanyButton/>}</Link>
             </Box>
         </PageWrapper>
     );
