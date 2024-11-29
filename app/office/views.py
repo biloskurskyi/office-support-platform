@@ -145,3 +145,22 @@ class OfficeListForManager(APIView):
             return Response({"message": "No offices found for you"}, status=200)
         serializer = OfficeSerializer(offices, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class OfficeListForCompany(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        user = request.user
+        if user.user_type != 1:
+            return Response({"message": "You do not have permission to view this resource."},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        offices = Office.objects.filter(company_id=pk)
+
+        if not offices.exists():
+            return Response({"message": "No offices found for the specified company."},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        serializer = OfficeSerializer(offices, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
