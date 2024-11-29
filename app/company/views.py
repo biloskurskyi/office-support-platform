@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from rest_framework import status, viewsets
@@ -6,8 +7,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import Company, User
+from user.serializers import UserSerializer
 
 from .mixins import CompanyDetailMixin
+
 from .serializers import CompanySerializer
 
 
@@ -117,3 +120,33 @@ class CompanyDetailView(CompanyDetailMixin, APIView):
 
         company.delete()
         return Response({'message': 'Company deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class CompanyManagersView(APIView):
+    """
+    API view that returns all unique managers for a specific company.
+    """
+
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, company_id):
+        try:
+            company = Company.objects.get(id=company_id)
+
+            if company.owner != request.user:
+                return Response({"error": "You are not the owner of this company."},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            managers = User.objects.filter(
+                Q(user_type=User.MANAGER_USER) & Q(office__company=company)
+            ).distinct()
+
+            serializer = UserSerializer(managers, many=True)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Company.DoesNotExist:
+            return Response({"error": "Company not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

@@ -1,11 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import axios, {AxiosResponse} from 'axios';
-import {Link, useOutletContext, useParams} from 'react-router-dom';
+import {useOutletContext, useParams} from 'react-router-dom';
 import {
     Typography,
-    List,
-    ListItem,
-    ListItemText,
     CircularProgress,
     Box,
     Button,
@@ -13,8 +10,9 @@ import {
     CardContent, CardActions
 } from '@mui/material';
 import InfoBlocks from "../components/MainPageComponents/UI/InfoBlocks.tsx";
-import CreateCompanyButton from "../components/MainPageComponents/UI/CreateCompanyButton.tsx";
 import PageWrapper from "../components/MainPageComponents/PageWrapper.tsx";
+import ErrorMessage from "../components/OfficesListOwnerComponent/UI/ErrorMessage.tsx";
+import OfficeCard from "../components/OfficesListOwnerComponent/UI/OfficeCard.tsx";
 
 interface Office {
     id: number;
@@ -76,9 +74,7 @@ const OfficesListOwnerPage = () => {
         return <CircularProgress/>;
     }
 
-    if (error) {
-        return <Typography color="error">{error}</Typography>;
-    }
+    if (error) return <ErrorMessage message={error}/>;
 
     if (!offices.length) {
         return (
@@ -138,44 +134,16 @@ const OfficesListOwnerPage = () => {
         );
     }
 
-    const blocksData = offices.map((office) => ({
-        title: office.city,
-        content: (
-            <>
-                <p><strong>Адреса:</strong> {office.address}</p>
-                <p><strong>Країна:</strong> {office.country}</p>
-                <p><strong>Поштовий індекс:</strong> {office.postal_code}</p>
-                <p><strong>Телефон:</strong> {office.phone_number}</p>
-                <Typography>
-                    <Link to={`/office/${office.id}`} style={{textDecoration: 'none'}}>
-                        <Button
-                            variant="outlined"
-                            sx={{
-                                marginTop: '16px',
-                                padding: '6px 16px',
-                                fontSize: '0.875rem',
-                                borderRadius: '4px',
-                                borderColor: '#000',
-                                color: '#000',
-                                '&:hover': {
-                                    borderColor: '#333',
-                                    backgroundColor: '#f5f5f5',
-                                },
-                            }}
-                        >
-                            Переглянути сторінку
-                        </Button>
-                    </Link>
-                </Typography>
-            </>
-        ),
-    }));
-
 
     return (
         <PageWrapper>
             <div style={{height: '500px'}}/>
-            <InfoBlocks blocksData={blocksData}/>
+            <InfoBlocks
+                blocksData={offices.map((office) => ({
+                    title: office.city,
+                    content: <OfficeCard office={office}/>,
+                }))}
+            />
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'center',
