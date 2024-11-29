@@ -1,38 +1,32 @@
 import React, {useEffect, useState} from 'react';
-import axios, {AxiosResponse} from 'axios';
-import {useOutletContext, useParams} from 'react-router-dom';
-import {
-    Typography,
-    CircularProgress,
-    Box,
-    Button,
-    Card,
-    CardContent, CardActions
-} from '@mui/material';
+import {useOutletContext, useParams} from "react-router-dom";
+import axios, {AxiosResponse} from "axios";
+import {Box, Button, Card, CardActions, CardContent, CircularProgress, Typography} from "@mui/material";
+import ErrorMessage from "../components/OfficesListOwnerComponent/UI/ErrorMessage.tsx";
 import InfoBlocks from "../components/MainPageComponents/UI/InfoBlocks.tsx";
 import PageWrapper from "../components/MainPageComponents/PageWrapper.tsx";
-import ErrorMessage from "../components/OfficesListOwnerComponent/UI/ErrorMessage.tsx";
-import OfficeCard from "../components/OfficesListOwnerComponent/UI/OfficeCard.tsx";
+import ManagerCard from "../components/ManagerCard/UI/ManagerCard.tsx";
 
-interface Office {
+interface Manager {
     id: number;
-    city: string;
-    address: string;
-    country: string;
-    postal_code: string;
-    phone_number: string;
+    surname: string,
+    name: string,
+    email: string,
+    user_type: number,
+    info: string,
+    company: number
 }
 
-const OfficesListOwnerPage: React.FC = () => {
+const ManagersListPage = () => {
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
 
     useEffect(() => {
 
-        setText(<h2>Перелік офісів для комапнії</h2>);
+        setText(<h2>Перелік менеджерів компанії</h2>);
     }, [setText]);
 
     const {id} = useParams<{ id: string }>();
-    const [offices, setOffices] = useState<Office[]>([]);
+    const [managers, setManagers] = useState<Manager[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -52,15 +46,15 @@ const OfficesListOwnerPage: React.FC = () => {
                     return;
                 }
 
-                const response: AxiosResponse<Office[]> = await axios.get(
-                    `http://localhost:8765/api/office-list-company/${id}/`,
+                const response: AxiosResponse<Manager[]> = await axios.get(
+                    `http://localhost:8765/api/company/${id}/managers/`,
                     {
                         headers: {Authorization: `Bearer ${token}`},
                     }
                 );
-                setOffices(response.data);
+                setManagers(response.data);
             } catch (error) {
-                setError('Не вдалося завантажити офіси. Спробуйте пізніше.');
+                setError('Не вдалося завантажити менеджерів. Спробуйте пізніше.');
                 console.error('Помилка завантаження даних:', error);
             } finally {
                 setLoading(false);
@@ -76,7 +70,7 @@ const OfficesListOwnerPage: React.FC = () => {
 
     if (error) return <ErrorMessage message={error}/>;
 
-    if (!offices.length) {
+        if (!managers.length) {
         return (
             <>
                 <div style={{height: '500px'}}/>
@@ -105,12 +99,11 @@ const OfficesListOwnerPage: React.FC = () => {
                                 component="div"
                                 sx={{marginBottom: '16px', fontWeight: 'bold', color: '#333'}}
                             >
-                                Офіси не знайдено
+                                Менеджерів не знайдено
                             </Typography>
                             <Typography variant="body1" color="text.secondary">
-                                Здається, у цієї компанії ще немає офісів. Ви можете створити новий офіс за допомогою
-                                кнопки
-                                нижче.
+                                Здається, у цієї компанії ще немає менеджерів. Ви можете створити нового менеджера
+                                за допомогою кнопки нижче.
                             </Typography>
                         </CardContent>
                         <CardActions sx={{justifyContent: 'center'}}>
@@ -124,7 +117,7 @@ const OfficesListOwnerPage: React.FC = () => {
                                     },
                                 }}
                             >
-                                Створити офіс
+                                Створити менеджера
                             </Button>
                         </CardActions>
                     </Card>
@@ -134,14 +127,14 @@ const OfficesListOwnerPage: React.FC = () => {
         );
     }
 
-
     return (
-        <PageWrapper>
+        <div>
+            <PageWrapper>
             <div style={{height: '500px'}}/>
             <InfoBlocks
-                blocksData={offices.map((office) => ({
-                    title: office.city,
-                    content: <OfficeCard office={office}/>,
+                blocksData={managers.map((manager) => ({
+                    title: manager.email,
+                    content: <ManagerCard manager={manager}/>,
                 }))}
             />
             <Box sx={{
@@ -153,7 +146,8 @@ const OfficesListOwnerPage: React.FC = () => {
                 {/*тут повина бути кнопка для створення офісів*/}
             </Box>
         </PageWrapper>
+        </div>
     );
 };
 
-export default OfficesListOwnerPage;
+export default ManagersListPage;

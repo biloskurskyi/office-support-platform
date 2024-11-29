@@ -17,7 +17,6 @@ interface OfficeCardProps {
 const OfficeCard: React.FC<OfficeCardProps> = ({ office }) => {
     return (
         <div>
-            <Typography variant="h6">{office.city}</Typography>
             <p><strong>Адреса:</strong> {office.address}</p>
             <p><strong>Країна:</strong> {office.country}</p>
             <p><strong>Поштовий індекс:</strong> {office.postal_code}</p>

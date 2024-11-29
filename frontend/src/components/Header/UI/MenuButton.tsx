@@ -109,7 +109,11 @@ const MenuButton: React.FC = () => {
             >
                 {localStorage.getItem('user_type') === '1' ? (
                     [
-                        <MenuItem key="managers" onClick={handleSubmenuItemClick}>Менеджери</MenuItem>,
+                        <Link
+                            to={`/company/${companies.find(c => c.legal_name === selectedCompany)?.id}/managers/`}
+                            style={{textDecoration: 'none', color: 'inherit'}}>
+                            <MenuItem key="managers" onClick={handleSubmenuItemClick}>Менеджери</MenuItem>
+                        </Link>,
                         <Link
                             to={`/office-list/${companies.find(c => c.legal_name === selectedCompany)?.id}`}
                             style={{textDecoration: 'none', color: 'inherit'}}>
