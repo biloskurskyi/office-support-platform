@@ -252,3 +252,29 @@ class UpdateUserView(APIView):
             return Response(serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangeActiveStatusManagerView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, pk):
+        user = request.user
+
+        # Переконаємося, що користувач є власником
+        if user.user_type != User.OWNER_USER:
+            return Response({"error": "Invalid user type."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Отримуємо менеджера по pk
+        manager = get_object_or_404(User, pk=pk, user_type=User.MANAGER_USER)
+
+        # Перевіряємо, чи менеджер належить компанії власника
+        if not Company.objects.filter(owner=user, id=manager.company).exists():
+            return Response({"error": "This manager does not belong to your company."},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        # Міняємо статус активності менеджера
+        manager.is_active = not manager.is_active
+        manager.save()
+
+        return Response({"message": "Manager's active status updated successfully.", "is_active": manager.is_active},
+                        status=status.HTTP_200_OK)

@@ -20,8 +20,10 @@ const InfoBlocks: React.FC<InfoBlocksProps> = ({blocksData}) => {
                 sx={{marginTop: '20px', textAlign: 'center', color: '#555'}}
             >
                 Інформація про компанії або офіси наразі відсутня. <br/>
-                Почніть свій шлях до ефективного управління — створіть компанію прямо зараз! <br/>
+                Почніть свій шлях до ефективного управління — створіть
+                компанію прямо зараз,<br/>або зачекайте на отримання прав доступу до офісу! <br/>
                 {/*<CreateCompanyButton/>*/}
+                <div style={{height: '100px'}}/>
             </Typography>
         );
     }
@@ -29,7 +31,7 @@ const InfoBlocks: React.FC<InfoBlocksProps> = ({blocksData}) => {
 
     return (
         <>
-            <Box sx={{
+        <Box sx={{
                 padding: '0 10px',
                 marginBottom: '100px',
                 display: 'flex',
