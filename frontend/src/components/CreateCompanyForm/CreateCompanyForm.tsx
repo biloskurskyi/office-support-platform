@@ -78,25 +78,25 @@ const CreateCompanyForm = () => {
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <TextFieldWithLabel
-                            label="Ім'я компанії"
+                            label="*Ім'я компанії"
                             name="name"
                             value={formData.name}
                             onChange={handleInputChange}
                         />
                         <TextFieldWithLabel
-                            label="Юридична особа"
+                            label="*Юридична особа"
                             name="legal_name"
                             value={formData.legal_name}
                             onChange={handleInputChange}
                         />
                         <TextFieldWithLabel
-                            label="*Опис"
+                            label="Опис"
                             name="description"
                             value={formData.description}
                             onChange={handleInputChange}
                         />
                         <TextFieldWithLabel
-                            label="*Веб-сайт"
+                            label="Веб-сайт"
                             name="website"
                             value={formData.website}
                             onChange={handleInputChange}

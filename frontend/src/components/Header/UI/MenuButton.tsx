@@ -110,12 +110,18 @@ const MenuButton: React.FC = () => {
                 {localStorage.getItem('user_type') === '1' ? (
                     [
                         <MenuItem key="managers" onClick={handleSubmenuItemClick}>Менеджери</MenuItem>,
-                        <MenuItem key="offices" onClick={handleSubmenuItemClick}>Офіси</MenuItem>,
+                        <Link
+                            to={`/office-list/${companies.find(c => c.legal_name === selectedCompany)?.id}`}
+                            style={{textDecoration: 'none', color: 'inherit'}}>
+                            <MenuItem key="offices" onClick={handleSubmenuItemClick}>
+                                Офіси
+                            </MenuItem>
+                        </Link>,
                         <MenuItem key="communal" onClick={handleSubmenuItemClick}>Комунальні послуги</MenuItem>,
                         <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>,
                         <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>,
                         <Link
-                            to={`/company/${companies && Array.isArray(companies) ? 
+                            to={`/company/${companies && Array.isArray(companies) ?
                                 companies.find(c => c.legal_name === selectedCompany)?.id : ''}`}
                             key="company-settings"
                             style={{textDecoration: 'none', color: 'inherit'}}>
@@ -130,7 +136,7 @@ const MenuButton: React.FC = () => {
                         <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>,
                         <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>,
                         <Link
-                            to={`/office/${selectedOffice && Array.isArray(offices) ? 
+                            to={`/office/${selectedOffice && Array.isArray(offices) ?
                                 offices.find(o => o.phone_number === selectedOffice)?.id : ''}`} // Використовуємо ID вибраного офісу
                             key="office-settings"
                             style={{textDecoration: 'none', color: 'inherit'}}

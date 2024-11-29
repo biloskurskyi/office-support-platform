@@ -156,11 +156,25 @@ class OfficeListForCompany(APIView):
             return Response({"message": "You do not have permission to view this resource."},
                             status=status.HTTP_403_FORBIDDEN)
 
+        try:
+            company = Company.objects.get(id=pk)
+        except Company.DoesNotExist:
+            return Response(
+                {"message": "The company with the provided ID does not exist."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if company.owner != user:
+            return Response(
+                {"message": "You do not have access to this company."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         offices = Office.objects.filter(company_id=pk)
 
         if not offices.exists():
-            return Response({"message": "No offices found for the specified company."},
-                            status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": "You do not created an office"},
+                            status=status.HTTP_200_OK)
 
         serializer = OfficeSerializer(offices, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

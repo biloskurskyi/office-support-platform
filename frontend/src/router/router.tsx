@@ -10,6 +10,7 @@ import CompanyEditPage from "../pages/CompanyEditPage.tsx";
 import CreateCompanyPage from "../pages/CreateCompanyPage.tsx";
 import ActivateUserPage from "../pages/ActivateUserPage.tsx";
 import OfficeEditPage from "../pages/OfficeEditPage.tsx";
+import OfficesListOwnerPage from "../pages/OfficesListOwnerPage.tsx";
 
 
 const rootLoader = async (): Promise<null | Response> => {
@@ -58,6 +59,10 @@ const routes: RouteObject[] = [
             {
                 path: '/office/:id',
                 element: <OfficeEditPage/>
+            },
+            {
+                path: "/office-list/:id",
+                element: <OfficesListOwnerPage/>
             },
         ],
     },

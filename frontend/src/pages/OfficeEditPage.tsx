@@ -24,6 +24,7 @@ const OfficeEditPage = () => {
         postal_code: '',
         phone_number: '',
         company: '',
+        company_id: '',
 
     });
     const [loading, setLoading] = useState(true);
@@ -47,6 +48,7 @@ const OfficeEditPage = () => {
                     postal_code: response.data.postal_code,
                     phone_number: response.data.phone_number,
                     company: response.data.company,
+                    company_id: response.data.company_id,
                 });
                 setLoading(false);
             } catch (error) {
@@ -71,7 +73,7 @@ const OfficeEditPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.patch(`http://localhost:8765/api/office/${id}/`, formData, {
+            const response = await axios.put(`http://localhost:8765/api/office/${id}/`, formData, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
                 },
@@ -88,6 +90,14 @@ const OfficeEditPage = () => {
 
     if (loading) return <div>Завантаження...</div>;
 
+    const userType = localStorage.getItem('user_type');
+    let linkTo = '';
+    if (userType == 2) {
+        linkTo = '/main';  // Для менеджера
+    } else if (userType == 1 && company.company_id) {
+        linkTo = `/office-list/${company.company_id}`;
+    }
+
 
     return (
         <div>
@@ -100,37 +110,37 @@ const OfficeEditPage = () => {
                             <CustomTextField
                                 label="Країна"
                                 value={formData.country}
-                                name="description"
+                                name="country"
                                 onChange={handleInputChange}
                             />
                             <CustomTextField
                                 label="Місто"
                                 value={formData.city}
-                                name="name"
+                                name="city"
                                 onChange={handleInputChange}
                             />
                             <CustomTextField
                                 label="Адресса"
                                 value={formData.address}
-                                name="legal_name"
+                                name="address"
                                 onChange={handleInputChange}
                             />
                             <CustomTextField
                                 label="Поштовий індекс"
                                 value={formData.postal_code}
-                                name="website"
+                                name="postal_code"
                                 onChange={handleInputChange}
                             />
-                             <CustomTextField
+                            <CustomTextField
                                 label="Номер телефону"
                                 value={formData.phone_number}
-                                name="website"
+                                name="phone_number"
                                 onChange={handleInputChange}
                             />
                             <CustomTextField
                                 label="Компанія"
                                 value={formData.company}
-                                name="website"
+                                name="company"
                                 disabled
                             />
                         </Grid>
@@ -152,7 +162,7 @@ const OfficeEditPage = () => {
 
                     <hr/>
 
-                    <Link to="/main" style={{textDecoration: 'none', color: 'inherit'}}>
+                    <Link to={linkTo} style={{textDecoration: 'none', color: 'inherit'}}>
                         <Box sx={{
                             display: 'flex',
                             justifyContent: 'center',
