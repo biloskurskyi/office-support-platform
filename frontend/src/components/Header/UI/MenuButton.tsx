@@ -37,7 +37,8 @@ const MenuButton: React.FC = () => {
         setSubmenuAnchorEl(null);
     };
 
-    const handleOfficeClick = (event: React.MouseEvent<HTMLElement>) => {
+    const handleOfficeClick = (event: React.MouseEvent<HTMLElement>, office: string) => {
+        setSelectedOffice(office);
         setSubmenuAnchorEl(event.currentTarget);
     };
 
@@ -45,6 +46,7 @@ const MenuButton: React.FC = () => {
         handleMenuClose(); // Закриваємо обидва меню
     };
 
+    console.log(selectedCompany)
 
     return (
         <div>
@@ -58,7 +60,7 @@ const MenuButton: React.FC = () => {
                     localStorage.getItem('user_type') === '2' ? (
                         offices.length > 0 ? (
                             offices.map((office) => (
-                                <MenuItem key={office.id} onClick={handleOfficeClick}>
+                                <MenuItem key={office.id} onClick={(o) => handleOfficeClick(o, office.phone_number)}>
                                     {isSmallScreen
                                         ? <>{office.city}, {office.country},<br/>{office.address}</>
                                         : <>{office.city}, {office.country}, {office.address}</>}
@@ -74,8 +76,8 @@ const MenuButton: React.FC = () => {
                     ) : (
                         companies.length > 0 ? (
                             companies.map((company) => (
-                                <MenuItem key={company.id} onClick={(e) => handleCompanyClick(e, company.name)}>
-                                    {company.name}
+                                <MenuItem key={company.id} onClick={(e) => handleCompanyClick(e, company.legal_name)}>
+                                    {company.legal_name}
                                 </MenuItem>
                             ))
                         ) : (
@@ -113,7 +115,8 @@ const MenuButton: React.FC = () => {
                         <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>,
                         <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>,
                         <Link
-                            to={`/company/${companies && Array.isArray(companies) ? companies.find(c => c.name === selectedCompany)?.id : ''}`}
+                            to={`/company/${companies && Array.isArray(companies) ? 
+                                companies.find(c => c.legal_name === selectedCompany)?.id : ''}`}
                             key="company-settings"
                             style={{textDecoration: 'none', color: 'inherit'}}>
                             <MenuItem key="company-settings" onClick={handleSubmenuItemClick}>
@@ -127,7 +130,8 @@ const MenuButton: React.FC = () => {
                         <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>,
                         <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>,
                         <Link
-                            to={`/office/${selectedOffice}`} // Використовуємо ID вибраного офісу
+                            to={`/office/${selectedOffice && Array.isArray(offices) ? 
+                                offices.find(o => o.phone_number === selectedOffice)?.id : ''}`} // Використовуємо ID вибраного офісу
                             key="office-settings"
                             style={{textDecoration: 'none', color: 'inherit'}}
                         >
