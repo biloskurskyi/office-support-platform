@@ -10,7 +10,6 @@ from core.models import Company, User
 from user.serializers import UserSerializer
 
 from .mixins import CompanyDetailMixin
-
 from .serializers import CompanySerializer
 
 
