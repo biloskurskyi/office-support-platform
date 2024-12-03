@@ -31,15 +31,15 @@ const ManagerCard: React.FC<ManagerCardProps> = ({manager}) => {
             }
 
             const response = await axios.post(
-                `http://localhost:8000/api/change-manager-status/${manager.id}/`,
+                `http://localhost:8765/api/change-manager-status/${manager.id}/`,
                 {},
                 {
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: {Authorization: `Bearer ${token}`},
                 }
             );
 
             setIsActive(response.data.is_active); // Оновлюємо статус активності
-            alert("Статус менеджера оновлено успішно.");
+            alert(`Статус менеджера змінено на ${response.data.is_active ? 'активний' : 'неактивний'}.`);
         } catch (error) {
             console.error("Помилка під час оновлення статусу менеджера:", error);
             alert("Не вдалося оновити статус менеджера. Спробуйте пізніше.");
@@ -55,7 +55,24 @@ const ManagerCard: React.FC<ManagerCardProps> = ({manager}) => {
             <p><strong>Ім'я:</strong> {manager.name}</p>
             <p><strong>Електрона пошта:</strong> {manager.email}</p>
             <p><strong>Інформація:</strong> {manager.info}</p>
-
+            <Typography variant="body2" color={isActive ? 'green' : 'red'} gutterBottom>
+                <strong>Статус:</strong> {isActive ? 'Активний' : 'Неактивний'}
+            </Typography>
+            <Button
+                variant="contained"
+                color={isActive ? 'secondary' : 'primary'}
+                onClick={handleToggleActive}
+                disabled={loading}
+                sx={{
+                    marginTop: '8px',
+                    backgroundColor: isActive ? '#808080' : '#1976d2',
+                    '&:hover': {
+                        backgroundColor: isActive ? '#c62828' : '#2e7d32',
+                    },
+                }}
+            >
+                {loading ? 'Оновлення...' : isActive ? 'Деактивувати' : 'Активувати'}
+            </Button>
         </div>
     );
 };

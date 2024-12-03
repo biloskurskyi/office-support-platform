@@ -14,7 +14,8 @@ interface Manager {
     email: string,
     user_type: number,
     info: string,
-    company: number
+    company: number,
+    is_active: boolean,
 }
 
 const ManagersListPage = () => {
@@ -59,6 +60,8 @@ const ManagersListPage = () => {
             } finally {
                 setLoading(false);
             }
+
+
         };
 
         fetchData();
@@ -70,7 +73,7 @@ const ManagersListPage = () => {
 
     if (error) return <ErrorMessage message={error}/>;
 
-        if (!managers.length) {
+    if (!managers.length) {
         return (
             <>
                 <div style={{height: '500px'}}/>
@@ -130,22 +133,23 @@ const ManagersListPage = () => {
     return (
         <div>
             <PageWrapper>
-            <div style={{height: '500px'}}/>
-            <InfoBlocks
-                blocksData={managers.map((manager) => ({
-                    title: manager.email,
-                    content: <ManagerCard manager={manager}/>,
-                }))}
-            />
-            <Box sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: '100%',
-            }}>
-                {/*тут повина бути кнопка для створення офісів*/}
-            </Box>
-        </PageWrapper>
+                <div style={{height: '500px'}}/>
+                <InfoBlocks
+                    blocksData={managers.map((manager) => ({
+                        title: manager.email,
+                        content: <ManagerCard manager={manager}/>,
+                    }))}
+                />
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                }}>
+                    {/*тут повина бути кнопка для створення офісів*/}
+                </Box>
+            </PageWrapper>
+
         </div>
     );
 };
