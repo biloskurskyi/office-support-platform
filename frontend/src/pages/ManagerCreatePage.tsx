@@ -132,7 +132,7 @@ const ManagerCreatePage = () => {
                                     }
                                 }}
                             >
-                                Перелік компаній
+                                Перелік менеджерів
                             </Button>
                         </Box>
                     </Link>

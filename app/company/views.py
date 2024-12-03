@@ -137,8 +137,8 @@ class CompanyManagersView(APIView):
                                 status=status.HTTP_403_FORBIDDEN)
 
             managers = User.objects.filter(
-                Q(user_type=User.MANAGER_USER) & Q(office__company=company)
-            ).distinct()
+                Q(user_type=User.MANAGER_USER) & Q(company=company_id)
+            )
 
             serializer = UserSerializer(managers, many=True)
 
