@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useOutletContext, useParams} from "react-router-dom";
+import {Link, useOutletContext, useParams} from "react-router-dom";
 import axios, {AxiosResponse} from "axios";
 import {Box, Button, Card, CardActions, CardContent, CircularProgress, Typography} from "@mui/material";
 import ErrorMessage from "../components/OfficesListOwnerComponent/UI/ErrorMessage.tsx";
@@ -110,18 +110,20 @@ const ManagersListPage = () => {
                             </Typography>
                         </CardContent>
                         <CardActions sx={{justifyContent: 'center'}}>
-                            <Button
-                                variant="contained"
-                                sx={{
-                                    backgroundColor: '#1976d2',
-                                    color: '#fff',
-                                    '&:hover': {
-                                        backgroundColor: '#155a9c',
-                                    },
-                                }}
-                            >
-                                Створити менеджера
-                            </Button>
+                            <Link to={`/create-manager/${id}`}>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        backgroundColor: '#1976d2',
+                                        color: '#fff',
+                                        '&:hover': {
+                                            backgroundColor: '#155a9c',
+                                        },
+                                    }}
+                                >
+                                    Створити менеджера
+                                </Button>
+                            </Link>
                         </CardActions>
                     </Card>
                 </Box>
@@ -149,7 +151,23 @@ const ManagersListPage = () => {
                     {/*тут повина бути кнопка для створення офісів*/}
                 </Box>
             </PageWrapper>
-
+            <CardActions sx={{justifyContent: 'center'}}>
+                <Link to={`/create-manager/${id}`}>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            backgroundColor: '#1976d2',
+                            color: '#fff',
+                            '&:hover': {
+                                backgroundColor: '#155a9c',
+                            },
+                        }}
+                    >
+                        Створити менеджера
+                    </Button>
+                </Link>
+            </CardActions>
+            <div style={{height: '50px'}}/>
         </div>
     );
 };

@@ -12,6 +12,7 @@ import ActivateUserPage from "../pages/ActivateUserPage.tsx";
 import OfficeEditPage from "../pages/OfficeEditPage.tsx";
 import OfficesListOwnerPage from "../pages/OfficesListOwnerPage.tsx";
 import ManagersListPage from "../pages/ManagersListPage.tsx";
+import ManagerCreatePage from "../pages/ManagerCreatePage.tsx";
 
 
 const rootLoader = async (): Promise<null | Response> => {
@@ -66,8 +67,12 @@ const routes: RouteObject[] = [
                 element: <OfficesListOwnerPage/>
             },
             {
-                path: "/company/:id/managers/",
+                path: "/company/:id/managers",
                 element: <ManagersListPage/>
+            },
+            {
+                path: "/create-manager/:id",
+                element: <ManagerCreatePage/>
             },
         ],
     },

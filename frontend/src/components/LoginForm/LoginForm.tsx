@@ -72,14 +72,14 @@ const LoginForm = () => {
                     <Grid container spacing={2}>
                         {/* Емейл */}
                         <TextFieldWithLabel
-                            label="Емейл"
+                            label="Емейл *"
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}
                         />
                         {/* Пароль */}
                         <TextFieldWithLabel
-                            label="Пароль"
+                            label="Пароль *"
                             name="password"
                             value={formData.password}
                             onChange={handleInputChange}

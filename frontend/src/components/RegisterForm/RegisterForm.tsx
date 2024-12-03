@@ -79,28 +79,28 @@ const RegisterForm = () => {
                     <Grid container spacing={2}>
                         {/* Ім'я */}
                         <TextFieldWithLabel
-                            label="Ім'я"
+                            label="Ім'я *"
                             name="name"
                             value={formData.name}
                             onChange={handleInputChange}
                         />
                         {/* Прізвище */}
                         <TextFieldWithLabel
-                            label="Прізвище"
+                            label="Прізвище *"
                             name="surname"
                             value={formData.surname}
                             onChange={handleInputChange}
                         />
                         {/* Емейл */}
                         <TextFieldWithLabel
-                            label="Емейл"
+                            label="Емейл *"
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}
                         />
                         {/* Пароль */}
                         <TextFieldWithLabel
-                            label="Пароль"
+                            label="Пароль *"
                             name="password"
                             value={formData.password}
                             onChange={handleInputChange}
@@ -108,7 +108,7 @@ const RegisterForm = () => {
                         />
                         {/* Підтвердження пароля */}
                         <TextFieldWithLabel
-                            label="Підтвердження пароля"
+                            label="Підтвердження пароля *"
                             name="confirmPassword"
                             value={formData.confirmPassword}
                             onChange={handleInputChange}
