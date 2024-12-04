@@ -74,15 +74,23 @@ class GetProvidersView(ProviderPermissionMixin, APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, pk):
-        # Check office existence and permissions
-        response = self.check_provider_permissions(request, office_pk=pk)
+        # response = self.check_provider_permissions(request, office_pk=pk)
+        # if isinstance(response, Response):
+        #     return response
+        #
+        # office = Office.objects.get(pk=pk)
+        #
+        # providers = Provider.objects.filter(company=office.company)
+        # serializer = ProviderSerializer(providers, many=True)
+        # return Response(serializer.data, status=status.HTTP_200_OK)
+        response = self.check_provider_permissions(request, company_id=pk)
         if isinstance(response, Response):  # If the response is an error response
             return response
 
-        office = Office.objects.get(pk=pk)  # Safe to fetch office after permission checks
+        # Retrieve all providers linked to the specified company
+        providers = Provider.objects.filter(company_id=pk)
 
-        # Retrieve all providers linked to the company of the specified office
-        providers = Provider.objects.filter(company=office.company)
+        # Serialize the providers and return the data in the response
         serializer = ProviderSerializer(providers, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

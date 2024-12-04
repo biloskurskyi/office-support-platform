@@ -48,6 +48,7 @@ const MenuButton: React.FC = () => {
     };
 
     console.log(selectedCompany)
+    // console.log("OFFICES", offices[0])
 
     return (
         <div>
@@ -128,7 +129,10 @@ const MenuButton: React.FC = () => {
                         </Link>,
                         <MenuItem key="communal" onClick={handleSubmenuItemClick}>Комунальні послуги</MenuItem>,
                         <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>,
-                        <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>,
+                        <Link
+                            to={`/provider-list/${Array.isArray(companies) ? companies.find(c => c.legal_name === selectedCompany)?.id : ''}`}
+                            style={{textDecoration: 'none', color: 'inherit'}}>
+                            <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem></Link>,
                         <Link
                             to={`/company/${Array.isArray(companies) ? companies.find(c => c.legal_name === selectedCompany)?.id : ''}`}
                             key="company-settings"
@@ -142,7 +146,17 @@ const MenuButton: React.FC = () => {
                     [
                         <MenuItem key="communal" onClick={handleSubmenuItemClick}>Комунальні послуги</MenuItem>,
                         <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>,
-                        <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>,
+                        <Link
+                            to={`/provider-list/${
+                                Array.isArray(offices) && offices.length > 0
+                                    ? offices[0].company_id // Використовуємо компанію, до якої належить перший офіс
+                                    : ''
+                            }`}
+                            style={{textDecoration: 'none', color: 'inherit'}}
+                        >
+                            <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>
+                        </Link>
+                        ,
                         <Link
                             to={`/office/${Array.isArray(offices) ? offices.find(o => o.phone_number === selectedOffice)?.id : ''}`} // Використовуємо ID вибраного офісу
                             key="office-settings"

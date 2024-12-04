@@ -45,6 +45,7 @@ class ProviderPermissionMixin:
     def check_provider_permissions(self, request, company_id=None, office_pk=None):
         user = request.user
 
+        # Перевірка для власника компанії
         if user.user_type == User.OWNER_USER:
             if company_id and not Company.objects.filter(pk=company_id, owner=user).exists():
                 return Response(
@@ -52,20 +53,23 @@ class ProviderPermissionMixin:
                     status=status.HTTP_404_NOT_FOUND
                 )
 
+        # Перевірка для менеджера компанії
         elif user.user_type == User.MANAGER_USER:
-            if office_pk:
+            if company_id:
+                # Менеджер може бачити провайдерів тільки компанії, де він працює
                 try:
-                    office = Office.objects.get(pk=office_pk, manager=user)
-                    return office.company_id  # Return the company ID for this office
+                    # Перевіряємо, чи є компанія, в якій цей менеджер працює
+                    Office.objects.get(manager=user, company_id=company_id)
                 except Office.DoesNotExist:
                     return Response(
-                        {"error": "No associated company found for this manager."},
-                        status=status.HTTP_404_NOT_FOUND
+                        {"error": "You are not a manager of this company."},
+                        status=status.HTTP_403_FORBIDDEN
                     )
 
+        # Якщо користувач не є власником чи менеджером
         else:
             return Response(
-                {"detail": "You do not have permission to access or create a provider."},
+                {"detail": "You do not have permission to access provider data."},
                 status=status.HTTP_403_FORBIDDEN
             )
 
