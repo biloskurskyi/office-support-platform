@@ -21,7 +21,8 @@ class UserApiTestsBase(TestCase):
             'surname': 'testsurname',
             'password': 'Testpassword123',
             'email': 'testuser@test.com',
-            'user_type': 1
+            'user_type': 1,
+            'is_confirmed': 'true'
         }
 
     def register_user(self, **kwargs):

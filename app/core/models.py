@@ -64,6 +64,7 @@ class User(AbstractUser):
     user_type = models.SmallIntegerField(choices=USER_TYPE_CHOICES)
     info = models.CharField(max_length=255, blank=True, null=True)
     company = models.CharField(max_length=255, blank=True, null=True)
+    is_confirmed = models.BooleanField(default=False)
     username = None
 
     USERNAME_FIELD = 'email'
@@ -85,6 +86,10 @@ class User(AbstractUser):
         if self.user_type == self.ADMIN_USER:
             if User.objects.filter(user_type=self.ADMIN_USER).exclude(id=self.id).exists():
                 raise ValidationError("Only one admin user is allowed in the system.")
+            if self.user_type == self.OWNER_USER:
+                self.is_confirmed = True
+            if self.user_type == self.MANAGER_USER:
+                self.is_active = False
         super().save(*args, **kwargs)
 
     def __str__(self):

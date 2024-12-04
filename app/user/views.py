@@ -85,6 +85,7 @@ class ActivateUserView(APIView):
             })
 
         user.is_active = True
+        user.is_confirmed = True
         user.save()
 
         return JsonResponse({
@@ -262,6 +263,11 @@ class ChangeActiveStatusManagerView(ManagerOwnershipMixin, APIView):
         manager, error_response = self.get_manager(request, pk)
         if error_response:
             return error_response
+
+        if not manager.is_confirmed:
+            return Response({
+                "detail": "Manager must confirm their account before active status can be changed."
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         manager.is_active = not manager.is_active
         manager.save()
