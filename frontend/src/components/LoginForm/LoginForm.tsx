@@ -72,7 +72,7 @@ const LoginForm = () => {
                     <Grid container spacing={2}>
                         {/* Емейл */}
                         <TextFieldWithLabel
-                            label="Емейл *"
+                            label="Електрона пошта *"
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}

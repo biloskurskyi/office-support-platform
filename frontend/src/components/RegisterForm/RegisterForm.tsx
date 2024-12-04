@@ -93,7 +93,7 @@ const RegisterForm = () => {
                         />
                         {/* Емейл */}
                         <TextFieldWithLabel
-                            label="Емейл *"
+                            label="Електрона пошта *"
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}

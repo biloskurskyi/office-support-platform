@@ -137,10 +137,10 @@ const ChangePasswordForm = () => {
                     )}
 
                     <ChangePasswordButton/>
-
+                    <div style={{height: '5px'}}/>
                     <hr/>
 
-                   <UserPageButton/>
+                    <UserPageButton/>
 
 
                 </form>

@@ -89,7 +89,7 @@ const ManagerCreatePage = () => {
                             />
                             {/* Емейл */}
                             <TextFieldWithLabel
-                                label="Емейл *"
+                                label="Електрона пошта *"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleInputChange}
@@ -110,7 +110,7 @@ const ManagerCreatePage = () => {
                             {errorMessage}
                         </Typography>
                     )}
-
+                    <div style={{height: '15px'}}/>
                     <hr/>
                     <Link to={`/company/${id}/managers`} style={{textDecoration: 'none', color: 'inherit'}}>
                         <Box sx={{

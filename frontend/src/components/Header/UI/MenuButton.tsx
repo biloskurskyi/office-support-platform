@@ -4,6 +4,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import {Link} from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useDataCompanyOffice} from "../../../context/useDataCompanyOffice.tsx";
+import CreateCompanyButton from "../../MainPageComponents/UI/CreateCompanyButton.tsx";
 
 const MenuButton: React.FC = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -81,11 +82,15 @@ const MenuButton: React.FC = () => {
                                 </MenuItem>
                             ))
                         ) : (
-                            <MenuItem onClick={handleMenuClose}>
-                                {isSmallScreen
-                                    ? <>Створіть компанію,<br/>щоб почати управляти вже зараз</>
-                                    : 'Створіть компанію, щоб почати управляти вже зараз'}
-                            </MenuItem>
+                            <Link to="/company-create" style={{
+                                textDecoration: 'none',
+                                color: 'inherit'
+                            }}>{localStorage.getItem('user_type') === '1'}
+                                <MenuItem onClick={handleMenuClose}>
+                                    {isSmallScreen
+                                        ? <>Створіть компанію,<br/>щоб почати управляти вже зараз</>
+                                        : 'Створіть компанію, щоб почати управляти вже зараз'}
+                                </MenuItem></Link>
                         )
                     )
                 ) : (
@@ -110,12 +115,12 @@ const MenuButton: React.FC = () => {
                 {localStorage.getItem('user_type') === '1' ? (
                     [
                         <Link
-                            to={`/company/${companies.find(c => c.legal_name === selectedCompany)?.id}/managers/`}
+                            to={`/company/${Array.isArray(companies) ? companies.find(c => c.legal_name === selectedCompany)?.id : ''}/managers/`}
                             style={{textDecoration: 'none', color: 'inherit'}}>
                             <MenuItem key="managers" onClick={handleSubmenuItemClick}>Менеджери</MenuItem>
                         </Link>,
                         <Link
-                            to={`/office-list/${companies.find(c => c.legal_name === selectedCompany)?.id}`}
+                            to={`/office-list/${Array.isArray(companies) ? companies.find(c => c.legal_name === selectedCompany)?.id : ''}`}
                             style={{textDecoration: 'none', color: 'inherit'}}>
                             <MenuItem key="offices" onClick={handleSubmenuItemClick}>
                                 Офіси
@@ -125,8 +130,7 @@ const MenuButton: React.FC = () => {
                         <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>,
                         <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>,
                         <Link
-                            to={`/company/${companies && Array.isArray(companies) ?
-                                companies.find(c => c.legal_name === selectedCompany)?.id : ''}`}
+                            to={`/company/${Array.isArray(companies) ? companies.find(c => c.legal_name === selectedCompany)?.id : ''}`}
                             key="company-settings"
                             style={{textDecoration: 'none', color: 'inherit'}}>
                             <MenuItem key="company-settings" onClick={handleSubmenuItemClick}>
@@ -140,8 +144,7 @@ const MenuButton: React.FC = () => {
                         <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>,
                         <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>,
                         <Link
-                            to={`/office/${selectedOffice && Array.isArray(offices) ?
-                                offices.find(o => o.phone_number === selectedOffice)?.id : ''}`} // Використовуємо ID вибраного офісу
+                            to={`/office/${Array.isArray(offices) ? offices.find(o => o.phone_number === selectedOffice)?.id : ''}`} // Використовуємо ID вибраного офісу
                             key="office-settings"
                             style={{textDecoration: 'none', color: 'inherit'}}
                         >
@@ -149,12 +152,11 @@ const MenuButton: React.FC = () => {
                                 Налаштування офісу
                             </MenuItem>
                         </Link>
-
-
                     ]
                 ) : (
                     <MenuItem onClick={handleSubmenuItemClick}>Немає доступу</MenuItem>
                 )}
+
             </Menu>
         </div>
     );

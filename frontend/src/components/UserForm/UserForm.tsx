@@ -86,10 +86,10 @@ const UserForm = () => {
                         />
                         {/* Емейл */}
                         <CustomTextField
-                            label="Емейл"
+                            label="Електрона пошта"
                             name="email"
                             value={formData.email}
-                            onChange={handleInputChange}
+                            disabled
                         />
                         {/* Дата реєстрації */}
                         <CustomTextField
