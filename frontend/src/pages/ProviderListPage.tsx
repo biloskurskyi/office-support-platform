@@ -8,6 +8,7 @@ import PageWrapper from "../components/MainPageComponents/PageWrapper.tsx";
 import InfoBlocks from "../components/MainPageComponents/UI/InfoBlocks.tsx";
 import OfficeCard from "../components/OfficesListOwnerComponent/UI/OfficeCard.tsx";
 import ProviderCard from "../components/ProviderComponents/UI/ProviderCard.tsx";
+import useProviders from "../hooks/useProviders.tsx";
 
 interface Provider {
     id: number;
@@ -28,38 +29,7 @@ const ProviderListPage: React.FC = () => {
     }, [setText]);
 
     const {id} = useParams<{ id: string }>();
-    const [providers, setProviders] = useState<Provider[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const token = localStorage.getItem('jwtToken');
-                const userType = localStorage.getItem('user_type');
-
-                if (!token) {
-                    setError('Необхідно авторизуватися.');
-                    return;
-                }
-
-                const response: AxiosResponse<Provider[]> = await axios.get(
-                    `http://localhost:8765/api/get-all-providers/${id}/`,
-                    {
-                        headers: {Authorization: `Bearer ${token}`},
-                    }
-                );
-                setProviders(response.data);
-            } catch (error) {
-                setError('Не вдалося завантажити провайдерів. Спробуйте пізніше.');
-                console.error('Помилка завантаження даних:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, [id]);
+    const {providers, loading, error} = useProviders(id);
 
     if (loading) {
         return <CircularProgress/>;
@@ -80,23 +50,23 @@ const ProviderListPage: React.FC = () => {
 
     return (
         <div>
-             <PageWrapper>
-            <div style={{height: '500px'}}/>
-            <InfoBlocks
-                blocksData={providers.map((provider) => ({
-                    title: provider.name,
-                    content: <ProviderCard provider={provider}/>,
-                }))}
-            />
-            <Box sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: '100%',
-            }}>
-                {/*тут повина бути кнопка для створення офісів*/}
-            </Box>
-        </PageWrapper>
+            <PageWrapper>
+                <div style={{height: '500px'}}/>
+                <InfoBlocks
+                    blocksData={providers.map((provider) => ({
+                        title: provider.name,
+                        content: <ProviderCard provider={provider}/>,
+                    }))}
+                />
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                }}>
+                    {/*тут повина бути кнопка для створення офісів*/}
+                </Box>
+            </PageWrapper>
         </div>
     );
 };

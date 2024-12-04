@@ -15,13 +15,14 @@ interface ProviderCardProps {
 }
 
 const ProviderCard: React.FC<ProviderCardProps> = ({provider}) => {
+    console.log("pr", provider)
     return (
         <div>
             <p><strong>Адреса:</strong> {provider.address}</p>
             <p><strong>Електрона пошта:</strong> {provider.email}</p>
             <p><strong>Телефон:</strong> {provider.phone_number}</p>
             <p><strong>Банківські реквізити:</strong> {provider.bank_details}</p>
-            <Link to={`/main`} component={RouterLink} style={{textDecoration: 'none'}}>
+            <Link to={`/provider/${provider.id}`} component={RouterLink} style={{ textDecoration: 'none' }}>
                 <Button
                     variant="outlined"
                     sx={{
