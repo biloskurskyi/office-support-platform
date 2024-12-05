@@ -170,11 +170,13 @@ class CreateManagerView(APIView):
 
         data['password'] = random_password
 
+        frontend_base_url = FRONTEND_BASE_URL
+
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
             manager = serializer.save()
 
-            activation_link = f'http://localhost:8765/api/activate/{manager.id}/'
+            activation_link = f'{frontend_base_url}/activate-user/{manager.id}/'
 
             subject = 'Manager Account Has Been Created. Activate Your Account!'
             message = (
