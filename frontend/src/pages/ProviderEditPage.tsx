@@ -46,7 +46,6 @@ const ProviderEditPage = () => {
                     address: response.data.address,
                     phone_number: response.data.phone_number,
                     email: response.data.email,
-                    phone_number: response.data.phone_number,
                     company: response.data.company,
                     company_id: response.data.company_id,
                     bank_details: response.data.bank_details,
@@ -162,7 +161,8 @@ const ProviderEditPage = () => {
 
                     <hr/>
 
-                    <Link to={`/provider-list/${provider.company_id}`} style={{textDecoration: 'none', color: 'inherit'}}>
+                    <Link to={`/provider-list/${provider.company_id}`}
+                          style={{textDecoration: 'none', color: 'inherit'}}>
                         <Box sx={{
                             display: 'flex',
                             justifyContent: 'center',

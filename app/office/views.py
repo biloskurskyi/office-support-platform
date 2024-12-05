@@ -24,7 +24,7 @@ class OfficeView(OfficeMixin, APIView):
             return permission_response
 
         data = request.data
-        company_id = data.get('company')
+        company_id = data.get('company_id')
         manager_id = data.get('manager')
 
         company = self.get_company(user, company_id)
@@ -34,10 +34,15 @@ class OfficeView(OfficeMixin, APIView):
 
         if manager_id:
             manager = self.get_manager(manager_id)
-            if not manager or manager.company != company.name:
+            if not manager:
+                return Response({"error": "Manager does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+            if int(manager.company) != int(company.id):
                 return Response({"error": "Manager does not belong to this company."},
                                 status=status.HTTP_400_BAD_REQUEST)
 
+        data['company_id'] = company_id
+        print(data)
         serializer = OfficeSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
