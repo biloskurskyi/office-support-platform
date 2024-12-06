@@ -7,6 +7,7 @@ import TextFieldWithLabel from "../components/RegisterForm/UI/TextFieldWithLabel
 import SubmitButton from "../components/RegisterForm/UI/SubmitButton.tsx";
 import CustomTextField from "../components/UserForm/UI/CustomTextField.tsx";
 import useFetchManagers from "../hooks/useFetchManagers.tsx";
+import useCheckOwnership from "../hooks/useCheckOwnership.tsx";
 
 const OfficeCreatePage = () => {
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
@@ -28,6 +29,9 @@ const OfficeCreatePage = () => {
 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const navigate = useNavigate();
+
+
+    useCheckOwnership(id);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({

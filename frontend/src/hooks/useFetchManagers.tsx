@@ -15,7 +15,7 @@ interface Manager {
 
 const useFetchManagers = (id: string | undefined) => {
     const [managers, setManagers] = useState<Manager[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading_managers, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -52,7 +52,7 @@ const useFetchManagers = (id: string | undefined) => {
         fetchData();
     }, [id]);
 
-    return { managers, loading, error };
+    return { managers, loading_managers, error };
 };
 
 export default useFetchManagers;

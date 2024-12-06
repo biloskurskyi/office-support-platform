@@ -5,6 +5,7 @@ import FormPaper from "../components/RegisterForm/UI/FormPaper.tsx";
 import {Box, Button, Grid, Typography} from "@mui/material";
 import TextFieldWithLabel from "../components/RegisterForm/UI/TextFieldWithLabel.tsx";
 import SubmitButton from "../components/RegisterForm/UI/SubmitButton.tsx";
+import useCheckOwnership from "../hooks/useCheckOwnership.tsx";
 
 const ManagerCreatePage = () => {
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
@@ -13,6 +14,8 @@ const ManagerCreatePage = () => {
     useEffect(() => {
         setText(<h2>Створити менеджера компанії</h2>);
     }, [setText]);
+
+    useCheckOwnership(id);
 
     const [formData, setFormData] = useState({
         surname: '',

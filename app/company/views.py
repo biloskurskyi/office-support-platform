@@ -149,3 +149,14 @@ class CompanyManagersView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VerifyCompanyOwnership(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, company_id):
+        user = request.user
+        company = Company.objects.filter(id=company_id, owner=user).first()
+        if company:
+            return Response({"isOwner": True})
+        return Response({"isOwner": False}, status=403)
