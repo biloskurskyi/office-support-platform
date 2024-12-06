@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Link, useNavigate, useOutletContext, useParams} from "react-router-dom";
-import useCheckOwnership from "../hooks/useCheckOwnership.tsx";
 import axios from "axios";
-import useFetchManagers from "../hooks/useFetchManagers.tsx";
 import {Box, Button, Grid, Typography} from "@mui/material";
 import FormPaper from "../components/RegisterForm/UI/FormPaper.tsx";
 import TextFieldWithLabel from "../components/RegisterForm/UI/TextFieldWithLabel.tsx";
