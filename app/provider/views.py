@@ -19,7 +19,8 @@ class ProviderCreateView(APIView):
         user = request.user
 
         if user.user_type == User.OWNER_USER:
-            company_id = data.get('company')
+            company_id = data.get('company_id')
+
             if not Company.objects.filter(pk=company_id, owner=user).exists():
                 return Response(
                     {"error": "You do not own this company or it does not exist."},
@@ -28,12 +29,18 @@ class ProviderCreateView(APIView):
 
         elif user.user_type == User.MANAGER_USER:
             try:
-                office = Office.objects.get(manager=user)
-                company_id = office.company_id
-            except Office.DoesNotExist:
+                offices = Office.objects.filter(manager=user.id)
+                if not offices.exists():
+                    return Response(
+                        {"error": "No associated company found for this manager."},
+                        status=status.HTTP_404_NOT_FOUND
+                    )
+                company_id = offices.first().company_id
+
+            except Exception as error:
                 return Response(
-                    {"error": "No associated company found for this manager."},
-                    status=status.HTTP_404_NOT_FOUND
+                    {"error": f"An unexpected error occurred: {str(error)}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
 
         else:

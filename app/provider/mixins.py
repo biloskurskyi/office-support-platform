@@ -56,11 +56,7 @@ class ProviderPermissionMixin:
         # Перевірка для менеджера компанії
         elif user.user_type == User.MANAGER_USER:
             if company_id:
-                # Менеджер може бачити провайдерів тільки компанії, де він працює
-                try:
-                    # Перевіряємо, чи є компанія, в якій цей менеджер працює
-                    Office.objects.get(manager=user, company_id=company_id)
-                except Office.DoesNotExist:
+                if not Office.objects.filter(manager=user.id, company_id=company_id).exists():
                     return Response(
                         {"error": "You are not a manager of this company."},
                         status=status.HTTP_403_FORBIDDEN

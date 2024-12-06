@@ -16,6 +16,7 @@ import ManagerCreatePage from "../pages/ManagerCreatePage.tsx";
 import ProviderListPage from "../pages/ProviderListPage.tsx";
 import ProviderEditPage from "../pages/ProviderEditPage.tsx";
 import OfficeCreatePage from "../pages/OfficeCreatePage.tsx";
+import ProviderCreatePage from "../pages/ProviderCreatePage.tsx";
 
 
 const rootLoader = async (): Promise<null | Response> => {
@@ -88,6 +89,10 @@ const routes: RouteObject[] = [
             {
                 path: "/office-create/:id",
                 element: <OfficeCreatePage/>
+            },
+            {
+                path: "/provider-create/:id",
+                element: <ProviderCreatePage/>
             }
         ],
     },

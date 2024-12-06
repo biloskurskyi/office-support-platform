@@ -16,7 +16,7 @@ const CreateCompanyForm = () => {
     });
 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -78,13 +78,13 @@ const CreateCompanyForm = () => {
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <TextFieldWithLabel
-                            label="*Ім'я компанії"
+                            label="Ім'я компанії *"
                             name="name"
                             value={formData.name}
                             onChange={handleInputChange}
                         />
                         <TextFieldWithLabel
-                            label="*Юридична особа"
+                            label="Юридична особа *"
                             name="legal_name"
                             value={formData.legal_name}
                             onChange={handleInputChange}

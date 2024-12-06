@@ -1,14 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {useOutletContext, useParams} from "react-router-dom";
-import axios, {AxiosResponse} from "axios";
 import {Box, CircularProgress} from "@mui/material";
 import ErrorMessage from "../components/OfficesListOwnerComponent/UI/ErrorMessage.tsx";
 import NoExistCard from "../components/NoExistCard/NoExistCard.tsx";
 import PageWrapper from "../components/MainPageComponents/PageWrapper.tsx";
 import InfoBlocks from "../components/MainPageComponents/UI/InfoBlocks.tsx";
-import OfficeCard from "../components/OfficesListOwnerComponent/UI/OfficeCard.tsx";
 import ProviderCard from "../components/ProviderComponents/UI/ProviderCard.tsx";
 import useProviders from "../hooks/useProviders.tsx";
+import CreateProviderButton from "../components/ProviderComponents/UI/CreateProviderButton.tsx";
 
 interface Provider {
     id: number;
@@ -19,6 +18,7 @@ interface Provider {
     company: string;
     bank_details: string;
 }
+
 
 const ProviderListPage: React.FC = () => {
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
@@ -43,7 +43,7 @@ const ProviderListPage: React.FC = () => {
                 title="Постачальників не знайдено"
                 message="Здається, у цієї компанії ще немає постачальників. Ви можете створити нового постачальника за допомогою кнопки нижче."
                 buttonText="Створити постачальника"
-                buttonLink={`/main`}
+                buttonLink={`/provider-create/${id}`}
             />
         );
     }
@@ -64,8 +64,9 @@ const ProviderListPage: React.FC = () => {
                     alignItems: 'center',
                     width: '100%',
                 }}>
-                    {/*тут повина бути кнопка для створення офісів*/}
+                    <CreateProviderButton companyId={id}/>
                 </Box>
+                <div style={{height: '50px'}}/>
             </PageWrapper>
         </div>
     );
