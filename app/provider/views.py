@@ -132,3 +132,35 @@ class ProviderDetailView(ProviderDetailMixin, APIView):
 
         provider.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ProviderAccessCheckAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        user = request.user
+
+        if user.user_type == User.OWNER_USER:
+            company = Company.objects.filter(id=pk, owner=user).first()
+            if not company:
+                return Response(
+                    {"error": "You are not the owner of this company or the company does not exist."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+        elif user.user_type == User.MANAGER_USER:
+            office_exists = Office.objects.filter(manager=user, company_id=pk).exists()
+            if not office_exists:
+                return Response(
+                    {"error": "You are not the manager of this company."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+        else:
+            return Response(
+                {"error": "You do not have permission to access this page."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        return Response(
+            {"message": "Access is allowed."},
+            status=status.HTTP_200_OK,
+        )

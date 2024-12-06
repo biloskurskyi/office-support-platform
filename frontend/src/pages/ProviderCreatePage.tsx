@@ -7,10 +7,12 @@ import {Box, Button, Grid, Typography} from "@mui/material";
 import FormPaper from "../components/RegisterForm/UI/FormPaper.tsx";
 import TextFieldWithLabel from "../components/RegisterForm/UI/TextFieldWithLabel.tsx";
 import SubmitButton from "../components/RegisterForm/UI/SubmitButton.tsx";
+import useAccessToProvider from "../hooks/useAccessToProvider.tsx";
 
 const ProviderCreatePage = () => {
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
     const {id} = useParams<{ id: string }>();
+    useAccessToProvider(id);
 
     useEffect(() => {
         setText(<h2>Створити постачальника компанії</h2>);
