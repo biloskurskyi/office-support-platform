@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views import GetProvidersView, ProviderCreateView, ProviderDetailView, ProviderAccessCheckAPIView
+from .views import (GetProvidersView, ProviderAccessCheckAPIView,
+                    ProviderCreateView, ProviderDetailView)
 
 app_name = 'provider'
 

@@ -15,7 +15,6 @@ interface ProviderCardProps {
 }
 
 const ProviderCard: React.FC<ProviderCardProps> = ({provider}) => {
-    console.log("pr", provider)
     return (
         <div>
             <p><strong>Адреса:</strong> {provider.address}</p>

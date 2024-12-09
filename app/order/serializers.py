@@ -8,10 +8,24 @@ from core.models import Order
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    provider_id = serializers.IntegerField(source='provider.id', read_only=True)
+    provider_name = serializers.CharField(source='provider.name', read_only=True)
+    office_id = serializers.IntegerField(source='office.id', read_only=True)
+    office_phone_number = serializers.CharField(source='office.phone_number', read_only=True)
+    currency = serializers.SerializerMethodField()
+
     class Meta:
         model = Order
-        fields = '__all__'
+        fields = [
+            'id', 'title', 'description', 'deal_value',
+            'currency', 'file',
+            'provider_id', 'provider_name',
+            'office_id', 'office_phone_number'
+        ]
         read_only_fields = ['id']
+
+    def get_currency(self, obj):
+        return obj.get_currency_display()
 
     def validate_deal_value(self, value):
         if value is not None and value < 0:

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useParams, useOutletContext} from 'react-router-dom';
+import {useParams, useOutletContext, Link} from 'react-router-dom';
 import {Button, Card, CardContent, CircularProgress, Grid, Typography} from "@mui/material";
 import ErrorMessage from "../components/OfficesListOwnerComponent/UI/ErrorMessage.tsx";
 import NoExistCard from "../components/NoExistCard/NoExistCard.tsx";
@@ -9,7 +9,7 @@ const OfficeOrdersOverviewPage = () => {
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
 
     useEffect(() => {
-        setText(<h2>Перелік замовлень для комапнії</h2>);
+        setText(<h2>Перелік офісів комапнії<h5>Оберіть офіс для якого Ви хочете отримати перелік замовлень</h5></h2>);
     }, [setText]);
 
     const {id} = useParams<{ id: string }>();
@@ -51,6 +51,7 @@ const OfficeOrdersOverviewPage = () => {
                                 <Typography variant="body2" color="textSecondary" sx={{marginBottom: 2}}>
                                     Телефон: {office.phone_number}
                                 </Typography>
+                                <Link to={`/orders-list/${office.id}`}>
                                 <Button
                                     variant="contained"
                                     // component={Link}
@@ -58,7 +59,7 @@ const OfficeOrdersOverviewPage = () => {
                                     sx={{marginTop: 2}}
                                 >
                                     Переглянути замовлення
-                                </Button>
+                                </Button></Link>
                             </CardContent>
                         </Card>
                     </Grid>
