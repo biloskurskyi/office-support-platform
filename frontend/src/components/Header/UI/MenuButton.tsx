@@ -128,13 +128,21 @@ const MenuButton: React.FC = () => {
                             </MenuItem>
                         </Link>,
                         <MenuItem key="communal" onClick={handleSubmenuItemClick}>Комунальні послуги</MenuItem>,
-                        <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>,
                         <Link
-                            to={`/provider-list/${Array.isArray(companies) ? companies.find(c => c.legal_name === selectedCompany)?.id : ''}`}
+                            to={`/office-overview/${Array.isArray(companies) ? companies.find(
+                                c => c.legal_name === selectedCompany)?.id : ''}`}
                             style={{textDecoration: 'none', color: 'inherit'}}>
-                            <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem></Link>,
+                            <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>
+                        </Link>,
                         <Link
-                            to={`/company/${Array.isArray(companies) ? companies.find(c => c.legal_name === selectedCompany)?.id : ''}`}
+                            to={`/provider-list/${Array.isArray(companies) ? companies.find(
+                                c => c.legal_name === selectedCompany)?.id : ''}`}
+                            style={{textDecoration: 'none', color: 'inherit'}}>
+                            <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>
+                        </Link>,
+                        <Link
+                            to={`/company/${Array.isArray(companies) ? companies.find(
+                                c => c.legal_name === selectedCompany)?.id : ''}`}
                             key="company-settings"
                             style={{textDecoration: 'none', color: 'inherit'}}>
                             <MenuItem key="company-settings" onClick={handleSubmenuItemClick}>
@@ -145,7 +153,17 @@ const MenuButton: React.FC = () => {
                 ) : localStorage.getItem('user_type') === '2' ? (
                     [
                         <MenuItem key="communal" onClick={handleSubmenuItemClick}>Комунальні послуги</MenuItem>,
-                        <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>,
+                        // fix problem with link
+                        <Link
+                            to={`/order-list/${
+                                Array.isArray(offices) && offices.length > 0
+                                    ? offices[0].company_id 
+                                    : ''
+                            }`}
+                            style={{textDecoration: 'none', color: 'inherit'}}
+                        >
+                            <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>
+                        </Link>,
                         <Link
                             to={`/provider-list/${
                                 Array.isArray(offices) && offices.length > 0

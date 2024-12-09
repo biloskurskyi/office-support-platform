@@ -125,12 +125,6 @@ const ProviderEditPage = () => {
                                 onChange={handleInputChange}
                             />
                             <CustomTextField
-                                label="Номер телефону"
-                                value={formData.phone_number}
-                                name="phone_number"
-                                onChange={handleInputChange}
-                            />
-                            <CustomTextField
                                 label="Банківські реквізити"
                                 value={formData.bank_details}
                                 name="bank_details"
