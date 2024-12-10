@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {Link, useNavigate, useOutletContext, useParams} from "react-router-dom";
+import {useOutletContext, useParams, useNavigate} from "react-router-dom";
 import axios from "axios";
-import {Box, Button, Grid, Typography} from "@mui/material";
+import {Box} from "@mui/material";
 import FormPaper from "../components/RegisterForm/UI/FormPaper.tsx";
-import TextFieldWithLabel from "../components/RegisterForm/UI/TextFieldWithLabel.tsx";
-import SubmitButton from "../components/RegisterForm/UI/SubmitButton.tsx";
 import useAccessToProvider from "../hooks/useAccessToProvider.tsx";
+import ProviderForm from '../components/ProviderComponents/ProviderForm';
 
 const ProviderCreatePage = () => {
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
@@ -46,12 +45,11 @@ const ProviderCreatePage = () => {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8765/api/provider/`,
-                formData, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-                    },
-                });
+            const response = await axios.post(`http://localhost:8765/api/provider/`, formData, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+                },
+            });
             navigate(`/provider-list/${id}`);
         } catch (error) {
             if (error.response) {
@@ -61,7 +59,6 @@ const ProviderCreatePage = () => {
             }
         }
     };
-
 
     return (
         <>
@@ -75,89 +72,12 @@ const ProviderCreatePage = () => {
                 }}
             >
                 <FormPaper title="Створення постачальника">
-                    <form onSubmit={handleSubmit}>
-                        <Grid container spacing={2}>
-                            <TextFieldWithLabel
-                                label="Ім'я постачальника *"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleInputChange}
-                            />
-                            <TextFieldWithLabel
-                                label="Електрона адреса *"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                            />
-                            <TextFieldWithLabel
-                                label="Адреса *"
-                                name="address"
-                                value={formData.address}
-                                onChange={handleInputChange}
-                            />
-                            <TextFieldWithLabel
-                                label="Номер телефону"
-                                name="phone_number"
-                                value={formData.phone_number}
-                                onChange={handleInputChange}
-                            />
-                            <TextFieldWithLabel
-                                label="Банківські реквізити"
-                                name="bank_details"
-                                value={formData.bank_details}
-                                onChange={handleInputChange}
-                            />
-                            <ul>
-                                <Typography variant="h6" gutterBottom>
-                                    Правила створення постачальника:
-                                </Typography>
-                                <li>
-                                    В одній компанії постачальник має мати унікальний номер телефону або електронну
-                                    адресу.
-                                </li>
-                                <li>
-                                    Банківські реквізити не можуть повторюватися.
-                                </li>
-                                <li>
-                                    Поле "Електронна адреса" або "Номер телефону" може бути пустим, але щонайменше одне
-                                    з них обов'язково має бути заповнене.
-                                </li>
-                            </ul>
-
-                            <SubmitButton text="Створити постачальника" onSubmit={handleSubmit}/>
-                        </Grid>
-                    </form>
-                    {errorMessage && (
-                        <Typography color="error" sx={{marginTop: '10px'}}>
-                            {errorMessage}
-                        </Typography>
-                    )}
-                    <div style={{height: '15px'}}/>
-                    <hr/>
-                    <Link to={`/provider-list/${id}`} style={{textDecoration: 'none', color: 'inherit'}}>
-                        <Box sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            marginTop: '30px',
-                        }}>
-
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                fullWidth
-                                sx={{
-                                    backgroundColor: '#58d68d',
-                                    color: '#fff',
-                                    fontWeight: 'bold',
-                                    '&:hover': {
-                                        backgroundColor: '#1d8348',
-                                    }
-                                }}
-                            >
-                                Перелік постачальників
-                            </Button>
-                        </Box>
-                    </Link>
+                    <ProviderForm
+                        formData={formData}
+                        handleInputChange={handleInputChange}
+                        handleSubmit={handleSubmit}
+                        errorMessage={errorMessage}
+                    />
                 </FormPaper>
             </Box>
             <div style={{height: '50px'}}/>

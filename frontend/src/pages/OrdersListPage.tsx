@@ -7,8 +7,9 @@ import PageWrapper from "../components/MainPageComponents/PageWrapper.tsx";
 import InfoBlocks from "../components/MainPageComponents/UI/InfoBlocks.tsx";
 import OrderCard from "../components/OrdersComponents/UI/OrderCard.tsx";
 import ErrorMessage from "../components/OfficesListOwnerComponent/UI/ErrorMessage.tsx";
+import CreateOrderButton from "../components/OrdersComponents/UI/CreateOrderButton.tsx";
 
-const OrdersList = () => {
+const OrdersListPage = () => {
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
 
     useEffect(() => {
@@ -52,7 +53,7 @@ const OrdersList = () => {
                     alignItems: 'center',
                     width: '100%',
                 }}>
-                    {/*<CreateProviderButton companyId={id}/>*/}
+                    <CreateOrderButton officeId={id}/>
                 </Box>
                 <div style={{height: '50px'}}/>
             </PageWrapper>
@@ -60,4 +61,4 @@ const OrdersList = () => {
     );
 };
 
-export default OrdersList;
+export default OrdersListPage;

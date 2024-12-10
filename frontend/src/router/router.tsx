@@ -18,8 +18,9 @@ import ProviderEditPage from "../pages/ProviderEditPage.tsx";
 import OfficeCreatePage from "../pages/OfficeCreatePage.tsx";
 import ProviderCreatePage from "../pages/ProviderCreatePage.tsx";
 import OfficeOrdersOverviewPage from "../pages/OfficeOrdersOverviewPage.tsx";
-import OrdersList from "../pages/OrdersList.tsx";
+import OrdersListPage from "../pages/OrdersListPage.tsx";
 import OrderEditPage from "../pages/OrderEditPage.tsx";
+import OrderCreatePage from "../pages/OrderCreatePage.tsx";
 
 
 const rootLoader = async (): Promise<null | Response> => {
@@ -103,11 +104,15 @@ const routes: RouteObject[] = [
             },
             {
                 path: "/order-list/:id",
-                element: <OrdersList/>
+                element: <OrdersListPage/>
             },
             {
                 path: "/order/:id",
                 element: <OrderEditPage/>
+            },
+            {
+                path: "/order-create/:id",
+                element: <OrderCreatePage/>
             }
         ],
     },
