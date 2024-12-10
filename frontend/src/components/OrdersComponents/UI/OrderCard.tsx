@@ -25,7 +25,7 @@ const OrderCard: React.FC<OrderCardProps> = ({order}) => {
             <p><strong>Файл:</strong> {order.file}</p>
             <p><strong>Провайдер: </strong><Link to={`/provider/${order.provider_id}`}>{order.provider_name}</Link></p>
             <p><strong>Номер телефону офісу:</strong> {order.office_phone_number}</p>
-            <Link to={`/provider/${order.id}`} component={RouterLink} style={{textDecoration: 'none'}}>
+            <Link to={`/order/${order.id}`} component={RouterLink} style={{textDecoration: 'none'}}>
                 <Button
                     variant="outlined"
                     sx={{

@@ -138,7 +138,7 @@ const MenuButton: React.FC = () => {
                             to={`/provider-list/${Array.isArray(companies) ? companies.find(
                                 c => c.legal_name === selectedCompany)?.id : ''}`}
                             style={{textDecoration: 'none', color: 'inherit'}}>
-                            <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>
+                            <MenuItem key="providers" onClick={handleSubmenuItemClick}>Постачальники</MenuItem>
                         </Link>,
                         <Link
                             to={`/company/${Array.isArray(companies) ? companies.find(
@@ -168,7 +168,7 @@ const MenuButton: React.FC = () => {
                             }`}
                             style={{textDecoration: 'none', color: 'inherit'}}
                         >
-                            <MenuItem key="providers" onClick={handleSubmenuItemClick}>Провайдери</MenuItem>
+                            <MenuItem key="providers" onClick={handleSubmenuItemClick}>Постачальники</MenuItem>
                         </Link>
                         ,
                         <Link
