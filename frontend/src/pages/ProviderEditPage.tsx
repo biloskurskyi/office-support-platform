@@ -11,7 +11,7 @@ const ProviderEditPage = () => {
         setText(<h2>Налаштування постачальника</h2>);
     }, [setText]);
 
-    const {id} = useParams();
+    const {id: string} = useParams();
 
     const {provider, formData, setFormData, loading, successMessage, errorMessage, handleSubmit} = useProviderData(id);
 

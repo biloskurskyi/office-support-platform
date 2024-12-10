@@ -51,7 +51,7 @@ const OfficeOrdersOverviewPage = () => {
                                 <Typography variant="body2" color="textSecondary" sx={{marginBottom: 2}}>
                                     Телефон: {office.phone_number}
                                 </Typography>
-                                <Link to={`/orders-list/${office.id}`}>
+                                <Link to={`/order-list/${office.id}`}>
                                 <Button
                                     variant="contained"
                                     // component={Link}

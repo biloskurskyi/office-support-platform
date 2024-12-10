@@ -102,7 +102,7 @@ const routes: RouteObject[] = [
                 element: <OfficeOrdersOverviewPage/>
             },
             {
-                path: "/orders-list/:id",
+                path: "/order-list/:id",
                 element: <OrdersList/>
             },
             {

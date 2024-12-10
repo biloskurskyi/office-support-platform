@@ -155,7 +155,7 @@ const MenuButton: React.FC = () => {
                         <MenuItem key="communal" onClick={handleSubmenuItemClick}>Комунальні послуги</MenuItem>,
                         // fix this problem
                         <Link
-                            to={`/orders-list/${Array.isArray(offices) ? offices.find(o => o.phone_number === selectedOffice)?.id : ''}`}
+                            to={`/order-list/${Array.isArray(offices) ? offices.find(o => o.phone_number === selectedOffice)?.id : ''}`}
                             style={{textDecoration: 'none', color: 'inherit'}}
                         >
                             <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>
