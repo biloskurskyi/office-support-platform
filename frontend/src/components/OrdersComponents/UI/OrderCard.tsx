@@ -1,6 +1,7 @@
 import React from 'react';
 import {Button, Typography} from '@mui/material';
 import {Link, Link as RouterLink} from 'react-router-dom';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 interface OrderCardProps {
     order: {
@@ -17,12 +18,32 @@ interface OrderCardProps {
 }
 
 const OrderCard: React.FC<OrderCardProps> = ({order}) => {
+    const handleFileDownload = () => {
+        const fileLink = document.createElement('a');
+        fileLink.href = order.file;
+        fileLink.download = order.file.split('/').pop() || 'file.pdf';  // Ім'я файлу
+        fileLink.click();
+    };
+
+
     return (
         <div>
             <p><strong>Опис:</strong> {order.description}</p>
             <p><strong>Сума:</strong> {order.deal_value}</p>
             <p><strong>Валюта:</strong> {order.currency}</p>
-            <p><strong>Файл:</strong> {order.file}</p>
+            <Typography>
+                <strong>Звіт:</strong>{' '}
+                <Button
+                    startIcon={<PictureAsPdfIcon />}
+                    onClick={handleFileDownload}
+                    sx={{
+                        textTransform: 'none',
+                        color: '#d32f2f',
+                    }}
+                >
+                    Завантажити файл
+                </Button>
+            </Typography>
             <p><strong>Провайдер: </strong><Link to={`/provider/${order.provider_id}`}>{order.provider_name}</Link></p>
             <p><strong>Номер телефону офісу:</strong> {order.office_phone_number}</p>
             <Link to={`/order/${order.id}`} component={RouterLink} style={{textDecoration: 'none'}}>

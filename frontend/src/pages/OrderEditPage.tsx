@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react';
 import {useOutletContext, useParams} from "react-router-dom";
 import useOrderData from "../hooks/useOrderData.tsx";
-import ProviderEditForm from "../components/ProviderComponents/ProviderEditForm.tsx";
 import OrderEditForm from "../components/OrdersComponents/OrderEditForm.tsx";
 
 const OrderEditPage = () => {

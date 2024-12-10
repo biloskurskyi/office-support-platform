@@ -47,20 +47,23 @@ const UseOrderData = (id) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const {file, ...formDataWithoutFile} = formData;
+        console.log('Sending form data:', formData);
         try {
             const response = await axios.put(`http://localhost:8765/api/order/${id}/`,
-                formData, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
-            });
+                formDataWithoutFile, {
+                    headers: {Authorization: `Bearer ${localStorage.getItem('jwtToken')}`}
+                });
             setSuccessMessage('Дані компанії оновлено успішно');
             setErrorMessage('');
         } catch (err) {
             setErrorMessage('Помилка оновлення даних.');
+            console.log(err.response)
             setSuccessMessage('');
         }
     };
 
-    return { order, formData, setFormData, loading, successMessage, errorMessage, handleSubmit };
+    return {order, formData, setFormData, loading, successMessage, errorMessage, handleSubmit};
 };
 
 export default UseOrderData;

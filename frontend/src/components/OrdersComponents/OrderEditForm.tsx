@@ -4,6 +4,7 @@ import CustomTextField from "../UserForm/UI/CustomTextField.tsx";
 import FormPaper from "../RegisterForm/UI/FormPaper.tsx";
 import UpdateButton from "../UserForm/UI/UpdateButton.tsx";
 import {Link} from "react-router-dom";
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 interface OrderEditFormProps {
     formData: {
@@ -30,6 +31,25 @@ const OrderEditForm: React.FC<OrderEditFormProps> = ({
                                                          successMessage,
                                                          order,
                                                      }) => {
+
+    const handleFileDownload = () => {
+        const fileLink = document.createElement('a');
+        fileLink.href = formData.file;
+        fileLink.download = formData.file.split('/').pop() || 'file.pdf';
+        fileLink.click();
+    };
+
+    if (!order) {
+        return (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "10px" }}>
+                <Typography color="error.main" sx={{ marginTop: "10px" }}>
+                    Невідоме замовлення або виникла помилка завантаження даних. Будь ласка, спробуйте пізніше.
+                </Typography>
+            </Box>
+        );
+    }
+
+
     return (
         <Box sx={{display: "flex", justifyContent: "center", alignItems: "center", padding: "10px"}}>
             <FormPaper title="Оновити дані">
@@ -59,14 +79,23 @@ const OrderEditForm: React.FC<OrderEditFormProps> = ({
                             name="currency"
                             onChange={(e) => setFormData({...formData, [e.target.name]: e.target.value})}
                         />
-
                         {/* Поля, які не можна редагувати */}
-                        <CustomTextField
-                            label="Файл *"
-                            value={formData.file}
-                            name="file"
-                            disabled
-                        />
+                        {/* Поле файлу - не редагується, але файл можна завантажити */}
+                        <Grid item xs={12} sx={{display: 'flex', alignItems: 'center'}}>
+                            Звіт *:
+                            <Button
+                                startIcon={<PictureAsPdfIcon/>}
+                                onClick={handleFileDownload}
+                                sx={{
+                                    marginLeft: 2,
+                                    color: '#d32f2f',
+                                    textTransform: 'none',
+                                }}
+                            >
+                                Завантажити файл
+                            </Button>
+                        </Grid>
+
                         <CustomTextField
                             label="Назва постачальника *"
                             value={formData.provider_name}
@@ -97,7 +126,7 @@ const OrderEditForm: React.FC<OrderEditFormProps> = ({
 
                 <hr/>
 
-                <Link to={`/order-list/${order.office_id}`} style={{textDecoration: "none", color: "inherit"}}>
+                <Link to={`/order-list/${order.office_id}`} style={{ textDecoration: "none", color: "inherit" }}>
                     <Box sx={{display: "flex", justifyContent: "center", marginTop: "30px"}}>
                         <Button
                             variant="outlined"
