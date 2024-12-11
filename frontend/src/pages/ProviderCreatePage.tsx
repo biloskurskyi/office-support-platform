@@ -27,7 +27,6 @@ const ProviderCreatePage = () => {
 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const navigate = useNavigate();
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({

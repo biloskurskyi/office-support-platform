@@ -29,7 +29,7 @@ const OrderCard: React.FC<OrderCardProps> = ({order}) => {
     return (
         <div>
             <p><strong>Опис:</strong> {order.description}</p>
-            <p><strong>Сума:</strong> {order.deal_value}</p>
+            <p><strong>Вартість угоди:</strong> {order.deal_value}</p>
             <p><strong>Валюта:</strong> {order.currency}</p>
             <Typography>
                 <strong>Звіт:</strong>{' '}
@@ -44,7 +44,7 @@ const OrderCard: React.FC<OrderCardProps> = ({order}) => {
                     Завантажити файл
                 </Button>
             </Typography>
-            <p><strong>Провайдер: </strong><Link to={`/provider/${order.provider_id}`}>{order.provider_name}</Link></p>
+            <p><strong>Постачальник замовлення: </strong><Link to={`/provider/${order.provider_id}`}>{order.provider_name}</Link></p>
             <p><strong>Номер телефону офісу:</strong> {order.office_phone_number}</p>
             <Link to={`/order/${order.id}`} component={RouterLink} style={{textDecoration: 'none'}}>
                 <Button
