@@ -52,17 +52,25 @@ class ProviderPermissionMixin:
                     {"error": "You do not own this company or it does not exist."},
                     status=status.HTTP_404_NOT_FOUND
                 )
+            if office_pk and not Office.objects.filter(pk=office_pk, company__owner=user).exists():
+                return Response(
+                    {"error": "Office does not exist or you do not own its company."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
 
         # Перевірка для менеджера компанії
         elif user.user_type == User.MANAGER_USER:
-            if company_id:
-                if not Office.objects.filter(manager=user.id, company_id=company_id).exists():
-                    return Response(
-                        {"error": "You are not a manager of this company."},
-                        status=status.HTTP_403_FORBIDDEN
-                    )
+            if company_id and not Office.objects.filter(manager=user.id, company_id=company_id).exists():
+                return Response(
+                    {"error": "You are not a manager of this company."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            if office_pk and not Office.objects.filter(pk=office_pk, manager=user).exists():
+                return Response(
+                    {"error": "You are not a manager of this office."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
 
-        # Якщо користувач не є власником чи менеджером
         else:
             return Response(
                 {"detail": "You do not have permission to access provider data."},

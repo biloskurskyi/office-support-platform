@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.models import Company, Office, Provider, User, Utilities
+from core.models import Company, Office, Provider, User, Utilities, Order
 
 from .mixins import ProviderDetailMixin, ProviderPermissionMixin
 from .serializers import ProviderSerializer
@@ -81,23 +81,32 @@ class GetProvidersView(ProviderPermissionMixin, APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, pk):
-        # response = self.check_provider_permissions(request, office_pk=pk)
-        # if isinstance(response, Response):
-        #     return response
-        #
-        # office = Office.objects.get(pk=pk)
-        #
-        # providers = Provider.objects.filter(company=office.company)
-        # serializer = ProviderSerializer(providers, many=True)
-        # return Response(serializer.data, status=status.HTTP_200_OK)
         response = self.check_provider_permissions(request, company_id=pk)
-        if isinstance(response, Response):  # If the response is an error response
+        if isinstance(response, Response):
             return response
 
-        # Retrieve all providers linked to the specified company
         providers = Provider.objects.filter(company_id=pk)
 
-        # Serialize the providers and return the data in the response
+        serializer = ProviderSerializer(providers, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetOfficeProvidersView(ProviderPermissionMixin, APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, office_pk):
+        response = self.check_provider_permissions(request, office_pk=office_pk)
+        if isinstance(response, Response):
+            return response
+
+        office = Office.objects.filter(pk=office_pk).first()
+        if not office:
+            return Response(
+                {"error": "Office not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        providers = Provider.objects.filter(company=office.company)
         serializer = ProviderSerializer(providers, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -164,3 +173,10 @@ class ProviderAccessCheckAPIView(APIView):
             {"message": "Access is allowed."},
             status=status.HTTP_200_OK,
         )
+
+
+class CurrencyListView(APIView):
+    # permission_classes = (IsAuthenticated,)
+    def get(self, request):
+        currencies = [{"id": id, "label": label} for id, label in Order.CURRENCY_TYPE_CHOICES]
+        return Response(currencies)

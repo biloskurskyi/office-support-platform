@@ -4,13 +4,13 @@ import uuid
 from django.core.files.storage import default_storage
 from rest_framework import serializers
 
-from core.models import Order
+from core.models import Order, Office
 
 
 class OrderSerializer(serializers.ModelSerializer):
     provider_id = serializers.IntegerField(source='provider.id', read_only=True)
     provider_name = serializers.CharField(source='provider.name', read_only=True)
-    office_id = serializers.IntegerField(source='office.id', read_only=True)
+    office_id = serializers.IntegerField(source='office.id')
     office_phone_number = serializers.CharField(source='office.phone_number', read_only=True)
     currency = serializers.SerializerMethodField()
 
@@ -66,5 +66,13 @@ class OrderSerializer(serializers.ModelSerializer):
             # Update validated_data with the saved file path
             validated_data['file'] = saved_path
 
-        # Create the order with the new validated_data that includes the file path
-        return super().create(validated_data)
+            # Отримуємо Office об'єкт за ID
+        office_id = validated_data.get('office_id')
+        if office_id:
+            office = Office.objects.get(id=office_id)  # Отримуємо об'єкт Office за ID
+            validated_data['office'] = office  # Призначаємо сам об'єкт Office
+
+        # Створюємо замовлення
+        order = Order.objects.create(**validated_data)
+
+        return order

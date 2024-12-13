@@ -17,44 +17,63 @@ const OrderCreatePage = () => {
         title: '',
         description: '',
         deal_value: '',
-        currency: '',
-        file: '',
+        currency: 0,
+        file: null as File | null,
         provider: '',
+        office_id: id || '',
     });
 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const navigate = useNavigate();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const {name, value, files} = e.target;
+
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value,
+            [name]: files && files.length > 0 ? files[0] : name === "currency" ? Number(value) : value,
         });
     };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        console.log(!formData.title || !formData.provider || !formData.deal_value || !formData.currency || !formData.file)
+        console.log(formData)
         if (!formData.title || !formData.provider || !formData.deal_value || !formData.currency || !formData.file) {
             setErrorMessage('Будь ласка, заповніть усі поля');
             return;
         }
 
+        const data = new FormData();
+        data.append("title", formData.title);
+        data.append("description", formData.description);
+        data.append("deal_value", formData.deal_value);
+        data.append("currency", formData.currency);
+        data.append("provider", formData.provider);
+        data.append("office_id", formData.office_id);
+        if (formData.file) {
+            data.append("file", formData.file);
+        }
+
         try {
-            const response = await axios.post(`http://localhost:8765/api/order/`, formData, {
+            await axios.post(`http://localhost:8765/api/order/`, data, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
                 },
             });
             navigate(`/order-list/${id}`);
         } catch (error) {
-            if (error.response) {
-                setErrorMessage(error.response.data.detail || 'Некоректно введені дані!');
+            if (axios.isAxiosError(error) && error.response) {
+                setErrorMessage(error.response.data.detail || "Некоректно введені дані!");
             } else {
-                setErrorMessage('Не вдалося з\'єднатися з сервером');
+                setErrorMessage("Не вдалося з'єднатися з сервером");
             }
         }
     };
+
 
     return (
         <>
