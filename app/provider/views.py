@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.models import Company, Office, Provider, User, Utilities, Order
+from core.models import Company, Office, Order, Provider, User, Utilities
 
 from .mixins import ProviderDetailMixin, ProviderPermissionMixin
 from .serializers import ProviderSerializer

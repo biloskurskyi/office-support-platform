@@ -16,7 +16,6 @@ class OrderCreateView(OfficePermissionMixin, APIView):
         data = request.data
         user = request.user
         office_id = data.get('office_id')
-        print(office_id)
 
         self.check_office_permission(user, office_id)
 
