@@ -215,7 +215,7 @@ class Order(models.Model):
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE, related_name="records")
     deal_value = models.IntegerField(blank=True)
     currency = models.SmallIntegerField(choices=CURRENCY_TYPE_CHOICES, default=UAH)
-    file = models.FileField(upload_to="records/pdfs/")
+    file = models.FileField(upload_to=str(config('RECORDS_URL')))
     office = models.ForeignKey(Office, on_delete=models.CASCADE, related_name="records")
 
     def __str__(self):

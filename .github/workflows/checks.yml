@@ -25,24 +25,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-#      - name: Run Migrations
-#        run: docker compose run --rm app sh -c "python manage.py wait_for_db && python manage.py migrate"
-#        env:
-#          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-#          DEBUG: ${{ secrets.DEBUG }}
-#          DB_HOST: ${{ secrets.DB_HOST }}
-#          DB_NAME: ${{ secrets.DB_NAME }}
-#          DB_USER: ${{ secrets.DB_USER }}
-#          DB_PASS: ${{ secrets.DB_PASS }}
-#          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-#          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-#          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-#          EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
-#          EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
-#          EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
-#          EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
-#          EMAIL_USE_TLS: ${{ secrets.EMAIL_USE_TLS }}
-
       - name: Test
         run: docker-compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test"
         env:
@@ -56,6 +38,7 @@ jobs:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           FRONTEND_BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
+          RECORDS_URL: ${{ secrets.RECORDS_URL }}
 
       - name: Lint
         run: docker-compose run --rm app sh -c "flake8"

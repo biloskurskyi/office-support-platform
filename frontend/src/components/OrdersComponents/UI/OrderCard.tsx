@@ -19,10 +19,18 @@ interface OrderCardProps {
 
 const OrderCard: React.FC<OrderCardProps> = ({order}) => {
     const handleFileDownload = () => {
+        const baseUrl = 'http://localhost:8765/';
+        const fileUrl = `${baseUrl}${order.file}`;
+        console.log(fileUrl)
+
+        // Створюємо посилання для завантаження файлу
         const fileLink = document.createElement('a');
-        fileLink.href = order.file;
-        fileLink.download = order.file.split('/').pop() || 'file.pdf';  // Ім'я файлу
+        fileLink.href = fileUrl;
+        fileLink.download = order.file.split('/').pop() || 'file.pdf';
+        fileLink.target = '_blank';
+        document.body.appendChild(fileLink);
         fileLink.click();
+        document.body.removeChild(fileLink);
     };
 
 
@@ -34,7 +42,7 @@ const OrderCard: React.FC<OrderCardProps> = ({order}) => {
             <Typography>
                 <strong>Звіт:</strong>{' '}
                 <Button
-                    startIcon={<PictureAsPdfIcon />}
+                    startIcon={<PictureAsPdfIcon/>}
                     onClick={handleFileDownload}
                     sx={{
                         textTransform: 'none',
@@ -44,7 +52,8 @@ const OrderCard: React.FC<OrderCardProps> = ({order}) => {
                     Завантажити файл
                 </Button>
             </Typography>
-            <p><strong>Постачальник замовлення: </strong><Link to={`/provider/${order.provider_id}`}>{order.provider_name}</Link></p>
+            <p><strong>Постачальник замовлення: </strong><Link
+                to={`/provider/${order.provider_id}`}>{order.provider_name}</Link></p>
             <p><strong>Номер телефону офісу:</strong> {order.office_phone_number}</p>
             <Link to={`/order/${order.id}`} component={RouterLink} style={{textDecoration: 'none'}}>
                 <Button

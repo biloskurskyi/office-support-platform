@@ -1,6 +1,7 @@
 import mimetypes
 import uuid
 
+from decouple import config
 from django.core.files.storage import default_storage
 from rest_framework import serializers
 
@@ -81,7 +82,7 @@ class OrderSerializer(serializers.ModelSerializer):
         file = validated_data.pop('file', None)
         if file:
             unique_filename = f"{uuid.uuid4()}.pdf"
-            file_path = f"records/pdfs/{unique_filename}"
+            file_path = f"{config('RECORDS_URL')}{unique_filename}"
             saved_path = default_storage.save(file_path, file)
             validated_data['file'] = saved_path
 
