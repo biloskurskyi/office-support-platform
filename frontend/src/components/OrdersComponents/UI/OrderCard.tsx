@@ -9,7 +9,7 @@ interface OrderCardProps {
         title: string;
         description: string;
         deal_value: number;
-        currency: number;
+        currency_name: string;
         file: string;
         provider_name: number;
         office_phone_number: number;
@@ -30,7 +30,7 @@ const OrderCard: React.FC<OrderCardProps> = ({order}) => {
         <div>
             <p><strong>Опис:</strong> {order.description}</p>
             <p><strong>Вартість угоди:</strong> {order.deal_value}</p>
-            <p><strong>Валюта:</strong> {order.currency}</p>
+            <p><strong>Валюта:</strong> {order.currency_name}</p>
             <Typography>
                 <strong>Звіт:</strong>{' '}
                 <Button

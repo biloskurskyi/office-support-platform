@@ -7,7 +7,7 @@ export interface Order {
     title: string;
     description: string;
     deal_value: number;
-    currency: number;
+    currency_name: string;
     file: string;
     provider_name: number;
     office_phone_number: number;

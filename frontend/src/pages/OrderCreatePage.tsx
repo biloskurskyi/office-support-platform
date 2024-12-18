@@ -17,7 +17,7 @@ const OrderCreatePage = () => {
         title: '',
         description: '',
         deal_value: '',
-        currency: 0,
+        currency: 2,
         file: null as File | null,
         provider: '',
         office_id: id || '',
@@ -39,9 +39,7 @@ const OrderCreatePage = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        console.log(!formData.title || !formData.provider || !formData.deal_value || !formData.currency || !formData.file)
-        console.log(formData)
-        if (!formData.title || !formData.provider || !formData.deal_value || !formData.currency || !formData.file) {
+        if (!formData.title || !formData.provider || !formData.deal_value || !formData.file) {
             setErrorMessage('Будь ласка, заповніть усі поля');
             return;
         }
@@ -49,10 +47,10 @@ const OrderCreatePage = () => {
         const data = new FormData();
         data.append("title", formData.title);
         data.append("description", formData.description);
-        data.append("deal_value", formData.deal_value);
-        data.append("currency", formData.currency);
-        data.append("provider", formData.provider);
-        data.append("office_id", formData.office_id);
+        data.append("deal_value", String(formData.deal_value));
+        data.append("currency", String(formData.currency));
+        data.append("provider_id", String(formData.provider));  // Замінив provider -> provider_id
+        data.append("office_id", String(formData.office_id));
         if (formData.file) {
             data.append("file", formData.file);
         }
