@@ -15,7 +15,7 @@ const useCheckOwnership = (companyId: string | undefined) => {
         const checkCompanyOwnership = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:8765/api/company/${companyId}/verify-ownership`,
+                    `http://localhost:8765/api/company/${companyId}/verify-ownership/`,
                     {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,

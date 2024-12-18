@@ -53,7 +53,7 @@ const ManagerCard: React.FC<ManagerCardProps> = ({manager}) => {
         <div>
             <p><strong>Прізвище:</strong> {manager.surname}</p>
             <p><strong>Ім'я:</strong> {manager.name}</p>
-            <p><strong>Електрона пошта:</strong> {manager.email}</p>
+            <p><strong>Електрона адреса:</strong> {manager.email}</p>
             <p><strong>Інформація:</strong> {manager.info}</p>
             <Typography variant="body2" color={isActive ? 'green' : 'red'} gutterBottom>
                 <strong>Статус:</strong> {isActive ? 'Активний' : 'Неактивний'}

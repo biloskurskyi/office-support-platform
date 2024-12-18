@@ -92,7 +92,7 @@ const ManagerCreatePage = () => {
                             />
                             {/* Емейл */}
                             <TextFieldWithLabel
-                                label="Електрона пошта *"
+                                label="Електрона адреса *"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleInputChange}
@@ -104,7 +104,21 @@ const ManagerCreatePage = () => {
                                 value={formData.info}
                                 onChange={handleInputChange}
                             />
-                            {/* Кнопка реєстрації */}
+
+                            <ul>
+                                <Typography variant="h6" gutterBottom>
+                                    Правила створення менеджера:
+                                </Typography>
+                                <li>При створенні менеджера він автоматично прив'язується до компанії, в якій його
+                                    створили.
+                                </li>
+                                <li>За замовчуванням менеджер є неактивним користувачем, поки він не підтвердить
+                                    отримання листа та не увійде в систему.
+                                </li>
+                                <li>Поле "Електронна адреса" повинно бути унікальним.</li>
+
+                            </ul>
+
                             <SubmitButton text="Створити менеджера" onSubmit={handleSubmit}/>
                         </Grid>
                     </form>

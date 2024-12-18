@@ -102,6 +102,17 @@ const CreateCompanyForm = () => {
                             onChange={handleInputChange}
                             type="password"
                         />
+
+                        <ul>
+                            <Typography variant="h6" gutterBottom>
+                                Правила створення компанії:
+                            </Typography>
+                            <li>При створенні компанії потрібно обов'язково надати загальну назву та юридичну (унікальну
+                                назву, яка відрізняє компанію в системі).
+                            </li>
+                        </ul>
+
+
                         <SubmitButton text="Створити компанію" onSubmit={handleSubmit}/>
                     </Grid>
                 </form>

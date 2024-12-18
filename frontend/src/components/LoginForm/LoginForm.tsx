@@ -19,12 +19,12 @@ const LoginForm = () => {
     const location = useLocation();
 
     useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const message = queryParams.get('message');
-    if (message === 'User created successfully.') {
-        setSuccessMessage('Ви успішно створили акаунт! Перейдіть на свою пошту та підтвердіть дані, тільки після цього ви зможете увійти в систему.');
-    }
-}, [location]);
+        const queryParams = new URLSearchParams(location.search);
+        const message = queryParams.get('message');
+        if (message === 'User created successfully.') {
+            setSuccessMessage('Ви успішно створили акаунт! Перейдіть на свою пошту та підтвердіть дані, тільки після цього ви зможете увійти в систему.');
+        }
+    }, [location]);
 
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +72,7 @@ const LoginForm = () => {
                     <Grid container spacing={2}>
                         {/* Емейл */}
                         <TextFieldWithLabel
-                            label="Електрона пошта *"
+                            label="Електрона адреса *"
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}
@@ -86,6 +86,12 @@ const LoginForm = () => {
                             type="password"
                         />
                         {/* Кнопка авторизації */}
+                        <ul>
+                            <li>Введіть коректно електронну адресу та пароль користувача. Якщо користувач не
+                                активований, перевірте електронну адресу, на яку ви реєстрували користувача, та
+                                підтвердіть особу в листі.
+                            </li>
+                        </ul>
                         <SubmitButton text="Увійти" onSubmit={handleSubmit}/>
                     </Grid>
                 </form>

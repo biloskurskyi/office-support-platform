@@ -93,7 +93,7 @@ const RegisterForm = () => {
                         />
                         {/* Емейл */}
                         <TextFieldWithLabel
-                            label="Електрона пошта *"
+                            label="Електрона адреса *"
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}
@@ -115,6 +115,18 @@ const RegisterForm = () => {
                             type="password"
                         />
                         {/* Кнопка реєстрації */}
+
+                        <ul>
+                            <Typography variant="h6" gutterBottom>
+                                Правила створення користувача (власника):
+                            </Typography>
+                            <li>Обов'язково потрібно заповнити всі поля.</li>
+                            <li>Ввести пароль від 8 символів, щонайменше 1 великої літери та цифри.</li>
+                            <li>Підтвердити пароль.</li>
+                            <li>Очікуйте листа на вашу електронну адресу, щоб підтвердити користувача в системі.</li>
+                        </ul>
+
+
                         <SubmitButton text="Зареєструватися" onSubmit={handleSubmit}/>
                     </Grid>
                 </form>
