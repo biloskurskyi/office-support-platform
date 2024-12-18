@@ -1,10 +1,20 @@
-import React from 'react';
-import {Box, Button, Grid, Typography} from '@mui/material';
+import React, {useEffect, useState} from 'react';
+import {
+    Box,
+    Typography,
+    Grid,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Select,
+    Button
+} from "@mui/material";
 import CustomTextField from "../UserForm/UI/CustomTextField.tsx";
 import FormPaper from "../RegisterForm/UI/FormPaper.tsx";
 import UpdateButton from "../UserForm/UI/UpdateButton.tsx";
 import {Link} from "react-router-dom";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import axios from "axios";
 
 interface OrderEditFormProps {
     formData: {
@@ -32,6 +42,23 @@ const OrderEditForm: React.FC<OrderEditFormProps> = ({
                                                          order,
                                                      }) => {
 
+    const [currencies, setCurrencies] = useState<{ id: string; label: string }[]>([]);
+
+    useEffect(() => {
+        axios
+            .get("http://localhost:8765/api/currencies/")
+            .then((response) => {
+                if (Array.isArray(response.data)) {
+                    setCurrencies(response.data);
+                } else {
+                    console.error("Unexpected response structure:", response.data);
+                }
+            })
+            .catch((error) =>
+                console.error("Помилка завантаження валют:", error)
+            );
+    }, []);
+
     const handleFileDownload = () => {
         const fileLink = document.createElement('a');
         fileLink.href = formData.file;
@@ -41,8 +68,8 @@ const OrderEditForm: React.FC<OrderEditFormProps> = ({
 
     if (!order) {
         return (
-            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "10px" }}>
-                <Typography color="error.main" sx={{ marginTop: "10px" }}>
+            <Box sx={{display: "flex", justifyContent: "center", alignItems: "center", padding: "10px"}}>
+                <Typography color="error.main" sx={{marginTop: "10px"}}>
                     Невідоме замовлення або виникла помилка завантаження даних. Будь ласка, спробуйте пізніше.
                 </Typography>
             </Box>
@@ -73,14 +100,54 @@ const OrderEditForm: React.FC<OrderEditFormProps> = ({
                             name="deal_value"
                             onChange={(e) => setFormData({...formData, [e.target.name]: e.target.value})}
                         />
-                        <CustomTextField
-                            label="Валюта *"
-                            value={formData.currency}
-                            name="currency"
-                            onChange={(e) => setFormData({...formData, [e.target.name]: e.target.value})}
-                        />
-                        {/* Поля, які не можна редагувати */}
-                        {/* Поле файлу - не редагується, але файл можна завантажити */}
+                        <Grid item xs={12}>
+                            <FormControl fullWidth sx={{
+                                marginTop: '10px',
+                                marginBottom: '10px',
+                                '.MuiInputLabel-root': {
+                                    backgroundColor: '#fff',
+                                    padding: '0 5px',
+                                    transform: 'translate(14px, -6px) scale(0.75)',
+                                },
+                                '.MuiSelect-select': {
+                                    padding: '16px',
+                                },
+                            }}>
+                                <InputLabel id="currency-select-label" sx={{
+                                    fontSize: '16px',
+                                    fontWeight: '500',
+                                }}>
+                                    Валюта *
+                                </InputLabel>
+                                <Select
+                                    labelId="currency-select-label"
+                                    id="currency-select"
+                                    value={formData.currency}
+                                    name="currency"
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            currency: e.target.value,
+                                        })
+                                    }
+                                    displayEmpty
+                                    sx={{borderRadius: "8px"}}
+                                >
+                                    <MenuItem value="">
+                                        <em>Не вибрано</em>
+                                    </MenuItem>
+                                    {currencies.map((currency) => (
+                                        <MenuItem
+                                            key={currency.id}
+                                            value={currency.id}
+                                        >
+                                            {currency.label}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+
                         <Grid item xs={12} sx={{display: 'flex', alignItems: 'center'}}>
                             Звіт *:
                             <Button
@@ -126,7 +193,7 @@ const OrderEditForm: React.FC<OrderEditFormProps> = ({
 
                 <hr/>
 
-                <Link to={`/order-list/${order.office_id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                <Link to={`/order-list/${order.office_id}`} style={{textDecoration: "none", color: "inherit"}}>
                     <Box sx={{display: "flex", justifyContent: "center", marginTop: "30px"}}>
                         <Button
                             variant="outlined"

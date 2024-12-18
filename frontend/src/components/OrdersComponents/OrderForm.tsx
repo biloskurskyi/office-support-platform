@@ -3,10 +3,7 @@ import {useParams} from "react-router-dom";
 import {Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, Typography} from "@mui/material";
 import TextFieldWithLabel from "../RegisterForm/UI/TextFieldWithLabel.tsx";
 import SubmitButton from "../RegisterForm/UI/SubmitButton.tsx";
-import ProviderListButton from "../ProviderComponents/UI/ProviderListButton.tsx";
 import OrderListButton from "./UI/OrderListButton.tsx";
-import useFetchManagers from "../../hooks/useFetchManagers.tsx";
-import useProviders from "../../hooks/useProviders.tsx";
 import UseProvidersByOffice from "../../hooks/useProvidersByOffice.tsx";
 import axios from "axios";
 
@@ -57,6 +54,8 @@ const OrderForm: React.FC<OrderFormProps> = ({
             })
             .catch((error) => console.error("Помилка завантаження валют:", error));
     }, []);
+
+    console.log(formData)
 
 
     return (

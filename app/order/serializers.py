@@ -12,7 +12,7 @@ class OrderSerializer(serializers.ModelSerializer):
     provider_name = serializers.CharField(source='provider.name', read_only=True)
     office_id = serializers.IntegerField(source='office.id')
     office_phone_number = serializers.CharField(source='office.phone_number', read_only=True)
-    currency = serializers.IntegerField(write_only=True)  # Allows setting currency by ID in POST
+    currency = serializers.IntegerField()  # Allows setting currency by ID in POST
     currency_name = serializers.CharField(source='get_currency_display', read_only=True)  # For GET, show the name
 
     class Meta:
