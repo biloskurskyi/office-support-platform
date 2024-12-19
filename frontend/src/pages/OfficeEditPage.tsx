@@ -150,7 +150,7 @@ const OfficeEditPage = () => {
                                 name="company"
                                 disabled
                             />
-                            <Grid item xs={12}>
+                            {localStorage.getItem("user_type") === "1" && (<Grid item xs={12}>
                                 <FormControl
                                     fullWidth
                                     sx={{
@@ -209,7 +209,7 @@ const OfficeEditPage = () => {
                                         ))}
                                     </Select>
                                 </FormControl>
-                            </Grid>
+                            </Grid>)}
                         </Grid>
 
                         {successMessage && (

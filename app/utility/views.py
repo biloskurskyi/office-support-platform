@@ -12,7 +12,7 @@ from .serializers import UtilitySerializer
 
 
 class UtilityView(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         data = request.data
@@ -107,3 +107,19 @@ class GetUtilitiesByTypeView(OfficeMixin, OfficePermissionMixin, APIView):
 
         serializer = UtilitySerializer(utilities, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetAllUtilitiesTypesView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        utility_types = Utilities.UTILITIES_TYPE_CHOICES
+        serialized_data = []
+
+        for utility in utility_types:
+            serialized_data.append({
+                'id': utility[0],
+                'utilities_type': utility[1]
+            })
+
+        return Response(serialized_data, status=status.HTTP_200_OK)
