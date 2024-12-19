@@ -8,6 +8,7 @@ import SubmitButton from "../components/RegisterForm/UI/SubmitButton.tsx";
 import CustomTextField from "../components/UserForm/UI/CustomTextField.tsx";
 import useFetchManagers from "../hooks/useFetchManagers.tsx";
 import useCheckOwnership from "../hooks/useCheckOwnership.tsx";
+import useFetchManagersData from "../hooks/useFetchManagersData.tsx";
 
 const OfficeCreatePage = () => {
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
@@ -67,7 +68,9 @@ const OfficeCreatePage = () => {
     };
 
 
-    const {managers, loading, error} = useFetchManagers(id);
+    const {managers, loading, error} = useFetchManagersData(
+        id ? `http://localhost:8765/api/company/${id}/managers/` : null
+    );
 
 
     return (

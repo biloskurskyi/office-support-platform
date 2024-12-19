@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {Link, useOutletContext, useParams} from "react-router-dom";
 import axios from 'axios';
-import {Box, Button, Grid, Typography} from "@mui/material";
+import {Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, Typography} from "@mui/material";
 import FormPaper from "../components/LoginForm/UI/FormPaper.tsx";
 import CustomTextField from "../components/UserForm/UI/CustomTextField.tsx";
 import UpdateButton from "../components/UserForm/UI/UpdateButton.tsx";
+import useFetchManagersData from "../hooks/useFetchManagersData.tsx";
 
 const OfficeEditPage = () => {
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
@@ -25,11 +26,16 @@ const OfficeEditPage = () => {
         phone_number: '',
         company: '',
         company_id: '',
+        manager: '',
 
     });
-    const [loading, setLoading] = useState(true);
+    const [loadingData, setLoading] = useState(true);
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+
+    const { managers, loading, error } = useFetchManagersData(
+    id ? `http://localhost:8765/api/office/${id}/managers/` : null
+);
 
     // Завантаження даних компанії
     useEffect(() => {
@@ -49,6 +55,7 @@ const OfficeEditPage = () => {
                     phone_number: response.data.phone_number,
                     company: response.data.company,
                     company_id: response.data.company_id,
+                    manager: response.data.manager,
                 });
                 setLoading(false);
             } catch (error) {
@@ -88,7 +95,7 @@ const OfficeEditPage = () => {
         }
     };
 
-    if (loading) return <div>Завантаження...</div>;
+    if (loadingData) return <div>Завантаження...</div>;
 
     const userType = localStorage.getItem('user_type');
     let linkTo = '';
@@ -143,6 +150,66 @@ const OfficeEditPage = () => {
                                 name="company"
                                 disabled
                             />
+                            <Grid item xs={12}>
+                                <FormControl
+                                    fullWidth
+                                    sx={{
+                                        marginTop: '10px',
+                                        marginBottom: '10px',
+                                        '.MuiInputLabel-root': {
+                                            backgroundColor: '#fff',
+                                            padding: '0 5px',
+                                            transform: 'translate(14px, -6px) scale(0.75)',
+                                        },
+                                        '.MuiSelect-select': {
+                                            padding: '16px',
+                                        },
+                                    }}
+                                >
+                                    <InputLabel
+                                        id="manager-select-label"
+                                        sx={{
+                                            fontSize: '16px',
+                                            fontWeight: '500',
+                                        }}
+                                    >
+                                        Менеджер
+                                    </InputLabel>
+                                    <Select
+                                        labelId="manager-select-label"
+                                        id="manager-select"
+                                        value={formData.manager}
+                                        name="manager"
+                                        onChange={handleInputChange}
+                                        disabled={loading}
+                                        displayEmpty
+                                        sx={{
+                                            borderRadius: '8px',
+                                            border: '0px solid #ccc',
+                                            ':focus': {
+                                                borderColor: '#1976d2',
+                                            },
+                                        }}
+                                    >
+                                        <MenuItem value="">
+                                            <em>Не вибрано</em>
+                                        </MenuItem>
+                                        {managers.map((manager: { id: number; name: string; email: string }) => (
+                                            <MenuItem
+                                                key={manager.id}
+                                                value={manager.id}
+                                                sx={{
+                                                    whiteSpace: 'normal',
+                                                    wordBreak: 'break-word',
+                                                    lineHeight: '1.5',
+                                                }}
+                                            >
+                                                {manager.name} з електроною адресою: {manager.email}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
                         </Grid>
 
                         {successMessage && (
