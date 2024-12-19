@@ -1,9 +1,11 @@
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import Company, Office, User
+from user.serializers import UserSerializer
 
 from .mixins import OfficeMixin
 from .serializers import OfficeSerializer
@@ -141,6 +143,9 @@ class OfficeDetailView(APIView):
 
 
 class OfficeListForManager(APIView):
+    """
+    List of all offices for special manager
+    """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -183,3 +188,42 @@ class OfficeListForCompany(APIView):
 
         serializer = OfficeSerializer(offices, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class OfficeManagersView(APIView):
+    """
+    API view that returns all unique managers for a specific office.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, office_id):
+        try:
+            # Перевіряємо існування офісу
+            office = Office.objects.select_related('company').get(id=office_id)
+
+            # Перевіряємо, чи є користувач власником компанії, до якої належить офіс
+            if office.company.owner != request.user:
+                return Response(
+                    {"error": "You are not the owner of this company."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            # Отримуємо менеджерів, прив'язаних до компанії
+            managers = User.objects.filter(
+                Q(user_type=User.MANAGER_USER) & Q(company=office.company.id)
+            ).distinct()
+
+            serializer = UserSerializer(managers, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Office.DoesNotExist:
+            return Response(
+                {"error": "Office not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
