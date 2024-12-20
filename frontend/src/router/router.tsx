@@ -21,6 +21,9 @@ import OfficeOrdersOverviewPage from "../pages/OfficeOrdersOverviewPage.tsx";
 import OrdersListPage from "../pages/OrdersListPage.tsx";
 import OrderEditPage from "../pages/OrderEditPage.tsx";
 import OrderCreatePage from "../pages/OrderCreatePage.tsx";
+import UtilityTypeListPage from "../pages/UtilityTypeListPage.tsx";
+import OfficeUtilitiesOverviewPage from "../pages/OfficeUtilitiesOverviewPage.tsx";
+import UtilityDetailsForOfficePage from "../pages/UtilityDetailsForOfficePage.tsx";
 
 
 const rootLoader = async (): Promise<null | Response> => {
@@ -99,7 +102,7 @@ const routes: RouteObject[] = [
                 element: <ProviderCreatePage/>
             },
             {
-                path: "/office-overview/:id",
+                path: "/office-overview-for-orders/:id",
                 element: <OfficeOrdersOverviewPage/>
             },
             {
@@ -113,6 +116,18 @@ const routes: RouteObject[] = [
             {
                 path: "/order-create/:id",
                 element: <OrderCreatePage/>
+            },
+            {
+                path: "/office-overview-for-utilities/:id",
+                element: <OfficeUtilitiesOverviewPage/>
+            },
+            {
+                path: "/utility-type-list/:id",
+                element: <UtilityTypeListPage/>
+            },
+            {
+                path: "/utility-for-office-by-type/:officeId/:utilityId",
+                element: <UtilityDetailsForOfficePage/>
             }
         ],
     },

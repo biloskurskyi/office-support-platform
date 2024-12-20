@@ -127,9 +127,14 @@ const MenuButton: React.FC = () => {
                                 Офіси
                             </MenuItem>
                         </Link>,
-                        <MenuItem key="communal" onClick={handleSubmenuItemClick}>Комунальні послуги</MenuItem>,
                         <Link
-                            to={`/office-overview/${Array.isArray(companies) ? companies.find(
+                            to={`/office-overview-for-utilities/${Array.isArray(companies) ? companies.find(
+                                c => c.legal_name === selectedCompany)?.id : ''}`}
+                            style={{textDecoration: 'none', color: 'inherit'}}>
+                            <MenuItem key="communal" onClick={handleSubmenuItemClick}>Комунальні послуги</MenuItem>
+                        </Link>,
+                        <Link
+                            to={`/office-overview-for-orders/${Array.isArray(companies) ? companies.find(
                                 c => c.legal_name === selectedCompany)?.id : ''}`}
                             style={{textDecoration: 'none', color: 'inherit'}}>
                             <MenuItem key="orders" onClick={handleSubmenuItemClick}>Замовлення</MenuItem>
