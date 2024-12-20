@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -112,14 +113,23 @@ class GetUtilitiesByTypeView(OfficeMixin, OfficePermissionMixin, APIView):
 class GetAllUtilitiesTypesView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request):
-        utility_types = Utilities.UTILITIES_TYPE_CHOICES
-        serialized_data = []
+    def get(self, request, office_id):
+        user = request.user
 
-        for utility in utility_types:
-            serialized_data.append({
-                'id': utility[0],
-                'utilities_type': utility[1]
-            })
+        office = get_object_or_404(Office, id=office_id)
 
-        return Response(serialized_data, status=status.HTTP_200_OK)
+        if (
+                (user.user_type == User.OWNER_USER and office.company.owner == user)
+                or (user.user_type == User.MANAGER_USER and office.manager == user)
+        ):
+            utility_types = Utilities.UTILITIES_TYPE_CHOICES
+            serialized_data = [
+                {'id': utility[0], 'utilities_type': utility[1]}
+                for utility in utility_types
+            ]
+            return Response(serialized_data, status=status.HTTP_200_OK)
+
+        return Response(
+            {'detail': 'Access denied.'},
+            status=status.HTTP_403_FORBIDDEN
+        )

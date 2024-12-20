@@ -11,6 +11,6 @@ urlpatterns = [
     path('utility/<int:pk>/', UtilityDetailView.as_view(), name='utility-detail'),
     path('get-utility-by-type/<int:office_id>/<int:utility_type>/', GetUtilitiesByTypeView.as_view(),
          name='get-utility-by-type'),
-    path('utilities/types/', GetAllUtilitiesTypesView.as_view(), name='get-all-utilities-types'),
+    path('utilities/types/<int:office_id>/', GetAllUtilitiesTypesView.as_view(), name='get-all-utilities-types'),
 
 ]

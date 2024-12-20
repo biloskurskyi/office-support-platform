@@ -151,11 +151,11 @@ class Utilities(models.Model):
     GAS_SUPPLY = 2
     ELECTRICITY_SUPPLY = 3
     WASTE_COLLECTION = 4
-    UTILITIES_TYPE_CHOICES = ((HEATING, 'Heating'),
-                              (WATER_SUPPLY, 'Water Supply'),
-                              (GAS_SUPPLY, 'Gas Supply'),
-                              (ELECTRICITY_SUPPLY, 'Electricity Supply'),
-                              (WASTE_COLLECTION, 'Waste Collection'),)
+    UTILITIES_TYPE_CHOICES = ((HEATING, 'Опалення'),
+                              (WATER_SUPPLY, 'Водопостачання'),
+                              (GAS_SUPPLY, 'Газопостачання'),
+                              (ELECTRICITY_SUPPLY, 'Електропостачання'),
+                              (WASTE_COLLECTION, 'Збір відходів'),)
     utilities_type = models.SmallIntegerField(choices=UTILITIES_TYPE_CHOICES)
     date = models.DateField()
     counter = models.PositiveIntegerField()
