@@ -93,6 +93,22 @@ class UtilityDetailView(OfficeMixin, UtilityPermissionMixin, APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+# class GetUtilitiesByTypeView(OfficeMixin, OfficePermissionMixin, APIView):
+#     def get(self, request, office_id, utility_type):
+#         office, permission_response = self.get_office_and_check_permissions(request, office_id)
+#         if permission_response:
+#             return permission_response
+#
+#         utilities = Utilities.objects.filter(office=office, utilities_type=utility_type)
+#         if not utilities.exists():
+#             return Response(
+#                 {"error": "No utilities of this type found for the specified office."},
+#                 status=status.HTTP_404_NOT_FOUND
+#             )
+#
+#         serializer = UtilitySerializer(utilities, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
 class GetUtilitiesByTypeView(OfficeMixin, OfficePermissionMixin, APIView):
     def get(self, request, office_id, utility_type):
         office, permission_response = self.get_office_and_check_permissions(request, office_id)
@@ -100,11 +116,9 @@ class GetUtilitiesByTypeView(OfficeMixin, OfficePermissionMixin, APIView):
             return permission_response
 
         utilities = Utilities.objects.filter(office=office, utilities_type=utility_type)
+
         if not utilities.exists():
-            return Response(
-                {"error": "No utilities of this type found for the specified office."},
-                status=status.HTTP_404_NOT_FOUND
-            )
+            return Response([], status=status.HTTP_200_OK)
 
         serializer = UtilitySerializer(utilities, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

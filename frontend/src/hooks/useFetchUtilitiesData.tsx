@@ -1,14 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import {Office} from "./useFetchOffices.tsx";
 import axios, {AxiosResponse} from "axios";
 
-export interface UtilityType {
+export interface Utility {
     id: number;
-    utilities_type: string;
+    utilities_type: number;
+    date: string;
+    counter: number;
+    price: number;
+    office: number;
 }
 
-const UseFetchUtilityTypes = (officeId: string | undefined) => {
-    const [utility, setUtility] = useState<UtilityType[]>([]);
+
+const UseFetchUtilitiesData = (officeId: string | undefined, utilityId: string | undefined) => {
+    const [utilities, setUtilities] = useState<Utility[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -23,13 +27,13 @@ const UseFetchUtilityTypes = (officeId: string | undefined) => {
                     return;
                 }
 
-                const response: AxiosResponse<UtilityType[]> = await axios.get(
-                    `http://localhost:8765/api/utilities/types/${officeId}/`,
+                const response: AxiosResponse<Utility[]> = await axios.get(
+                    `http://localhost:8765/api/get-utility-by-type/${officeId}/${utilityId}/`,
                     {
                         headers: {Authorization: `Bearer ${token}`},
                     }
                 );
-                setUtility(response.data);
+                setUtilities(response.data);
             } catch (error) {
                 setError("Не вдалося завантажити комунальні послуги. Спробуйте пізніше.");
                 console.error("Помилка завантаження даних:", error);
@@ -41,7 +45,7 @@ const UseFetchUtilityTypes = (officeId: string | undefined) => {
         fetchData();
     }, [officeId]);
 
-    return {utility, loading, error};
+    return {utilities, loading, error};
 };
 
-export default UseFetchUtilityTypes;
+export default UseFetchUtilitiesData;

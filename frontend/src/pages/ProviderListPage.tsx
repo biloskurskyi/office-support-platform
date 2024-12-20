@@ -9,15 +9,15 @@ import ProviderCard from "../components/ProviderComponents/UI/ProviderCard.tsx";
 import useProviders from "../hooks/useProviders.tsx";
 import CreateProviderButton from "../components/ProviderComponents/UI/CreateProviderButton.tsx";
 
-interface Provider {
-    id: number;
-    name: string;
-    address: string;
-    phone_number: string;
-    email: string;
-    company: string;
-    bank_details: string;
-}
+// interface Provider {
+//     id: number;
+//     name: string;
+//     address: string;
+//     phone_number: string;
+//     email: string;
+//     company: string;
+//     bank_details: string;
+// }
 
 
 const ProviderListPage: React.FC = () => {
