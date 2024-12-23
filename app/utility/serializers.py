@@ -18,6 +18,13 @@ class UtilitySerializer(serializers.ModelSerializer):
         new_counter = data.get('counter')
         new_date = data.get('date')
 
+        if new_date is None:
+            new_date = self.instance.date
+        if office is None:
+            office = self.instance.office
+        if utilities_type is None:
+            utilities_type = self.instance.utilities_type
+
         if not new_date or not office or utilities_type is None:
             raise serializers.ValidationError({"error": "Missing required fields: date, office, or utilities_type."})
 
@@ -77,12 +84,16 @@ class UtilitySerializer(serializers.ModelSerializer):
 
 class GetUtilitySerializer(serializers.ModelSerializer):
     utilities_type_display = serializers.SerializerMethodField()
+    utility_type_id = serializers.IntegerField(source='utilities_type')
+    utility_id = serializers.IntegerField(source='id')
     office_display = serializers.CharField(source='office.__str__')
+    office_id = serializers.IntegerField(source='office.id')
 
     class Meta:
         model = Utilities
-        fields = ['id', 'utilities_type_display', 'date', 'counter', 'price', 'office_display']
-        read_only_fields = ['id']
+        fields = ['utility_type_id', 'utilities_type_display', 'date', 'counter', 'price', 'office_display',
+                  'office_id', 'utility_id']
+        read_only_fields = ['utility_type_id', 'office_id', 'utility_id']
 
     def get_utilities_type_display(self, obj):
         return obj.get_utilities_type_display()

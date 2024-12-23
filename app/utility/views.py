@@ -69,7 +69,7 @@ class UtilityDetailView(OfficeMixin, UtilityPermissionMixin, APIView):
         if permission_response:
             return permission_response
 
-        serializer = UtilitySerializer(utility, many=False)
+        serializer = GetUtilitySerializer(utility, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
