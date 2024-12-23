@@ -9,7 +9,7 @@ from core.models import Company, Office, User, Utilities
 from office.mixins import OfficeMixin
 
 from .mixins import OfficePermissionMixin, UtilityPermissionMixin
-from .serializers import UtilitySerializer
+from .serializers import GetUtilitySerializer, UtilitySerializer
 
 
 class UtilityView(APIView):
@@ -120,7 +120,7 @@ class GetUtilitiesByTypeView(OfficeMixin, OfficePermissionMixin, APIView):
         if not utilities.exists():
             return Response([], status=status.HTTP_200_OK)
 
-        serializer = UtilitySerializer(utilities, many=True)
+        serializer = GetUtilitySerializer(utilities, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

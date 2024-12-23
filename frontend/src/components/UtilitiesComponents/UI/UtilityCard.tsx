@@ -5,22 +5,22 @@ import {Link as RouterLink} from "react-router-dom";
 interface UtilityCardProps {
     utility: {
         id: number;
-        utilities_type: number;
+        utilities_type_display: string;
         date: string;
         counter: number;
         price: number;
-        office: number;
+        office_display: string;
     }
 }
 
 const UtilityCard: React.FC<UtilityCardProps> = ({utility}) => {
     return (
         <div>
-            <p><strong>Тип комунальної послуги:</strong> {utility.utilities_type}</p>
+            <p><strong>Тип комунальної послуги:</strong> {utility.utilities_type_display}</p>
             <p><strong>Дата:</strong> {utility.date}</p>
             <p><strong>Показник:</strong> {utility.counter}</p>
             <p><strong>Сума оплати:</strong> {utility.price}</p>
-            <p><strong>Офіс:</strong> {utility.office}</p>
+            <p><strong>Офіс:</strong> {utility.office_display}</p>
             <Link to={`/`} component={RouterLink} style={{textDecoration: 'none'}}>
                 <Button
                     variant="outlined"

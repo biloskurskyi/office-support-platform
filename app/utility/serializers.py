@@ -88,3 +88,16 @@ class UtilitySerializer(serializers.ModelSerializer):
             })
 
         return data
+
+
+class GetUtilitySerializer(serializers.ModelSerializer):
+    utilities_type_display = serializers.SerializerMethodField()
+    office_display = serializers.CharField(source='office.__str__')
+
+    class Meta:
+        model = Utilities
+        fields = ['id', 'utilities_type_display', 'date', 'counter', 'price', 'office_display']
+        read_only_fields = ['id']
+
+    def get_utilities_type_display(self, obj):
+        return obj.get_utilities_type_display()

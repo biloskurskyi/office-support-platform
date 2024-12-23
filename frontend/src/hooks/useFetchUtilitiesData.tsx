@@ -3,11 +3,11 @@ import axios, {AxiosResponse} from "axios";
 
 export interface Utility {
     id: number;
-    utilities_type: number;
+    utilities_type_display: string;
     date: string;
     counter: number;
     price: number;
-    office: number;
+    office_display: string;
 }
 
 
