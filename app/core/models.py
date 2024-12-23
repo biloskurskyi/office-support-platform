@@ -158,9 +158,26 @@ class Utilities(models.Model):
                               (WASTE_COLLECTION, 'Збір відходів'),)
     utilities_type = models.SmallIntegerField(choices=UTILITIES_TYPE_CHOICES)
     date = models.DateField()
-    counter = models.PositiveIntegerField()
+    counter = models.PositiveIntegerField(default=1)
     price = models.FloatField()
     office = models.ForeignKey(Office, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        # Автоматичне оновлення counter для WASTE_COLLECTION
+        if self.utilities_type == self.WASTE_COLLECTION:
+            last_utility = Utilities.objects.filter(
+                office=self.office,
+                utilities_type=self.WASTE_COLLECTION
+            ).order_by('-date').first()
+
+            # Якщо це перший запис, встановлюємо counter в 0
+            if not last_utility:
+                self.counter = 1
+            else:
+                # Збільшуємо counter на 1
+                self.counter = last_utility.counter + 1
+
+        super().save(*args, **kwargs)
 
 
 class Provider(models.Model):

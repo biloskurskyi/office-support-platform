@@ -1,5 +1,6 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
+from django.db import models  # Імпортуємо models
 from rest_framework import serializers
 
 from core.models import Utilities
@@ -17,26 +18,36 @@ class UtilitySerializer(serializers.ModelSerializer):
         new_counter = data.get('counter')
         new_date = data.get('date')
 
-        year = new_date.year
-        month = new_date.month
+        if not new_date or not office or utilities_type is None:
+            raise serializers.ValidationError({"error": "Missing required fields: date, office, or utilities_type."})
 
-        # Check for existing utilities with the same office, type, and month/year
+        # Заборонити більше одного запису для WASTE_COLLECTION за один місяць
+        if utilities_type == Utilities.WASTE_COLLECTION:
+            if Utilities.objects.filter(
+                    office=office,
+                    utilities_type=utilities_type,
+                    date__year=new_date.year,
+                    date__month=new_date.month
+            ).exists():
+                raise serializers.ValidationError({
+                    "error": f"WASTE_COLLECTION record for {new_date.strftime('%Y-%m')} already exists."
+                })
 
-        # Check if we're updating an existing instance
-        instance_id = self.instance.id if self.instance else None
-
-        if Utilities.objects.filter(
+            # Автоматичне управління `counter` для WASTE_COLLECTION
+            max_counter = Utilities.objects.filter(
                 office=office,
-                utilities_type=utilities_type,
-                date__year=year,
-                date__month=month
-        ).exclude(id=instance_id).exists():
-            raise serializers.ValidationError({
-                "error": "Utilities for this office and type already exist for this month."
-            })
+                utilities_type=utilities_type
+            ).aggregate(max_counter=models.Max('counter'))['max_counter'] or 0
+            data['counter'] = max_counter + 1
+            return data
 
-        # Check if counter is greater than the previous month's counter (if it exists)
+        # Для всіх інших типів (не WASTE_COLLECTION), виконувати перевірку по даті та рахунку
 
+        # Забезпечити, щоб `counter` був обов'язковим
+        if new_counter is None:
+            raise serializers.ValidationError({"counter": "Counter value is required."})
+
+        # Перевірка на коректність значення `counter` по даті
         previous_utility = Utilities.objects.filter(
             office=office,
             utilities_type=utilities_type,
@@ -44,38 +55,12 @@ class UtilitySerializer(serializers.ModelSerializer):
         ).order_by('-date').first()
 
         if previous_utility and new_counter <= previous_utility.counter:
-            raise serializers.ValidationError(
-                {"counter": "Counter value must be greater than the previous month's value of {}.".format(
-                    previous_utility.counter)}
-            )
+            raise serializers.ValidationError({
+                "counter": f"Counter value must be greater than the previous month's value of "
+                           f"{previous_utility.counter}."
+            })
 
-        # Ensure sequential month addition if adding for a past month
-
-        latest_utility = Utilities.objects.filter(
-            office=office,
-            utilities_type=utilities_type
-        ).order_by('-date').last()
-
-        # Check if it is utility for next month
-
-        if latest_utility and new_date < latest_utility.date:
-            next_date_expected = latest_utility.date - timedelta(days=latest_utility.date.day)
-            while next_date_expected.year > new_date.year or (
-                    next_date_expected.year == new_date.year and next_date_expected.month > new_date.month):
-                if not Utilities.objects.filter(
-                        office=office,
-                        utilities_type=utilities_type,
-                        date__year=next_date_expected.year,
-                        date__month=next_date_expected.month
-                ).exists():
-                    raise serializers.ValidationError({
-                        "error": f"Please add utility for {next_date_expected.strftime('%Y-%m')} "
-                                 f"before adding {new_date.strftime('%Y-%m')}."
-                    })
-                next_date_expected -= timedelta(days=next_date_expected.day)
-
-        # Check if counter is less than the next month's counter (if it exists)
-
+        # Перевірка на коректність значення `counter` для наступного запису по даті
         next_utility = Utilities.objects.filter(
             office=office,
             utilities_type=utilities_type,

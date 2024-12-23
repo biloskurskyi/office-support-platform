@@ -115,7 +115,7 @@ class GetUtilitiesByTypeView(OfficeMixin, OfficePermissionMixin, APIView):
         if permission_response:
             return permission_response
 
-        utilities = Utilities.objects.filter(office=office, utilities_type=utility_type)
+        utilities = Utilities.objects.filter(office=office, utilities_type=utility_type).order_by('-date')
 
         if not utilities.exists():
             return Response([], status=status.HTTP_200_OK)
