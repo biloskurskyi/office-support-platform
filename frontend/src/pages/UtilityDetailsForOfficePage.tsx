@@ -7,6 +7,7 @@ import NoExistCard from "../components/NoExistCard/NoExistCard.tsx";
 import PageWrapper from "../components/MainPageComponents/PageWrapper.tsx";
 import InfoBlocks from "../components/MainPageComponents/UI/InfoBlocks.tsx";
 import UtilityCard from "../components/UtilitiesComponents/UI/UtilityCard.tsx";
+import CreateOrderButton from "../components/OrdersComponents/UI/CreateOrderButton.tsx";
 
 const UtilityDetailsForOfficePage = () => {
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
@@ -53,7 +54,7 @@ const UtilityDetailsForOfficePage = () => {
                     alignItems: 'center',
                     width: '100%',
                 }}>
-                    {/*<CreateOrderButton officeId={officeId}/>*/}
+                    <CreateOrderButton officeId={officeId}/>
                 </Box>
                 <div style={{height: '50px'}}/>
             </PageWrapper>

@@ -6,6 +6,7 @@ interface UtilityCardProps {
     utility: {
         id: number;
         utilities_type_display: string;
+        utility_id: number;
         date: string;
         counter: number;
         price: number;
@@ -21,7 +22,7 @@ const UtilityCard: React.FC<UtilityCardProps> = ({utility}) => {
             <p><strong>Показник:</strong> {utility.counter}</p>
             <p><strong>Сума оплати:</strong> {utility.price}</p>
             <p><strong>Офіс:</strong> {utility.office_display}</p>
-            <Link to={`/`} component={RouterLink} style={{textDecoration: 'none'}}>
+            <Link to={`/utility/${utility.utility_id}`} component={RouterLink} style={{textDecoration: 'none'}}>
                 <Button
                     variant="outlined"
                     sx={{

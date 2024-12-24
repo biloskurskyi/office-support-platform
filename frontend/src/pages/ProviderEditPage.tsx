@@ -15,10 +15,6 @@ const ProviderEditPage = () => {
 
     const {provider, formData, setFormData, loading, successMessage, errorMessage, handleSubmit} = useProviderData(id);
 
-    useEffect(() => {
-        setText(<h2>Налаштування постачальника</h2>);
-    }, [setText]);
-
     if (loading) return <div>Завантаження...</div>;
 
 

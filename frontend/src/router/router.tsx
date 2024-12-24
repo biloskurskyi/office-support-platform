@@ -24,6 +24,7 @@ import OrderCreatePage from "../pages/OrderCreatePage.tsx";
 import UtilityTypeListPage from "../pages/UtilityTypeListPage.tsx";
 import OfficeUtilitiesOverviewPage from "../pages/OfficeUtilitiesOverviewPage.tsx";
 import UtilityDetailsForOfficePage from "../pages/UtilityDetailsForOfficePage.tsx";
+import UtilityEditPage from "../pages/UtilityEditPage.tsx";
 
 
 const rootLoader = async (): Promise<null | Response> => {
@@ -128,6 +129,10 @@ const routes: RouteObject[] = [
             {
                 path: "/utility-for-office-by-type/:officeId/:utilityId",
                 element: <UtilityDetailsForOfficePage/>
+            },
+            {
+                path: "/utility/:id",
+                element: <UtilityEditPage/>
             }
         ],
     },
