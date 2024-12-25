@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from "react-router-dom";
-import {FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography} from "@mui/material";
+import {FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, TextField, Typography} from "@mui/material";
 import TextFieldWithLabel from "../RegisterForm/UI/TextFieldWithLabel.tsx";
 import SubmitButton from "../RegisterForm/UI/SubmitButton.tsx";
 import ProviderListButton from "../ProviderComponents/UI/ProviderListButton.tsx";
@@ -139,14 +139,18 @@ const UtilityForm: React.FC<UtilityFormProps> = ({
                                 ))}
                             </Select>
                         </FormControl>
-
-
                     </Grid>
-                    <TextFieldWithLabel
+                    <Grid item xs={12}>
+                        <FormHelperText sx={{fontSize: '0.75rem', color: 'gray'}}>
+                            * при виборі Збору відходів поле з показником лічильника власноруч збільшиться на 1
+                        </FormHelperText>
+                    </Grid>
+                    <CustomTextField
                         label="Показники лічильника *"
                         value={formData.counter}
                         name="counter"
                         onChange={handleInputChange}
+                        disabled={formData.utilities_type === 4}
                     />
                     <TextFieldWithLabel
                         label="Сума оплати *"

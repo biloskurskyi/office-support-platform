@@ -29,12 +29,18 @@ const UtilityCreatePage = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: any }>) => {
         const {name, value} = e.target;
-
         if (name === 'date' && value) {
             // Переведення Dayjs в формат YYYY-MM-DD
             setFormData({
                 ...formData,
                 [name]: dayjs(value).format('YYYY-MM-DD'),
+            });
+        } else if (name === 'utilities_type') {
+            // Якщо тип послуги WASTE_COLLECTION, то вимикаємо поле для лічильника
+            setFormData({
+                ...formData,
+                [name]: value,
+                counter: '', price: ''// Скидаємо значення лічильника при зміні типу послуги
             });
         } else {
             setFormData({
@@ -47,14 +53,25 @@ const UtilityCreatePage = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!(formData.utilities_type >= 0 && formData.utilities_type <= 4) || !formData.date || !formData.counter || !formData.price) {
-            console.log(formData.utilities_type >= 0 && formData.utilities_type <= 4, formData.utilities_type)
+        if (!(formData.utilities_type >= 0 && formData.utilities_type <= 4) ||
+            !formData.date ||
+            (formData.utilities_type !== 4 && !formData.counter) ||
+            !formData.price) {
+            console.log(formData.utilities_type >= 0 && formData.utilities_type <= 4, formData.utilities_type);
             setErrorMessage('Будь ласка, заповніть усі поля');
             return;
         }
 
+        const dataToSend = {...formData};
+        if (formData.utilities_type === 4) {
+            delete dataToSend.counter; // Видалити поле counter
+        }
+
+        console.log(dataToSend)
+
+
         try {
-            const response = await axios.post(`http://localhost:8765/api/utility/`, formData,
+            const response = await axios.post(`http://localhost:8765/api/utility/`, dataToSend,
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
@@ -66,7 +83,7 @@ const UtilityCreatePage = () => {
             }, 2000);
         } catch (error) {
             if (error.response) {
-                console.log(formData)
+                // console.log(formData)
                 setErrorMessage(error.response.data.detail || 'Некоректно введені дані!');
             } else {
                 setErrorMessage('Не вдалося з\'єднатися з сервером');
