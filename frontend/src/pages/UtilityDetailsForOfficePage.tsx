@@ -7,7 +7,7 @@ import NoExistCard from "../components/NoExistCard/NoExistCard.tsx";
 import PageWrapper from "../components/MainPageComponents/PageWrapper.tsx";
 import InfoBlocks from "../components/MainPageComponents/UI/InfoBlocks.tsx";
 import UtilityCard from "../components/UtilitiesComponents/UI/UtilityCard.tsx";
-import CreateOrderButton from "../components/OrdersComponents/UI/CreateOrderButton.tsx";
+import CreateUtilityButton from "../components/UtilitiesComponents/UI/CreateUtilityButton.tsx";
 
 const UtilityDetailsForOfficePage = () => {
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
@@ -32,7 +32,7 @@ const UtilityDetailsForOfficePage = () => {
                 message="Здається, цієї послуги для данного офісу ще немає. Ви можете створити нову комунальну послугу
                  за допомогою кнопки нижче."
                 buttonText="Створити комунальну послугу"
-                buttonLink={`/`}
+                buttonLink={`/utility-create/${officeId}`}
             />
         );
     }
@@ -54,7 +54,7 @@ const UtilityDetailsForOfficePage = () => {
                     alignItems: 'center',
                     width: '100%',
                 }}>
-                    <CreateOrderButton officeId={officeId}/>
+                    <CreateUtilityButton officeId={officeId}/>
                 </Box>
                 <div style={{height: '50px'}}/>
             </PageWrapper>
