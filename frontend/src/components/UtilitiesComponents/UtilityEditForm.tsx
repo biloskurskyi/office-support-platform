@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Button, Grid, Typography} from "@mui/material";
+import {Box, Button, FormHelperText, Grid, Typography} from "@mui/material";
 import FormPaper from "../LoginForm/UI/FormPaper.tsx";
 import CustomTextField from "../UserForm/UI/CustomTextField.tsx";
 import UpdateButton from "../UserForm/UI/UpdateButton.tsx";
@@ -64,11 +64,19 @@ const UtilityEditForm: React.FC<UtilityFormProps> = ({
                                 />
                             </LocalizationProvider>
                         </Grid>
+                        <Grid item xs={12}>
+                            <FormHelperText sx={{fontSize: '0.75rem', color: 'gray'}}>
+                                * Для типу послуги "Збір відходів" показник лічильника автоматично збільшується і не
+                                може бути змінений вручну.
+                            </FormHelperText>
+                        </Grid>
+
                         <CustomTextField
                             label="Показники рахунка:"
                             value={formData.counter}
                             name="counter"
                             onChange={(e) => setFormData({...formData, [e.target.name]: e.target.value})}
+                            disabled={formData.utility_type_id === 4}
                         />
                         <CustomTextField
                             label="Сума оплати:"

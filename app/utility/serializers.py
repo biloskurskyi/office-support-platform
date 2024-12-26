@@ -26,7 +26,17 @@ class UtilitySerializer(serializers.ModelSerializer):
             utilities_type = self.instance.utilities_type
 
         if not new_date or not office or utilities_type is None:
-            raise serializers.ValidationError({"error": "Missing required fields: date, office, or utilities_type."})
+            raise serializers.ValidationError({"error": "Відсутні обов'язкові поля: дата, офіс або тип послуги."})
+
+        if Utilities.objects.filter(
+                office=office,
+                utilities_type=utilities_type,
+                date__year=new_date.year,
+                date__month=new_date.month
+        ).exclude(id=self.instance.id if self.instance else None).exists():
+            raise serializers.ValidationError({
+                "error": f"Запис для даної послуги за {new_date.strftime('%Y-%m')} вже існує."
+            })
 
         # Заборонити більше одного запису для WASTE_COLLECTION за один місяць
         if utilities_type == Utilities.WASTE_COLLECTION:
@@ -37,7 +47,7 @@ class UtilitySerializer(serializers.ModelSerializer):
                     date__month=new_date.month
             ).exists():
                 raise serializers.ValidationError({
-                    "error": f"WASTE_COLLECTION record for {new_date.strftime('%Y-%m')} already exists."
+                    "error": f"Запис для Збору відходів за {new_date.strftime('%Y-%m')} вже існує."
                 })
 
             # Автоматичне управління `counter` для WASTE_COLLECTION
@@ -52,7 +62,7 @@ class UtilitySerializer(serializers.ModelSerializer):
 
         # Забезпечити, щоб `counter` був обов'язковим
         if new_counter is None:
-            raise serializers.ValidationError({"counter": "Counter value is required."})
+            raise serializers.ValidationError({"counter": "Значення лічильника є обов'язковим."})
 
         # Перевірка на коректність значення `counter` по даті
         previous_utility = Utilities.objects.filter(
@@ -61,9 +71,9 @@ class UtilitySerializer(serializers.ModelSerializer):
             date__lt=new_date
         ).order_by('-date').first()
 
-        if previous_utility and new_counter <= previous_utility.counter:
+        if previous_utility and new_counter < previous_utility.counter:
             raise serializers.ValidationError({
-                "counter": f"Counter value must be greater than the previous month's value of "
+                "counter": f"Значення лічильника повинно бути більшим за попередній місяць: "
                            f"{previous_utility.counter}."
             })
 
@@ -74,9 +84,10 @@ class UtilitySerializer(serializers.ModelSerializer):
             date__gt=new_date
         ).order_by('date').first()
 
-        if next_utility and new_counter >= next_utility.counter:
+        if next_utility and new_counter > next_utility.counter:
             raise serializers.ValidationError({
-                "counter": f"Counter value must be less than the next month's value of {next_utility.counter}."
+                "counter": f"Значення лічильника повинно бути меншим за"
+                           f" наступний місяць {next_utility.counter}."
             })
 
         return data

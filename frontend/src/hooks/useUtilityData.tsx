@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
+import dayjs from "dayjs";
 
 const UseUtilityData = (id) => {
     const [utility, setUtility] = useState(null);
@@ -20,7 +21,7 @@ const UseUtilityData = (id) => {
         const fetchCompanyData = async () => {
             try {
                 const response = await axios.get(`http://localhost:8765/api/utility/${id}/`, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
+                    headers: {Authorization: `Bearer ${localStorage.getItem('jwtToken')}`}
                 });
                 setUtility(response.data);
                 setFormData({
@@ -45,19 +46,40 @@ const UseUtilityData = (id) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const formattedDate = formData.date ? dayjs(formData.date).format('YYYY-MM-DD') : '';
+
+        console.log(formattedDate)
+
         try {
-            const response = await axios.put(`http://localhost:8765/api/utility/${id}/`, formData, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
-            });
+            const response = await axios.put(`http://localhost:8765/api/utility/${id}/`,
+                {...formData, date: formattedDate}, {
+                    headers: {Authorization: `Bearer ${localStorage.getItem('jwtToken')}`}
+                });
             setSuccessMessage('Дані про комунальну послугу оновлено успішно');
             setErrorMessage('');
-        } catch (err) {
-            setErrorMessage('Помилка оновлення даних.');
+        } catch (error) {
+            if (error.response) {
+                const errorData = error.response.data;
+
+                if (errorData.counter && Array.isArray(errorData.counter)) {
+                    setErrorMessage(errorData.counter[0]);
+                } else if (errorData.error && Array.isArray(errorData.error)) {
+                    setErrorMessage(errorData.error[0]);
+                } else if (errorData.detail) {
+                    setErrorMessage(errorData.detail);
+                } else {
+                    console.log(formData)
+                    setErrorMessage('Помилка при обробці данних');
+                }
+            } else {
+                setErrorMessage('Не вдалося з\'єднатися з сервером.');
+            }
             setSuccessMessage('');
         }
     };
 
-    return { utility, formData, setFormData, loading, successMessage, errorMessage, handleSubmit };
+    return {utility, formData, setFormData, loading, successMessage, errorMessage, handleSubmit};
 };
 
 

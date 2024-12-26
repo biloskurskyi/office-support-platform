@@ -3,7 +3,6 @@ import {useNavigate, useOutletContext, useParams} from "react-router-dom";
 import axios from "axios";
 import {Alert, Box, Snackbar} from "@mui/material";
 import FormPaper from "../components/RegisterForm/UI/FormPaper.tsx";
-import ProviderForm from "../components/ProviderComponents/ProviderForm.tsx";
 import UtilityForm from "../components/UtilitiesComponents/UtilityForm.tsx";
 import dayjs from "dayjs";
 
@@ -83,12 +82,20 @@ const UtilityCreatePage = () => {
             }, 2000);
         } catch (error) {
             if (error.response) {
-                // console.log(formData)
-                setErrorMessage(error.response.data.detail || 'Некоректно введені дані!');
+                const errorData = error.response.data;
+
+                if (errorData.counter && Array.isArray(errorData.counter)) {
+                    setErrorMessage(errorData.counter[0]);
+                } else if (errorData.error && Array.isArray(errorData.error)) {
+                    setErrorMessage(errorData.error[0]);
+                } else {
+                    setErrorMessage(errorData.detail || 'Некоректно введені дані!');
+                }
             } else {
                 setErrorMessage('Не вдалося з\'єднатися з сервером');
             }
         }
+
     };
 
 
