@@ -6,23 +6,24 @@ interface Props {
     officeId: string | undefined;
 }
 
-const CreateUtilityButton: React.FC<Props> = ({officeId}) => {
+const CreateUtilityButton: React.FC<Props> = ({ officeId }) => {
     return (
-        <Link to={`/utility-create/${officeId}`} style={{textDecoration: 'none', color: 'inherit'}}>
-            <CardActions sx={{justifyContent: 'center'}}>
-                <Button
-                    variant="contained"
-                    sx={{
-                        backgroundColor: '#1976d2',
-                        color: '#fff',
-                        '&:hover': {
-                            backgroundColor: '#155a9c',
-                        },
-                    }}
-                >
-                    Створити комунальну послугу
-                </Button>
-            </CardActions>
+        <Link to={`/utility-create/${officeId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Button
+                variant="contained"
+                fullWidth
+                sx={{
+                    backgroundColor: '#1976d2',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    width: '280px',
+                    '&:hover': {
+                        backgroundColor: '#155a9c',
+                    },
+                }}
+            >
+                Створити комунальну послугу
+            </Button>
         </Link>
     );
 };

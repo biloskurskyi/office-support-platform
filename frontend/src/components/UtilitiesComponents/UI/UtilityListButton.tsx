@@ -7,11 +7,10 @@ interface UtilityListButtonProps {
 }
 
 
-const UtilityListButton: React.FC<UtilityListButtonProps> = ({id}) => {
+const UtilityListButton: React.FC<UtilityListButtonProps> = ({ id }) => {
     return (
-        <Link to={`/utility-type-list/${id}`} style={{textDecoration: 'none', color: 'inherit'}}>
-            <Box sx={{display: 'flex', justifyContent: 'center', marginTop: '30px'}}>
-                <Button
+        <Link to={`/utility-type-list/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Button
                     variant="outlined"
                     color="secondary"
                     fullWidth
@@ -24,9 +23,8 @@ const UtilityListButton: React.FC<UtilityListButtonProps> = ({id}) => {
                         },
                     }}
                 >
-                    Перелік комунальних послуг
-                </Button>
-            </Box>
+                Перелік комунальних послуг
+            </Button>
         </Link>
     );
 };

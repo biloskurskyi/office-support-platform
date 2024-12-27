@@ -8,6 +8,7 @@ import PageWrapper from "../components/MainPageComponents/PageWrapper.tsx";
 import InfoBlocks from "../components/MainPageComponents/UI/InfoBlocks.tsx";
 import UtilityCard from "../components/UtilitiesComponents/UI/UtilityCard.tsx";
 import CreateUtilityButton from "../components/UtilitiesComponents/UI/CreateUtilityButton.tsx";
+import UtilityListButton from "../components/UtilitiesComponents/UI/UtilityListButton.tsx";
 
 const UtilityDetailsForOfficePage = () => {
     const {setText} = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
@@ -48,14 +49,21 @@ const UtilityDetailsForOfficePage = () => {
                         content: <UtilityCard utility={utility}/>,
                     }))}
                 />
-                <Box sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%',
-                }}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: 2, // Відступ між кнопками
+                        width: '100%',
+                        padding: 2, // Відступи в контейнері
+                    }}
+                >
                     <CreateUtilityButton officeId={officeId}/>
+                    <UtilityListButton id={officeId}/>
                 </Box>
+
                 <div style={{height: '50px'}}/>
             </PageWrapper>
         </div>
