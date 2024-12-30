@@ -157,7 +157,13 @@ const MenuButton: React.FC = () => {
                     ]
                 ) : localStorage.getItem('user_type') === '2' ? (
                     [
-                        <MenuItem key="communal" onClick={handleSubmenuItemClick}>Комунальні послуги</MenuItem>,
+                        <Link
+                            to={`/utility-type-list/${Array.isArray(offices) ? offices.find(o => o.phone_number === selectedOffice)?.id : ''}`}
+                            style={{textDecoration: 'none', color: 'inherit'}}
+                        >
+                            <MenuItem key="communal" onClick={handleSubmenuItemClick}>Комунальні послуги</MenuItem>
+                        </Link>,
+
                         // fix this problem
                         <Link
                             to={`/order-list/${Array.isArray(offices) ? offices.find(o => o.phone_number === selectedOffice)?.id : ''}`}
