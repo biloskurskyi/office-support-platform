@@ -26,6 +26,7 @@ import OfficeUtilitiesOverviewPage from "../pages/OfficeUtilitiesOverviewPage.ts
 import UtilityDetailsForOfficePage from "../pages/UtilityDetailsForOfficePage.tsx";
 import UtilityEditPage from "../pages/UtilityEditPage.tsx";
 import UtilityCreatePage from "../pages/UtilityCreatePage.tsx";
+import ErrorPage from "../pages/ErrorPage.tsx";
 
 
 const rootLoader = async (): Promise<null | Response> => {
@@ -138,6 +139,10 @@ const routes: RouteObject[] = [
             {
                 path: "/utility-create/:id",
                 element: <UtilityCreatePage/>
+            },
+            {
+                path: "/error",
+                element: <ErrorPage/>
             }
         ],
     },
