@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {useParams, useOutletContext, Link} from 'react-router-dom';
+import {useParams, useOutletContext, Link, useNavigate} from 'react-router-dom';
 import {Button, Card, CardContent, CircularProgress, Grid, Typography} from "@mui/material";
 import ErrorMessage from "../../components/OfficesListOwnerComponent/UI/ErrorMessage.tsx";
 import NoExistCard from "../../components/NoExistCard/NoExistCard.tsx";
@@ -33,6 +33,15 @@ const OfficeOverviewPage: React.FC<OfficeOverviewPageProps> = ({
     useEffect(() => {
         setText(pageTitle);
     }, [setText, pageTitle]);
+
+        const navigate = useNavigate();
+
+    const user_type = localStorage.getItem("user_type")
+
+    console.log("user_type" + user_type)
+    if (user_type !== '1') {
+        navigate("/error");
+    }
 
     const {id} = useParams<{ id: string }>();
     const {offices, loading, error} = useFetchOffices(id);

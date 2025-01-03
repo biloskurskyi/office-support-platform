@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios, {AxiosResponse} from "axios";
+import {useNavigate} from "react-router-dom";
+import useFetchUtilityTypes from "./useFetchUtilityTypes.tsx";
 
 export interface Utility {
     id: number;
@@ -12,9 +14,17 @@ export interface Utility {
 
 
 const UseFetchUtilitiesData = (officeId: string | undefined, utilityId: string | undefined) => {
+    // const {utility, loading: utilityLoading, error: utilityError} = useFetchUtilityTypes(utilityId);
     const [utilities, setUtilities] = useState<Utility[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
+    // console.log(utility)
+    console.log(utilityId)
+
+    if (utilityId < 0 || utilityId > 5) {
+        navigate("/error")
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -37,6 +47,7 @@ const UseFetchUtilitiesData = (officeId: string | undefined, utilityId: string |
             } catch (error) {
                 setError("Не вдалося завантажити комунальні послуги. Спробуйте пізніше.");
                 console.error("Помилка завантаження даних:", error);
+                navigate("/error");
             } finally {
                 setLoading(false);
             }

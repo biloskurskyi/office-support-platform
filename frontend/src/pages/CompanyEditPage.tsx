@@ -1,4 +1,4 @@
-import {Link, useOutletContext, useParams} from 'react-router-dom';
+import {Link, useNavigate, useOutletContext, useParams} from 'react-router-dom';
 import React, {useState, useEffect} from 'react';
 import FormPaper from "../components/LoginForm/UI/FormPaper.tsx";
 import axios from 'axios';
@@ -8,6 +8,7 @@ import UpdateButton from "../components/UserForm/UI/UpdateButton.tsx";
 
 const CompanyEditPage = () => {
     const { setText } = useOutletContext<{ setText: (text: React.ReactNode) => void }>();
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -50,11 +51,12 @@ const CompanyEditPage = () => {
                 console.error('Error fetching company data:', error);
                 setErrorMessage('Помилка завантаження даних компанії.');
                 setLoading(false);
+                navigate("/error");
             }
         };
 
         fetchCompanyData();
-    }, [id]);
+    }, [id, navigate]);
 
 // Обробка зміни інпутів
     const handleInputChange = (e) => {

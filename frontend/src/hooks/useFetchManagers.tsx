@@ -1,6 +1,7 @@
 // hooks/useFetchManagers.ts
-import { useEffect, useState } from "react";
-import axios, { AxiosResponse } from "axios";
+import {useEffect, useState} from "react";
+import axios, {AxiosResponse} from "axios";
+import {useNavigate} from "react-router-dom";
 
 interface Manager {
     id: number;
@@ -17,6 +18,7 @@ const useFetchManagers = (id: string | undefined) => {
     const [managers, setManagers] = useState<Manager[]>([]);
     const [loading_managers, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -37,13 +39,14 @@ const useFetchManagers = (id: string | undefined) => {
                 const response: AxiosResponse<Manager[]> = await axios.get(
                     `http://localhost:8765/api/company/${id}/managers/`,
                     {
-                        headers: { Authorization: `Bearer ${token}` },
+                        headers: {Authorization: `Bearer ${token}`},
                     }
                 );
                 setManagers(response.data);
             } catch (error) {
                 setError("Не вдалося завантажити менеджерів. Спробуйте пізніше.");
                 console.error("Помилка завантаження даних:", error);
+                navigate("/error");
             } finally {
                 setLoading(false);
             }
@@ -52,7 +55,7 @@ const useFetchManagers = (id: string | undefined) => {
         fetchData();
     }, [id]);
 
-    return { managers, loading_managers, error };
+    return {managers, loading_managers, error};
 };
 
 export default useFetchManagers;

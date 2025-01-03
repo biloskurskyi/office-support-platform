@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Link, useOutletContext, useParams} from "react-router-dom";
+import {Link, useNavigate, useOutletContext, useParams} from "react-router-dom";
 import {Box, Button, Card, CardActions, CardContent, CircularProgress, Typography} from "@mui/material";
 import ErrorMessage from "../components/OfficesListOwnerComponent/UI/ErrorMessage.tsx";
 import InfoBlocks from "../components/MainPageComponents/UI/InfoBlocks.tsx";
@@ -16,6 +16,14 @@ const ManagersListPage = () => {
 
         setText(<h2>Перелік менеджерів компанії</h2>);
     }, [setText]);
+
+    const navigate = useNavigate();
+
+    const user_type = localStorage.getItem("user_type")
+
+    if (user_type !== '1') {
+        navigate("/error");
+    }
 
     const {id} = useParams<{ id: string }>();
     const {managers, loading, error} = useFetchManagers(id);

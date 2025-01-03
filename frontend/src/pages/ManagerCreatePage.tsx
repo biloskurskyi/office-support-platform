@@ -29,6 +29,12 @@ const ManagerCreatePage = () => {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const navigate = useNavigate();
 
+    const user_type = localStorage.getItem("user_type")
+
+    if (user_type !== '1') {
+        navigate("/error");
+    }
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
             ...formData,

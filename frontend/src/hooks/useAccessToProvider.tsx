@@ -27,7 +27,7 @@ const useAccessToProvider = (companyId: string | undefined): boolean | null => {
             } catch (error) {
                 console.error("Помилка перевірки доступу до постачальника:", error);
                 setHasAccess(false);
-                navigate("/");
+                navigate("/error");
             }
         };
 

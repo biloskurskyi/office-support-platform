@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
+import {useNavigate} from "react-router-dom";
 
 export interface Office {
     id: number;
@@ -14,6 +15,7 @@ const useFetchOffices = (companyId: string | undefined) => {
     const [offices, setOffices] = useState<Office[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -41,6 +43,7 @@ const useFetchOffices = (companyId: string | undefined) => {
             } catch (error) {
                 setError("Не вдалося завантажити офіси. Спробуйте пізніше.");
                 console.error("Помилка завантаження даних:", error);
+                navigate("/error");
             } finally {
                 setLoading(false);
             }

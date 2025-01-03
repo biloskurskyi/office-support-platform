@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import dayjs from "dayjs";
+import {useNavigate} from "react-router-dom";
 
 const UseUtilityData = (id) => {
     const [utility, setUtility] = useState(null);
@@ -16,6 +17,7 @@ const UseUtilityData = (id) => {
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCompanyData = async () => {
@@ -38,6 +40,7 @@ const UseUtilityData = (id) => {
                 console.error('Error fetching company data:', error);
                 setErrorMessage('Помилка завантаження даних комунальних послуг.');
                 setLoading(false);
+                navigate("/navigate");
             }
         };
 

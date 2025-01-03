@@ -27,7 +27,7 @@ const useCheckOwnership = (companyId: string | undefined) => {
                 }
             } catch (error) {
                 console.error("Помилка перевірки компанії:", error);
-                navigate("/");
+                navigate("/error");
             }
         };
 

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Link, useOutletContext, useParams} from "react-router-dom";
+import {Link, useNavigate, useOutletContext, useParams} from "react-router-dom";
 import axios from 'axios';
 import {Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, Typography} from "@mui/material";
 import FormPaper from "../components/LoginForm/UI/FormPaper.tsx";
@@ -14,6 +14,8 @@ const OfficeEditPage = () => {
 
         setText(<h2>Налаштування сторінки офісу</h2>);
     }, [setText]);
+
+    const navigate = useNavigate();
 
 
     const {id} = useParams(); // Отримуємо id з URL
@@ -62,6 +64,7 @@ const OfficeEditPage = () => {
                 console.error('Error fetching company data:', error);
                 setErrorMessage('Помилка завантаження даних компанії.');
                 setLoading(false);
+                navigate("/error");
             }
         };
 
@@ -86,7 +89,7 @@ const OfficeEditPage = () => {
                 },
             });
             console.log('Company updated successfully:', response.data);
-            setSuccessMessage('Дані компанії оновлено успішно');
+            setSuccessMessage('Дані про офіс оновлено успішно');
             setErrorMessage('');
         } catch (err) {
             console.error('Error updating company data:', err);

@@ -1,6 +1,7 @@
 import React from 'react';
 import {useState, useEffect} from "react";
 import axios, {AxiosResponse} from "axios";
+import {useNavigate} from "react-router-dom";
 
 export interface Order {
     id: number;
@@ -18,6 +19,7 @@ const UseFetchOrders = (officeId: string | undefined) => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -38,8 +40,9 @@ const UseFetchOrders = (officeId: string | undefined) => {
                 );
                 setOrders(response.data);
             } catch (error) {
-                setError("Не вдалося завантажити офіси. Спробуйте пізніше.");
+                setError("Не вдалося завантажити замовлення. Спробуйте пізніше.");
                 console.error("Помилка завантаження даних:", error);
+                navigate("/error");
             } finally {
                 setLoading(false);
             }

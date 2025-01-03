@@ -1,6 +1,7 @@
 // hooks/useProviders.ts
 import { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
+import {useNavigate} from "react-router-dom";
 
 interface Provider {
     id: number;
@@ -16,6 +17,7 @@ const useProviders = (companyId: string) => {
     const [providers, setProviders] = useState<Provider[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -37,6 +39,7 @@ const useProviders = (companyId: string) => {
             } catch (error) {
                 setError("Не вдалося завантажити провайдерів. Спробуйте пізніше.");
                 console.error("Помилка завантаження даних:", error);
+                navigate("/error");
             } finally {
                 setLoading(false);
             }

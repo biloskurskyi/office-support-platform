@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Office} from "./useFetchOffices.tsx";
 import axios, {AxiosResponse} from "axios";
+import {useNavigate} from "react-router-dom";
 
 export interface UtilityType {
     id: number;
@@ -11,6 +12,7 @@ const UseFetchUtilityTypes = (officeId: string | undefined) => {
     const [utility, setUtility] = useState<UtilityType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -33,6 +35,7 @@ const UseFetchUtilityTypes = (officeId: string | undefined) => {
             } catch (error) {
                 setError("Не вдалося завантажити комунальні послуги. Спробуйте пізніше.");
                 console.error("Помилка завантаження даних:", error);
+                navigate("/error");
             } finally {
                 setLoading(false);
             }

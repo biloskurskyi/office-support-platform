@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {useOutletContext, useParams} from 'react-router-dom';
+import {useNavigate, useOutletContext, useParams} from 'react-router-dom';
 import {
     CircularProgress,
 } from '@mui/material';
@@ -17,8 +17,16 @@ const OfficesListOwnerPage: React.FC = () => {
         setText(<h2>Перелік офісів для комапнії</h2>);
     }, [setText]);
 
+    const navigate = useNavigate();
+
+    const user_type = localStorage.getItem("user_type")
+
+    if (user_type !== '1') {
+        navigate("/error");
+    }
+
     const {id} = useParams<{ id: string }>();
-    const { offices, loading, error } = useFetchOffices(id);
+    const {offices, loading, error} = useFetchOffices(id);
 
     useEffect(() => {
         setText(<h2>Перелік офісів для комапнії</h2>);
@@ -30,13 +38,13 @@ const OfficesListOwnerPage: React.FC = () => {
 
     if (error) return <ErrorMessage message={error}/>;
 
-     if (!offices.length) return <NoOfficesMessage companyId={id} />;
+    if (!offices.length) return <NoOfficesMessage companyId={id}/>;
 
 
     return (
         <PageWrapper>
             <div style={{height: '500px'}}/>
-             <OfficesList offices={offices} companyId={id} />
+            <OfficesList offices={offices} companyId={id}/>
             <div style={{height: '50px'}}/>
         </PageWrapper>
     );
