@@ -45,7 +45,8 @@ urlpatterns = [
     path('api/', include('office.urls', namespace='office')),
     path('api/', include('utility.urls', namespace='utility')),
     path('api/', include('provider.urls', namespace='provider')),
-    path('api/', include('order.urls', namespace='order'))
+    path('api/', include('order.urls', namespace='order')),
+    path('api/', include('pdf.urls', namespace='pdf')),
 ]
 
 if settings.DEBUG:

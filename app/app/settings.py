@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'office',
     'utility',
     'provider',
+    'pdf',
     'rest_framework',
 
     'drf_yasg',

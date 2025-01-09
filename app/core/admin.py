@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import User, Company, Office, Utilities, Provider, Order
+
+from .models import Company, Office, Order, Provider, User, Utilities
 
 
 class UserAdmin(admin.ModelAdmin):
