@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 from io import BytesIO
-
 from django.db.models import Q
 from django.http import FileResponse
 from reportlab.lib.pagesizes import letter
@@ -12,13 +11,68 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from company.serializers import CompanySerializer
 from core.models import Company, User
 from user.serializers import UserSerializer
+from reportlab.lib.units import inch
+
+import textwrap
 
 
-def generate_pdf(data):
+def wrap_text(pdf, title, subtitle, data, item_fields):
+    width, height = letter
+    margin = inch
+    line_height = 14
+    max_line_width = width - 2 * margin  # Максимальна ширина тексту
+    wrap_width = int(max_line_width / 7)  # Приблизна кількість символів на рядок
+
+    pdf.setFont("DejaVuSans-Bold", 20)
+    pdf.drawCentredString(width / 2, height - margin, title)
+    page_y = height - margin - line_height * 2
+
+    pdf.setFont("DejaVuSans", 14)
+    pdf.drawCentredString(width / 2, page_y, subtitle)
+    page_y -= line_height * 2
+
+    pdf.line(margin, page_y, width - margin, page_y)
+    page_y -= line_height
+
+    for item in data:
+        if page_y < margin + 2 * line_height:
+            pdf.showPage()
+            pdf.setFont("DejaVuSans", 12)
+            page_y = height - margin
+
+        page_y -= 20
+
+        for field_name, field_label in item_fields:
+            text = f"{field_label}: {item.get(field_name, '')}"
+            wrapped_text = textwrap.wrap(text, width=wrap_width)
+
+            for line in wrapped_text:
+                pdf.drawString(margin, page_y, line)
+                page_y -= line_height
+                if page_y < margin + line_height:
+                    pdf.showPage()
+                    pdf.setFont("DejaVuSans", 12)
+                    page_y = height - margin - line_height
+
+            page_y -= 10
+
+        pdf.line(margin, page_y, width - margin, page_y)
+        page_y -= line_height
+
+    total_pages = pdf.getPageNumber()
+    for page_num in range(1, total_pages + 1):
+        pdf.showPage()
+        pdf.setFont("DejaVuSans", 14)
+        pdf.drawString(480, 20, f"Сторінка {page_num} з {total_pages}")
+        pdf.drawString(200, 20, f"Офісна Мозаїка {datetime.now().year} UA")
+
+    pdf.save()
+
+
+def generate_pdf(title, subtitle, data, item_fields):
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=letter)
 
@@ -27,55 +81,7 @@ def generate_pdf(data):
     pdfmetrics.registerFont(TTFont('DejaVuSans-Bold', font_path))
 
     pdf.setFont("DejaVuSans", 12)
-
-    header_y_position = 770
-
-    pdf.setTitle("Company Report")
-    pdf.setFont("DejaVuSans-Bold", 16)
-
-    text = "Офісна Мозаїка"
-
-    text_width = pdf.stringWidth(text, "DejaVuSans-Bold", 16)
-
-    center_x = 612 / 2
-
-    pdf.drawString(center_x - text_width / 2, header_y_position, text)
-
-    report_text = "Звіт по компаніях"
-
-    pdf.setFont("DejaVuSans", 12)
-    report_text_width = pdf.stringWidth(report_text, "DejaVuSans", 12)
-    pdf.drawString(center_x - report_text_width / 2, header_y_position - 20, report_text)
-
-    pdf.line(100, header_y_position - 25, 500, header_y_position - 25)
-
-    y = 720
-    line_spacing = 120
-
-    for index, item in enumerate(data):
-        if y < 150:
-            pdf.showPage()
-            pdf.setFont("DejaVuSans", 12)
-            pdf.drawString(230, 780, "Офісна Мозаїка")
-            pdf.drawString(100, 750, "Звіт по компаніях")
-            pdf.line(100, 745, 500, 745)
-
-        pdf.drawString(100, y, f"Назва компанії: {item['name']}")
-        pdf.drawString(100, y - 20, f"Юридична назва: {item['legal_name']}")
-        pdf.drawString(100, y - 60, f"Опис: {item['description']}")
-        pdf.drawString(100, y - 80, f"Вебсайт: {item['website']}")
-        pdf.line(100, y - 85, 500, y - 85)
-        y -= line_spacing
-
-    # Додавання нумерації сторінок та footer
-    total_pages = pdf.getPageNumber()
-    for page_num in range(1, total_pages + 1):
-        pdf.showPage()
-        pdf.setFont("DejaVuSans", 10)
-        pdf.drawString(500, 20, f"Сторінка {page_num} з {total_pages}")
-        pdf.drawString(230, 20, f"Офісна Мозаїка {datetime.now().year} UA")
-
-    pdf.save()
+    wrap_text(pdf, title, subtitle, data, item_fields)
     buffer.seek(0)
     return buffer
 
@@ -85,7 +91,7 @@ class CompanyPDFView(APIView):
 
     def get(self, request):
         if request.user.user_type != User.OWNER_USER:
-            return Response({'detail': 'You do not have permission to get a companies.'},
+            return Response({'detail': 'You do not have permission to get companies.'},
                             status=status.HTTP_403_FORBIDDEN)
 
         companies = Company.objects.filter(owner=request.user.id)
@@ -93,71 +99,19 @@ class CompanyPDFView(APIView):
         if not companies.exists():
             return Response({"message": "No posts found for this user"}, status=200)
 
-        pdf_buffer = generate_pdf(serializer.data)
+        item_fields = [
+            ('name', 'Назва компанії'),
+            ('legal_name', 'Юридична назва'),
+            ('description', 'Опис'),
+            ('website', 'Вебсайт')
+        ]
+        pdf_buffer = generate_pdf(
+            title="Звіт по компаніях",
+            subtitle="Детальна інформація про компанії",
+            data=serializer.data,
+            item_fields=item_fields
+        )
         return FileResponse(pdf_buffer, as_attachment=True, filename='company_report.pdf')
-
-
-def generate_pdf_for_managers(data):
-    buffer = BytesIO()
-    pdf = canvas.Canvas(buffer, pagesize=letter)
-
-    font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'DejaVuSans.ttf')
-    pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
-    pdfmetrics.registerFont(TTFont('DejaVuSans-Bold', font_path))
-
-    pdf.setFont("DejaVuSans", 12)
-
-    header_y_position = 770
-
-    pdf.setTitle("Managers Report")
-    pdf.setFont("DejaVuSans-Bold", 16)
-
-    text = "Офісна Мозаїка"
-
-    text_width = pdf.stringWidth(text, "DejaVuSans-Bold", 16)
-
-    center_x = 612 / 2
-
-    pdf.drawString(center_x - text_width / 2, header_y_position, text)
-
-    report_text = "Звіт по менеджерах"
-
-    pdf.setFont("DejaVuSans", 12)
-    report_text_width = pdf.stringWidth(report_text, "DejaVuSans", 12)
-    pdf.drawString(center_x - report_text_width / 2, header_y_position - 20, report_text)
-
-    pdf.line(100, header_y_position - 25, 500, header_y_position - 25)
-
-    y = 720
-    line_spacing = 120
-
-    for index, item in enumerate(data):
-        if y < 150:
-            pdf.showPage()
-            pdf.setFont("DejaVuSans", 12)
-            pdf.drawString(230, 780, "Офісна Мозаїка")
-            pdf.drawString(100, 750, "Звіт по менеджерах")
-            pdf.line(100, 745, 500, 745)
-
-        pdf.drawString(100, y, f"Менеджер: {item['name']} {item['surname']}")
-        pdf.drawString(100, y - 20, f"Електронна пошта: {item['email']}")
-        pdf.drawString(100, y - 40, f"Інформація: {item['info']}")
-        pdf.drawString(100, y - 60, f"Компанія: {item['company']}")
-        pdf.drawString(100, y - 80, f"Активний: {'Так' if item['is_active'] else 'Ні'}")
-        pdf.line(100, y - 85, 500, y - 85)
-        y -= line_spacing
-
-    # Додавання нумерації сторінок та footer
-    total_pages = pdf.getPageNumber()
-    for page_num in range(1, total_pages + 1):
-        pdf.showPage()
-        pdf.setFont("DejaVuSans", 10)
-        pdf.drawString(500, 20, f"Сторінка {page_num} з {total_pages}")
-        pdf.drawString(230, 20, f"Офісна Мозаїка {datetime.now().year} UA")
-
-    pdf.save()
-    buffer.seek(0)
-    return buffer
 
 
 class CompanyManagersPDFView(APIView):
@@ -175,14 +129,29 @@ class CompanyManagersPDFView(APIView):
                 Q(user_type=User.MANAGER_USER) & Q(company=company_id)
             )
 
-            # Якщо компанія не має менеджерів
             if not managers.exists():
                 return Response({"message": "No managers found for this company"}, status=200)
 
-            # Серіалізуємо дані
             serializer = UserSerializer(managers, many=True)
-            pdf_buffer = generate_pdf_for_managers(serializer.data)
 
+            data = serializer.data
+
+            for item in data:
+                item['is_active'] = 'Активний' if item['is_active'] else 'Не активний'
+
+            item_fields = [
+                ('name', 'Менеджер'),
+                ('surname', 'Прізвище'),
+                ('email', 'Електронна пошта'),
+                ('info', 'Інформація'),
+                ('is_active', 'Активний')
+            ]
+            pdf_buffer = generate_pdf(
+                title="Звіт по менеджерах",
+                subtitle=f"Менеджери компанії {company.name}",
+                data=serializer.data,
+                item_fields=item_fields
+            )
             return FileResponse(pdf_buffer, as_attachment=True, filename=f'manager_report_{company_id}.pdf')
 
         except Company.DoesNotExist:
