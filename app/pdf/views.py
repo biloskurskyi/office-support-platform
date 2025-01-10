@@ -6,10 +6,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from company.serializers import CompanySerializer
-from core.models import Company, Office, Provider, User
+from core.models import Company, Office, Provider, User, Order
 from office.serializers import OfficeSerializer
 from provider.mixins import ProviderPermissionMixin
 from provider.serializers import ProviderSerializer
+from order.serializers import OrderSerializer
+from order.mixins import OfficePermissionMixin
 from user.serializers import UserSerializer
 
 from .static.template import generate_pdf
@@ -169,3 +171,40 @@ class ProvidersPDFView(APIView):
         )
 
         return FileResponse(pdf_buffer, as_attachment=True, filename=f'providers_report_{pk}.pdf')
+
+
+class OrdersPDFView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        user = request.user
+        office_id = pk
+
+        # Перевірка доступу до офісу
+        office = OfficePermissionMixin().check_office_permission(user, office_id)
+
+        # Отримання замовлень для офісу
+        orders = Order.objects.filter(office=office_id)
+        if not orders.exists():
+            return Response({"message": "No orders found for this office."}, status=status.HTTP_200_OK)
+
+        serializer = OrderSerializer(orders, many=True)
+
+        # Генерація звіту
+        item_fields = [
+            ('title', 'Назва замовлення'),
+            ('description', 'Опис'),
+            ('deal_value', 'Сума угоди'),
+            ('currency_name', 'Валюта'),
+            ('provider_name', 'Провайдер'),
+            ('office_phone_number', 'Телефон офісу'),
+        ]
+
+        pdf_buffer = generate_pdf(
+            title="Звіт по замовленнях",
+            subtitle=f"Замовлення для офісу {office.address}, {office.city}, {office.country}",
+            data=serializer.data,
+            item_fields=item_fields
+        )
+
+        return FileResponse(pdf_buffer, as_attachment=True, filename=f'orders_report_{office_id}.pdf')
