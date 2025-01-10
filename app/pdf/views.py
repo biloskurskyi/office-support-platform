@@ -6,8 +6,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from company.serializers import CompanySerializer
-from core.models import Company, Office, User
+from core.models import Company, Office, Provider, User
 from office.serializers import OfficeSerializer
+from provider.mixins import ProviderPermissionMixin
+from provider.serializers import ProviderSerializer
 from user.serializers import UserSerializer
 
 from .static.template import generate_pdf
@@ -132,3 +134,38 @@ class OfficeListForCompany(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProvidersPDFView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        response = ProviderPermissionMixin().check_provider_permissions(request, company_id=pk)
+        if isinstance(response, Response):
+            return response
+
+        providers = Provider.objects.filter(company_id=pk)
+
+        if not providers.exists():
+            return Response({"message": "No providers found for this company"}, status=status.HTTP_200_OK)
+
+        serializer = ProviderSerializer(providers, many=True)
+
+        item_fields = [
+            ('name', 'Назва провайдера'),
+            ('address', 'Адреса'),
+            ('phone_number', 'Телефон'),
+            ('email', 'Електронна пошта'),
+            ('bank_details', 'Банківські реквізити')
+        ]
+
+        company = Company.objects.get(pk=pk)
+
+        pdf_buffer = generate_pdf(
+            title="Звіт по провайдерах",
+            subtitle=f"Провайдери компанії {company.legal_name}",
+            data=serializer.data,
+            item_fields=item_fields
+        )
+
+        return FileResponse(pdf_buffer, as_attachment=True, filename=f'providers_report_{pk}.pdf')
