@@ -27,14 +27,20 @@ def wrap_text_with_fixed_footer(pdf, title, subtitle, data, item_fields):
     current_y = height - margin
     page_num = 1
 
-    # Title and Subtitle (only on the first page)
+    # Title (Wrapped if too long)
     pdf.setFont("DejaVuSans-Bold", 22)
-    pdf.drawCentredString(width / 2, current_y, title)
-    current_y -= line_height * 2
+    title_lines = textwrap.wrap(title, width=int(max_line_width / 10))
+    for line in title_lines:
+        pdf.drawCentredString(width / 2, current_y, line)
+        current_y -= line_height * 2
 
+    # Subtitle (Wrapped if too long)
     pdf.setFont("DejaVuSans", 18)
-    pdf.drawCentredString(width / 2, current_y, subtitle)
-    current_y -= line_height * 2
+    subtitle_lines = textwrap.wrap(subtitle, width=int(max_line_width / 10))
+    for line in subtitle_lines:
+        pdf.drawCentredString(width / 2, current_y, line)
+        current_y -= line_height * 2
+
     pdf.line(margin, current_y, width - margin, current_y)
     current_y -= line_height
 

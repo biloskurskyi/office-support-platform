@@ -6,13 +6,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from company.serializers import CompanySerializer
-from core.models import Company, Office, Provider, User, Order
+from core.models import Company, Office, Order, Provider, User, Utilities
 from office.serializers import OfficeSerializer
+from order.mixins import OfficePermissionMixin
+from order.serializers import OrderSerializer
 from provider.mixins import ProviderPermissionMixin
 from provider.serializers import ProviderSerializer
-from order.serializers import OrderSerializer
-from order.mixins import OfficePermissionMixin
 from user.serializers import UserSerializer
+from utility.serializers import GetUtilitySerializer
 
 from .static.template import generate_pdf
 
@@ -208,3 +209,47 @@ class OrdersPDFView(APIView):
         )
 
         return FileResponse(pdf_buffer, as_attachment=True, filename=f'orders_report_{office_id}.pdf')
+
+
+class UtilitiesPDFView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, office_id, utility_type):
+        user = request.user
+        # Перевірка доступу до офісу
+        office = OfficePermissionMixin().check_office_permission(user, office_id)
+
+        # Отримуємо комунальні послуги
+        utilities = Utilities.objects.filter(office=office, utilities_type=utility_type).order_by('-date')
+
+        if not utilities.exists():
+            return Response({"message": "No utilities found for this office and type."}, status=status.HTTP_200_OK)
+
+        serializer = GetUtilitySerializer(utilities, many=True)
+
+        # Формуємо назву типу комунальних послуг (для заголовка)
+        # Формуємо назву типу комунальних послуг (для заголовка)
+        if utilities.exists():
+            first_utility = GetUtilitySerializer(utilities.first()).data
+            utility_type_display = first_utility.get('utilities_type_display', 'Комунальні послуги')
+        else:
+            utility_type_display = "Комунальні послуги"
+
+        # Генерація PDF
+        item_fields = [
+            ('date', 'Дата'),
+            ('counter', 'Лічильник'),
+            ('price', 'Ціна'),
+            ('office_display', 'Офіс'),
+            ('utility_type_display', 'Тип послуги'),
+        ]
+
+        pdf_buffer = generate_pdf(
+            title="Звіт по комунальних послугах",
+            subtitle=f"Тип послуги: {utility_type_display}, Офіс: {office.address}, {office.city}, {office.country}",
+            data=serializer.data,
+            item_fields=item_fields
+        )
+
+        return FileResponse(pdf_buffer, as_attachment=True,
+                            filename=f'utilities_report_{office_id}_{utility_type}.pdf')
