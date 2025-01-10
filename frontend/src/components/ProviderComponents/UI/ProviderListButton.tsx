@@ -8,8 +8,13 @@ interface ProviderListButtonProps {
 
 const ProviderListButton: React.FC<ProviderListButtonProps> = ({ id }) => {
   return (
-    <Link to={`/provider-list/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
+    <Link
+      to={`/provider-list/${id}`}
+      style={{ textDecoration: 'none', color: 'inherit' }}
+    >
+      <Box
+        sx={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}
+      >
         <Button
           variant="outlined"
           color="secondary"

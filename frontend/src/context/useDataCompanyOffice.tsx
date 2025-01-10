@@ -31,10 +31,13 @@ interface DataContextProps {
 
 const DataContext = createContext<DataContextProps | undefined>(undefined);
 
-export const DataProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
+export const DataProvider: React.FC<{ children: React.ReactNode }> = ({
+                                                                          children,
+                                                                      }) => {
     const [companies, setCompanies] = useState<Company[]>([]);
     const [offices, setOffices] = useState<Office[]>([]);
-    const [isManagerWithoutOffices, setIsManagerWithoutOffices] = useState<boolean>(false);
+    const [isManagerWithoutOffices, setIsManagerWithoutOffices] =
+        useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -51,17 +54,23 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({children}
                     return;
                 }
 
-                if (userType === '1') { // Власник
-                    const response: AxiosResponse<Company[]> = await axios.get('http://localhost:8765/api/company/',
+                if (userType === '1') {
+                    // Власник
+                    const response: AxiosResponse<Company[]> = await axios.get(
+                        'http://localhost:8765/api/company/',
                         {
                             headers: {Authorization: `Bearer ${token}`},
-                        });
+                        }
+                    );
                     setCompanies(response.data);
-                } else if (userType === '2') { // Менеджер
-                    const response: AxiosResponse<Office[]> = await axios.get('http://localhost:8765/api/office-list/',
+                } else if (userType === '2') {
+                    // Менеджер
+                    const response: AxiosResponse<Office[]> = await axios.get(
+                        'http://localhost:8765/api/office-list/',
                         {
                             headers: {Authorization: `Bearer ${token}`},
-                        });
+                        }
+                    );
                     setOffices(response.data);
                     setIsManagerWithoutOffices(response.data.length === 0);
                 }
@@ -76,7 +85,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({children}
     }, []);
 
     return (
-        <DataContext.Provider value={{companies, offices, isManagerWithoutOffices, loading}}>
+        <DataContext.Provider
+            value={{companies, offices, isManagerWithoutOffices, loading}}
+        >
             {children}
         </DataContext.Provider>
     );

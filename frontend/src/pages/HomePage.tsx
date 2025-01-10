@@ -5,28 +5,31 @@ import BackgroundImage from '../components/BackgroundImage/BackgroundImage.tsx';
 import InfoBlocks from '../components/HomeInfoBlocks/InfoBlocks.tsx';
 
 const HomePage = () => {
-    return (
-        <div style={{position: 'relative'}}>
-            <BackgroundImage text={
-                <>
-                    Вітаємо у системі для ефективного управління офісами! За допомогою нашої платформи ви можете:
-                    <br/>
-                    • Створювати та управляти офісами компанії.
-                    <br/>
-                    • Легко створювати замовлення для офісів.
-                    <br/>
-                    • Слідкувати за комунальними послугами і отримувати статистику витрат.
-                    <br/>
-                    Ваші офіси — в надійних руках!
-                </>
-            }/>
-            <Header/>
-            <div style={{height: '500px'}}>
-            </div>
-            <InfoBlocks/>
-            <Footer/>
-        </div>
-    );
+  return (
+    <div style={{ position: 'relative' }}>
+      <BackgroundImage
+        text={
+          <>
+            Вітаємо у системі для ефективного управління офісами! За допомогою
+            нашої платформи ви можете:
+            <br />
+            • Створювати та управляти офісами компанії.
+            <br />
+            • Легко створювати замовлення для офісів.
+            <br />
+            • Слідкувати за комунальними послугами і отримувати статистику
+            витрат.
+            <br />
+            Ваші офіси — в надійних руках!
+          </>
+        }
+      />
+      <Header />
+      <div style={{ height: '500px' }}></div>
+      <InfoBlocks />
+      <Footer />
+    </div>
+  );
 };
 
 export default HomePage;

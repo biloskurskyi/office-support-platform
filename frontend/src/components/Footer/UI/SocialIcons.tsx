@@ -6,17 +6,32 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
 const SocialIcons: React.FC = () => (
-    <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 2 }}>
-        <IconButton color="inherit" aria-label="Facebook" href="https://facebook.com" target="_blank">
-            <FacebookIcon />
-        </IconButton>
-        <IconButton color="inherit" aria-label="Instagram" href="https://instagram.com" target="_blank">
-            <InstagramIcon />
-        </IconButton>
-        <IconButton color="inherit" aria-label="LinkedIn" href="https://linkedin.com" target="_blank">
-            <LinkedInIcon />
-        </IconButton>
-    </Stack>
+  <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 2 }}>
+    <IconButton
+      color="inherit"
+      aria-label="Facebook"
+      href="https://facebook.com"
+      target="_blank"
+    >
+      <FacebookIcon />
+    </IconButton>
+    <IconButton
+      color="inherit"
+      aria-label="Instagram"
+      href="https://instagram.com"
+      target="_blank"
+    >
+      <InstagramIcon />
+    </IconButton>
+    <IconButton
+      color="inherit"
+      aria-label="LinkedIn"
+      href="https://linkedin.com"
+      target="_blank"
+    >
+      <LinkedInIcon />
+    </IconButton>
+  </Stack>
 );
 
 export default SocialIcons;
