@@ -7,6 +7,7 @@ import PageWrapper from '../components/MainPageComponents/PageWrapper.tsx';
 import InfoBlocks from '../components/MainPageComponents/UI/InfoBlocks.tsx';
 import UserWelcomeText from '../components/MainPageComponents/UI/UserWelcomeText.tsx';
 import CreateCompanyButton from '../components/MainPageComponents/UI/CreateCompanyButton.tsx';
+import DownloadPDFButton from "../components/DownloadPDFButton/DownloadPDFButton.tsx";
 
 const MainPage = () => {
     const userType: string | null = useUserType();
@@ -139,7 +140,15 @@ const MainPage = () => {
                 <Link to="/company-create">
                     {userType === '1' && <CreateCompanyButton/>}
                 </Link>
+
             </Box>
+            <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
+                <DownloadPDFButton
+                    apiUrl='http://localhost:8765/api/company/pdf/'
+                    fileName="company_report.pdf"
+                />
+            </Box>
+
         </PageWrapper>
     );
 };
