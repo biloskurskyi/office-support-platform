@@ -145,7 +145,6 @@ const MainPage = () => {
             <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
                 <DownloadPDFButton
                     apiUrl='http://localhost:8765/api/company/pdf/'
-                    fileName="company_report.pdf"
                 />
             </Box>
 

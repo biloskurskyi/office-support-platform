@@ -43,7 +43,11 @@ class CompanyPDFView(APIView):
             data=serializer.data,
             item_fields=item_fields
         )
-        return FileResponse(pdf_buffer, as_attachment=True, filename='company_report.pdf')
+        response = FileResponse(pdf_buffer, as_attachment=True, filename='company_report.pdf')
+        response['Content-Disposition'] = 'attachment; filename="company_report.pdf"'
+        response['Access-Control-Expose-Headers'] = 'Content-Disposition'
+        print("Content-Disposition:", response['Content-Disposition'])
+        return response
 
 
 class CompanyManagersPDFView(APIView):
