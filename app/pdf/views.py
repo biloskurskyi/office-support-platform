@@ -88,7 +88,14 @@ class CompanyManagersPDFView(APIView):
                 data=serializer.data,
                 item_fields=item_fields
             )
-            return FileResponse(pdf_buffer, as_attachment=True, filename=f'manager_report_{company_id}.pdf')
+
+            filename = f'manager_report_{company.name}.pdf'
+            response = FileResponse(pdf_buffer, as_attachment=True, filename=filename)
+            response['Content-Disposition'] = f'attachment; filename={filename}'
+            response['Access-Control-Expose-Headers'] = 'Content-Disposition'
+            print("Content-Disposition:", response['Content-Disposition'])
+
+            return response
 
         except Company.DoesNotExist:
             return Response({"error": "Company not found."}, status=status.HTTP_404_NOT_FOUND)

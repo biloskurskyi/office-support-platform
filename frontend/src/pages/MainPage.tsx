@@ -142,7 +142,7 @@ const MainPage = () => {
                 <Link to="/company-create">
                     {userType === '1' && <CreateCompanyButton/>}
                 </Link>
-                <DownloadPDFButton apiUrl="http://localhost:8765/api/company/pdf/"/>
+                {userType === '1' && <DownloadPDFButton apiUrl="http://localhost:8765/api/company/pdf/"/>}
             </Box>
             <div style={{height: '50px'}}/>
 
