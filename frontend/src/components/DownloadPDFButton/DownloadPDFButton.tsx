@@ -1,6 +1,9 @@
 import React from 'react';
 import {Button} from '@mui/material';
 import axios from "axios";
+import DownloadIcon from '@mui/icons-material/Download';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+
 interface DownloadPDFButtonProps {
     apiUrl: string;
 }
@@ -33,9 +36,25 @@ const DownloadPDFButton: React.FC<DownloadPDFButtonProps> = ({apiUrl}) => {
     };
 
     return (
-        <Button variant="contained" color="primary" onClick={handleDownload}>
-            Завантажити PDF
+        <Button
+            variant="contained"
+            color="error" // Червоний колір кнопки
+            onClick={handleDownload}
+            startIcon={<PictureAsPdfIcon/>} // Іконка PDF
+            sx={{
+                textTransform: 'none', // Прибрати великі літери
+                fontWeight: 'bold', // Жирний текст
+                padding: '10px 20px', // Простір
+                borderRadius: '8px', // Заокруглення
+                backgroundColor: '#e64034', // Основний червоний колір
+                '&:hover': {
+                    backgroundColor: '#d32f2f', // Темніший відтінок червоного при наведенні
+                },
+            }}
+        >
+            Завантажити звіт
         </Button>
+
     );
 };
 

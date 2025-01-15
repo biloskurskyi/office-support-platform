@@ -132,21 +132,19 @@ const MainPage = () => {
             <Box
                 sx={{
                     display: 'flex',
-                    justifyContent: 'center',
+                    flexDirection: 'column',
                     alignItems: 'center',
-                    width: '100%',
+                    justifyContent: 'center',
+                    gap: '20px', // Відступи між кнопками
+                    marginTop: '20px',
                 }}
             >
                 <Link to="/company-create">
                     {userType === '1' && <CreateCompanyButton/>}
                 </Link>
-
+                <DownloadPDFButton apiUrl="http://localhost:8765/api/company/pdf/"/>
             </Box>
-            <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
-                <DownloadPDFButton
-                    apiUrl='http://localhost:8765/api/company/pdf/'
-                />
-            </Box>
+            <div style={{height: '50px'}}/>
 
         </PageWrapper>
     );
