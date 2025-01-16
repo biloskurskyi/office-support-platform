@@ -93,7 +93,6 @@ class CompanyManagersPDFView(APIView):
             response = FileResponse(pdf_buffer, as_attachment=True, filename=filename)
             response['Content-Disposition'] = f'attachment; filename={filename}'
             response['Access-Control-Expose-Headers'] = 'Content-Disposition'
-            print("Content-Disposition:", response['Content-Disposition'])
 
             return response
 
@@ -141,7 +140,12 @@ class OfficeListForCompany(APIView):
                 item_fields=item_fields
             )
 
-            return FileResponse(pdf_buffer, as_attachment=True, filename=f'offices_report_{company_id}.pdf')
+            filename = f'offices_report_{company.name}.pdf'
+            response = FileResponse(pdf_buffer, as_attachment=True, filename=filename)
+            response['Content-Disposition'] = f'attachment; filename={filename}'
+            response['Access-Control-Expose-Headers'] = 'Content-Disposition'
+
+            return response
 
         except Company.DoesNotExist:
             return Response({"error": "Company not found."}, status=status.HTTP_404_NOT_FOUND)
@@ -182,7 +186,13 @@ class ProvidersPDFView(APIView):
             item_fields=item_fields
         )
 
-        return FileResponse(pdf_buffer, as_attachment=True, filename=f'providers_report_{pk}.pdf')
+        filename = f'providers_report_{company.legal_name}.pdf'
+        response = FileResponse(pdf_buffer, as_attachment=True, filename=filename)
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        response['Access-Control-Expose-Headers'] = 'Content-Disposition'
+        return response
+
+        # return FileResponse(pdf_buffer, as_attachment=True, filename=f'providers_report_{pk}.pdf')
 
 
 class OrdersPDFView(APIView):
@@ -219,7 +229,22 @@ class OrdersPDFView(APIView):
             item_fields=item_fields
         )
 
-        return FileResponse(pdf_buffer, as_attachment=True, filename=f'orders_report_{office_id}.pdf')
+        filename = f'orders_report_{office.city}_{office.phone_number}.pdf'
+        response = FileResponse(pdf_buffer, as_attachment=True, filename=filename)
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        response['Access-Control-Expose-Headers'] = 'Content-Disposition'
+        return response
+
+
+def get_utility_type_in_english(utility_type_display):
+    mapping = {
+        'Опалення': 'Heating',
+        'Водопостачання': 'Water_supply',
+        'Газопостачання': 'Gas_supply',
+        'Електропостачання': 'Electricity_supply',
+        'Збір відходів': 'Waste_collection',
+    }
+    return mapping.get(utility_type_display, 'unknown')
 
 
 class UtilitiesPDFView(APIView):
@@ -227,10 +252,8 @@ class UtilitiesPDFView(APIView):
 
     def get(self, request, office_id, utility_type):
         user = request.user
-        # Перевірка доступу до офісу
         office = OfficePermissionMixin().check_office_permission(user, office_id)
 
-        # Отримуємо комунальні послуги
         utilities = Utilities.objects.filter(office=office, utilities_type=utility_type).order_by('-date')
 
         if not utilities.exists():
@@ -238,8 +261,6 @@ class UtilitiesPDFView(APIView):
 
         serializer = GetUtilitySerializer(utilities, many=True)
 
-        # Формуємо назву типу комунальних послуг (для заголовка)
-        # Формуємо назву типу комунальних послуг (для заголовка)
         if utilities.exists():
             first_utility = GetUtilitySerializer(utilities.first()).data
             utility_type_display = first_utility.get('utilities_type_display', 'Комунальні послуги')
@@ -251,8 +272,7 @@ class UtilitiesPDFView(APIView):
             ('date', 'Дата'),
             ('counter', 'Лічильник'),
             ('price', 'Ціна'),
-            ('office_display', 'Офіс'),
-            ('utility_type_display', 'Тип послуги'),
+            # ('office_display', 'Офіс')
         ]
 
         pdf_buffer = generate_pdf(
@@ -262,5 +282,16 @@ class UtilitiesPDFView(APIView):
             item_fields=item_fields
         )
 
-        return FileResponse(pdf_buffer, as_attachment=True,
-                            filename=f'utilities_report_{office_id}_{utility_type}.pdf')
+        print(utility_type_display)
+        """((HEATING, 'Опалення'),
+                              (WATER_SUPPLY, 'Водопостачання'),
+                              (GAS_SUPPLY, 'Газопостачання'),
+                              (ELECTRICITY_SUPPLY, 'Електропостачання'),
+                              (WASTE_COLLECTION, 'Збір відходів'),)"""
+
+        filename = (f'utilities_report_'
+                    f'{get_utility_type_in_english(utility_type_display)}_{office.city}_{office.phone_number}.pdf')
+        response = FileResponse(pdf_buffer, as_attachment=True, filename=filename)
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        response['Access-Control-Expose-Headers'] = 'Content-Disposition'
+        return response
