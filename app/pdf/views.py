@@ -295,3 +295,37 @@ class UtilitiesPDFView(APIView):
         response['Content-Disposition'] = f'attachment; filename={filename}'
         response['Access-Control-Expose-Headers'] = 'Content-Disposition'
         return response
+
+
+class OfficeListManagerPDFView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user = request.user
+        offices = Office.objects.filter(manager=user.id)
+        if not offices.exists():
+            return Response({"message": "No offices found for you"}, status=200)
+        serializer = OfficeSerializer(offices, many=True)
+
+        item_fields = [
+            ('country', 'Країна'),
+            ('city', 'Місто'),
+            ('address', 'Адреса'),
+            ('postal_code', 'Поштовий індекс'),
+            ('phone_number', 'Телефон'),
+            ('company', 'Компанія')
+        ]
+
+        pdf_buffer = generate_pdf(
+            title="Звіт по офісах компанії",
+            subtitle=f"Менеджер: {user.name} {user.surname}",
+            data=serializer.data,
+            item_fields=item_fields
+        )
+
+        filename = 'offices_report.pdf'
+        response = FileResponse(pdf_buffer, as_attachment=True, filename=filename)
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        response['Access-Control-Expose-Headers'] = 'Content-Disposition'
+
+        return response
