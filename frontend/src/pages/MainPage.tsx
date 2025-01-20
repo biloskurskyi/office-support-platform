@@ -143,6 +143,7 @@ const MainPage = () => {
                     {userType === '1' && <CreateCompanyButton/>}
                 </Link>
                 {userType === '1' && <DownloadPDFButton apiUrl="http://localhost:8765/api/company/pdf/"/>}
+                {userType === '2' && <DownloadPDFButton apiUrl="http://localhost:8765/api/office-list-manager/pdf/"/>}
             </Box>
             <div style={{height: '50px'}}/>
 
