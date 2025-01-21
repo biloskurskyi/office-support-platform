@@ -160,3 +160,43 @@ class VerifyCompanyOwnership(APIView):
         if company:
             return Response({"isOwner": True})
         return Response({"isOwner": False}, status=403)
+
+
+class StatisticsView(APIView):
+    """
+    API для отримання статистики:
+    1. Кількість компаній для вказаного власника.
+    2. Кількість менеджерів у кожній компанії.
+    """
+    def get(self, request):
+        if request.user.user_type != User.OWNER_USER:
+            return Response(
+                {'detail': 'You do not have permission to access statistics.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        try:
+            # Отримуємо всі компанії власника
+            companies = Company.objects.filter(owner=request.user.id)
+            if not companies.exists():
+                return Response({"message": "No companies found for this user"}, status=status.HTTP_200_OK)
+
+            # Статистика компаній
+            statistics = {
+                "owner_email": request.user.email,
+                "number_of_companies": companies.count(),
+                "companies": {}
+            }
+
+            for company in companies:
+                # Отримуємо кількість менеджерів для кожної компанії
+                managers_count = User.objects.filter(
+                    Q(user_type=User.MANAGER_USER) & Q(company=company.id)
+                ).count()
+
+                statistics["companies"][company.name] = managers_count
+
+            return Response(statistics, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
