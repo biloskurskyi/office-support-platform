@@ -18,6 +18,7 @@ import useFetchManagers from '../hooks/useFetchManagers.tsx';
 import CreateManagerButton from '../components/ManagersList/UI/CreateManagerButton.tsx';
 import NoExistCard from '../components/NoExistCard/NoExistCard.tsx';
 import DownloadPDFButton from "../components/DownloadPDFButton/DownloadPDFButton.tsx";
+import ActionButton from "../components/ActionButton/ActionButton.tsx";
 
 const ManagersListPage = () => {
     const {setText} = useOutletContext<{
@@ -57,7 +58,6 @@ const ManagersListPage = () => {
     }
 
     const pdf_url = `http://localhost:8765/api/company/${id}/managers/pdf/`;
-    console.log(pdf_url);
 
     return (
         <div>
@@ -88,9 +88,7 @@ const ManagersListPage = () => {
                     marginTop: '20px',
                 }}
             >
-                <CardActions sx={{justifyContent: 'center'}}>
-                    <CreateManagerButton companyId={id}/>
-                </CardActions>
+                <ActionButton to={`/create-manager/${id}`} label="Створити менеджера"/>
                 <DownloadPDFButton apiUrl={pdf_url}/>
             </Box>
             <div style={{height: '50px'}}/>
