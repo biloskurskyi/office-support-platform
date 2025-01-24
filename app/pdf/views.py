@@ -1,4 +1,8 @@
-from django.db.models import Q
+import json
+import urllib.request
+from decimal import Decimal
+
+from django.db.models import Avg, Count, Max, Min, Q, Sum
 from django.http import FileResponse
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -31,6 +35,39 @@ class CompanyPDFView(APIView):
         if not companies.exists():
             return Response({"message": "No posts found for this user"}, status=200)
 
+        statistics = {
+            "Електрона адреса власника": request.user.email,
+            "Кількість компаній": companies.count(),
+            "Компанії": {}
+        }
+
+        for company in companies:
+            managers_count = User.objects.filter(
+                Q(user_type=User.MANAGER_USER) & Q(company=company.id)
+            ).count()
+
+            offices_count = Office.objects.filter(company=company).count()
+
+            total_deals_value = Order.objects.filter(
+                office__company=company
+            ).aggregate(total_value=Sum('deal_value'))['total_value'] or 0
+
+            # Кількість замовлень для компанії
+            orders_count = Order.objects.filter(office__company=company).count()
+
+            # Загальна кількість комунальних послуг
+            utilities_count = Utilities.objects.filter(office__company=company).count()
+
+            statistics["Компанії"][company.name] = [
+                f"{managers_count} - кількість менеджерів",
+                f"{offices_count} - кількість офісів",
+                f"{orders_count} - кількість замовлень",
+                f"{utilities_count} - кількість комунальних послуг",
+                f"{total_deals_value} гривень - загальна вартість угод"
+            ]
+
+        print(statistics)
+
         item_fields = [
             ('name', 'Назва компанії'),
             ('legal_name', 'Юридична назва'),
@@ -41,7 +78,8 @@ class CompanyPDFView(APIView):
             title="Звіт по компаніях",
             subtitle="Детальна інформація про компанії",
             data=serializer.data,
-            item_fields=item_fields
+            item_fields=item_fields,
+            statistics=statistics
         )
         response = FileResponse(pdf_buffer, as_attachment=True, filename='company_report.pdf')
         response['Content-Disposition'] = 'attachment; filename="company_report.pdf"'
@@ -75,6 +113,15 @@ class CompanyManagersPDFView(APIView):
             for item in data:
                 item['is_active'] = 'Активний' if item['is_active'] else 'Не активний'
 
+            active_managers_count = managers.filter(is_active=True).count()
+            inactive_managers_count = managers.filter(is_active=False).count()
+
+            statistics = {
+                "Кількість менеджерів": managers.count(),
+                "Активних менеджерів": active_managers_count,
+                "Неактивних менеджерів": inactive_managers_count,
+            }
+
             item_fields = [
                 ('name', 'Менеджер'),
                 ('surname', 'Прізвище'),
@@ -86,7 +133,8 @@ class CompanyManagersPDFView(APIView):
                 title="Звіт по менеджерах",
                 subtitle=f"Менеджери компанії {company.name}",
                 data=serializer.data,
-                item_fields=item_fields
+                item_fields=item_fields,
+                statistics=statistics
             )
 
             filename = f'manager_report_{company.name}.pdf'
@@ -132,12 +180,61 @@ class OfficeListForCompany(APIView):
                 ('company', 'Компанія')
             ]
 
+            # Отримати офіси компанії
+            offices = Office.objects.filter(company=company)
+
+            if not offices.exists():
+                return Response({"message": "No offices found for this company."}, status=200)
+
+            # Загальна кількість офісів
+            total_offices = offices.count()
+
+            # Розподіл офісів за країнами
+            country_distribution = offices.values('country').annotate(count=Count('country')).order_by('-count')
+
+            # Кількість офісів із закріпленими менеджерами
+            offices_with_managers = offices.filter(manager__isnull=False).count()
+
+            # Кількість офісів без закріплених менеджерів
+            offices_without_managers = total_offices - offices_with_managers
+
+            # Детальна інформація про офіси
+            office_data = []
+            for office in offices:
+                office_info = {
+                    "Адреса": office.address,
+                    "Місто": office.city,
+                    "Країна": office.country,
+                    "Поштовий код": office.postal_code or "N/A",
+                    "Телефон": office.phone_number,
+                }
+
+                if office.manager:
+                    office_info["Менеджер"] = f"{office.manager.name} {office.manager.surname} ({office.manager.email})"
+                else:
+                    office_info["Менеджер"] = "Не закріплений"
+
+                office_data.append(office_info)
+
+            # Статистика
+            statistics = {
+                "Загальна кількість офісів": total_offices,
+                "Офіси з менеджерами": offices_with_managers,
+                "Офіси без менеджерів": offices_without_managers,
+                "Розподіл за країнами": {},
+            }
+
+            for item in country_distribution:
+                print(item)
+                statistics["Розподіл за країнами"][item["country"]] = [f"Кількість офісів: {item['count']}"]
+
             # Generate PDF
             pdf_buffer = generate_pdf(
                 title="Звіт по офісах компанії",
                 subtitle=f"Офіси компанії {company.name}",
                 data=serializer.data,
-                item_fields=item_fields
+                item_fields=item_fields,
+                statistics=statistics,
             )
 
             filename = f'offices_report_{company.name}.pdf'
@@ -179,11 +276,40 @@ class ProvidersPDFView(APIView):
 
         company = Company.objects.get(pk=pk)
 
+        total_providers = providers.count()
+
+        # Відсоток провайдерів із банківськими реквізитами
+        providers_with_bank_details = providers.filter(bank_details__isnull=False).exclude(bank_details="").count()
+        bank_details_percentage = (providers_with_bank_details / total_providers) * 100 if total_providers > 0 else 0
+
+        # Провайдери із заповненим телефоном, email або обома
+        providers_with_phone = providers.filter(phone_number__isnull=False).exclude(phone_number="").count()
+        providers_with_email = providers.filter(email__isnull=False).exclude(email="").count()
+        providers_with_both = providers.filter(
+            phone_number__isnull=False, email__isnull=False
+        ).exclude(phone_number="").exclude(email="").count()
+
+        # Найчастіше використовуваний домен електронної пошти
+        email_domains = [provider.email.split("@")[-1] for provider in providers if provider.email]
+        most_common_domain = max(set(email_domains), key=email_domains.count) if email_domains else "Немає даних"
+
+        # Формуємо статистику
+        statistics = {
+            "Компанія": company.legal_name,
+            "Загальна кількість провайдерів": total_providers,
+            "Відсоток провайдерів із банківськими реквізитами": f"{bank_details_percentage:.2f}%",
+            "Провайдери з телефоном": providers_with_phone,
+            "Провайдери з email": providers_with_email,
+            "Провайдери з телефоном і email": providers_with_both,
+            "Найчастіший домен електронної пошти": most_common_domain,
+        }
+
         pdf_buffer = generate_pdf(
             title="Звіт по провайдерах",
             subtitle=f"Провайдери компанії {company.legal_name}",
             data=serializer.data,
-            item_fields=item_fields
+            item_fields=item_fields,
+            statistics=statistics,
         )
 
         filename = f'providers_report_{company.legal_name}.pdf'
@@ -192,11 +318,26 @@ class ProvidersPDFView(APIView):
         response['Access-Control-Expose-Headers'] = 'Content-Disposition'
         return response
 
-        # return FileResponse(pdf_buffer, as_attachment=True, filename=f'providers_report_{pk}.pdf')
-
 
 class OrdersPDFView(APIView):
     permission_classes = (IsAuthenticated,)
+
+    def get_exchange_rates(self):
+        # Отримання курсу валют з API ПриватБанку
+        url = "https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5"
+        try:
+            with urllib.request.urlopen(url) as response:
+                if response.status == 200:  # Використовується атрибут 'status', а не 'status_code'
+                    exchange_data = json.loads(response.read().decode('utf-8'))  # Декодуємо та парсимо JSON
+                    rates = {rate['ccy']: Decimal(rate['sale']) for rate in exchange_data}
+                    # print(rates)
+                    return rates
+        except Exception as e:
+            # Логування помилки для дебагу
+            print(f"Error fetching exchange rates: {e}")
+
+        # Повертаємо дефолтні курси у випадку помилки
+        return {"USD": Decimal(42.3), "EUR": Decimal(44.25)}
 
     def get(self, request, pk):
         user = request.user
@@ -212,6 +353,44 @@ class OrdersPDFView(APIView):
 
         serializer = OrderSerializer(orders, many=True)
 
+        exchange_rates = self.get_exchange_rates()
+
+        # Аналіз замовлень
+        total_cost_uah = Decimal(0)
+        orders_count = orders.count()
+        orders_by_currency = {currency[1]: 0 for currency in Order.CURRENCY_TYPE_CHOICES}
+        total_cost_by_currency = {currency[1]: Decimal(0) for currency in Order.CURRENCY_TYPE_CHOICES}
+
+        for order in orders:
+            orders_by_currency[order.get_currency_display()] += 1
+            if order.currency == Order.USD:
+                total_cost_uah += order.deal_value * exchange_rates.get("USD")
+                total_cost_by_currency["Долар США"] += order.deal_value * exchange_rates.get("USD")
+            elif order.currency == Order.EUR:
+                total_cost_uah += order.deal_value * exchange_rates.get("EUR")
+                total_cost_by_currency["Євро"] += order.deal_value * exchange_rates.get("EUR")
+            else:  # UAH
+                total_cost_uah += order.deal_value
+                total_cost_by_currency["Гривня"] += order.deal_value
+
+        average_order_value = total_cost_uah / orders_count if orders_count > 0 else Decimal(0)
+
+        # Статистика
+        statistics = {
+            "Загальна кількість замовлень": orders_count,
+            "Сума витрат (грн)": f"{total_cost_uah:.2f}",
+            "Середня сума замовлення (грн)": f"{average_order_value:.2f}",
+            "Статистика по валютам": {},
+        }
+
+        for currency, count in orders_by_currency.items():
+            statistics["Статистика по валютам"][currency] = [
+                f"Кількість замовлень за валютами {count}",
+                f"Сума витрат: {total_cost_by_currency[currency]:.2f} грн",
+                f"Середня сума замовлення: {total_cost_by_currency[currency] / count:.2f}"
+
+            ]
+
         # Генерація звіту
         item_fields = [
             ('title', 'Назва замовлення'),
@@ -226,7 +405,8 @@ class OrdersPDFView(APIView):
             title="Звіт по замовленнях",
             subtitle=f"Замовлення для офісу {office.address}, {office.city}, {office.country}",
             data=serializer.data,
-            item_fields=item_fields
+            item_fields=item_fields,
+            statistics=statistics,
         )
 
         filename = f'orders_report_{office.city}_{office.phone_number}.pdf'
@@ -272,14 +452,34 @@ class UtilitiesPDFView(APIView):
             ('date', 'Дата'),
             ('counter', 'Лічильник'),
             ('price', 'Ціна'),
-            # ('office_display', 'Офіс')
         ]
+
+        total_cost = utilities.aggregate(total=Sum('price'))['total'] or 0
+        average_cost = utilities.aggregate(avg=Avg('price'))['avg'] or 0
+        max_cost = utilities.aggregate(max_price=Max('price'))['max_price'] or 0
+        min_cost = utilities.aggregate(min_price=Min('price'))['min_price'] or 0
+        total_records = utilities.count()
+        first_date = utilities.aggregate(first_date=Min('date'))['first_date']
+        last_date = utilities.aggregate(last_date=Max('date'))['last_date']
+
+        # Розширення статистики
+        statistics = {
+            "Тип послуги": dict(Utilities.UTILITIES_TYPE_CHOICES).get(utility_type, "Невідомий"),
+            "Загальна вартість": f"{total_cost:.2f} грн",
+            "Середня вартість": f"{average_cost:.2f} грн",
+            "Максимальна вартість": f"{max_cost:.2f} грн",
+            "Мінімальна вартість": f"{min_cost:.2f} грн",
+            "Кількість записів": total_records,
+            "Найраніша дата запису": first_date,
+            "Остання дата запису": last_date,
+        }
 
         pdf_buffer = generate_pdf(
             title="Звіт по комунальних послугах",
             subtitle=f"Тип послуги: {utility_type_display}, Офіс: {office.address}, {office.city}, {office.country}",
             data=serializer.data,
-            item_fields=item_fields
+            item_fields=item_fields,
+            statistics=statistics,
         )
 
         print(utility_type_display)
