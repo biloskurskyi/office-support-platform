@@ -507,6 +507,23 @@ class OfficeListManagerPDFView(APIView):
             return Response({"message": "No offices found for you"}, status=200)
         serializer = OfficeSerializer(offices, many=True)
 
+        # Додавання статистики
+        total_offices = offices.count()
+
+        # Форматування статистики
+        statistics = {
+            "Загальна кількість офісів": total_offices,
+            "Розподіл за країнами": {},
+        }
+
+        country_distribution = offices.values('country').annotate(count=Count('country')).order_by('-count')
+
+        print(country_distribution)
+
+        for item in country_distribution:
+            print(item)
+            statistics["Розподіл за країнами"][item["country"]] = [f"Кількість офісів: {item['count']}"]
+
         item_fields = [
             ('country', 'Країна'),
             ('city', 'Місто'),
@@ -520,7 +537,8 @@ class OfficeListManagerPDFView(APIView):
             title="Звіт по офісах компанії",
             subtitle=f"Менеджер: {user.name} {user.surname}",
             data=serializer.data,
-            item_fields=item_fields
+            item_fields=item_fields,
+            statistics=statistics
         )
 
         filename = 'offices_report.pdf'
