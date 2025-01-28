@@ -7,6 +7,8 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
+from django.utils.timezone import now
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
@@ -47,9 +49,13 @@ class RegisterView(APIView):
 
         if user.email:
             subject = 'Activate your account'
-            activation_link = f'{frontend_base_url}/activate-user/{user.id}/'
+            activation_token = self.generate_activation_token(user.id)
+            activation_link = f'{frontend_base_url}/activate-user/{activation_token}/'
             message = (
-                f'Hello {user.name},\n\nPlease activate your account using the following link:\n{activation_link}')
+                f"Вітаємо, {user.name}!\n\n"
+                f"Для активації вашого акаунта, будь ласка, перейдіть за наступним посиланням:\n{activation_link}\n\n"
+                f"Якщо ви не створювали обліковий запис, просто проігноруйте цей лист.\n\n"
+            )
             from_email = settings.EMAIL_HOST_USER
             recipient_list = [user.email]
 
@@ -64,6 +70,13 @@ class RegisterView(APIView):
             status=status.HTTP_201_CREATED
         )
 
+    def generate_activation_token(self, user_id):
+        """
+        Generate a secure token for account activation.
+        """
+        serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
+        return serializer.dumps({"user_id": user_id})
+
 
 class ActivateUserView(APIView):
     """
@@ -72,26 +85,41 @@ class ActivateUserView(APIView):
     GET request URL should include 'user_id'.
     """
 
-    def get(self, request, user_id):
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return JsonResponse({'error': 'Користувача не знайдено.'}, status=status.HTTP_404_NOT_FOUND)
+    def get(self, request, token):
+        serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
 
-        if user.is_active:
+        try:
+            # Розшифровуємо токен
+            data = serializer.loads(token, max_age=259200)  # 1 година (3600 секунд)
+            user_id = data.get("user_id")
+
+            # Знаходимо користувача
+            try:
+                user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
+                return JsonResponse({'error': 'Користувача не знайдено.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Перевіряємо статус активації
+            if user.is_active:
+                return JsonResponse({
+                    'message': "Ви вже успішно активували свій акаунт раніше.\n"
+                               "Тепер ви можете увійти до системи та використовувати її функціонал."
+                })
+
+            # Активуємо акаунт
+            user.is_active = True
+            user.is_confirmed = True
+            user.save()
+
             return JsonResponse({
-                'message': "Ви вже успішно активували свій акаунт раніше.\n"
+                'message': "Вітаємо! Ви успішно активували свій акаунт.\n"
                            "Тепер ви можете увійти до системи та використовувати її функціонал."
             })
 
-        user.is_active = True
-        user.is_confirmed = True
-        user.save()
-
-        return JsonResponse({
-            'message': "Вітаємо! Ви успішно активували свій акаунт.\n"
-                       "Тепер ви можете увійти до системи та використовувати її функціонал."
-        })
+        except SignatureExpired:
+            return JsonResponse({"error": "The activation token has expired."}, status=status.HTTP_400_BAD_REQUEST)
+        except BadSignature:
+            return JsonResponse({"error": "Invalid activation token."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
@@ -137,7 +165,7 @@ class LogoutView(APIView):
         return response
 
 
-class CreateManagerView(APIView):
+class CreateManagerView(RegisterView):
     """
     Allows owners to create manager users.
     """
@@ -176,14 +204,16 @@ class CreateManagerView(APIView):
         if serializer.is_valid():
             manager = serializer.save()
 
-            activation_link = f'{frontend_base_url}/activate-user/{manager.id}/'
+            token = self.generate_activation_token(manager.id)
+
+            activation_link = f'{frontend_base_url}/activate-user/{token}/'
 
             subject = 'Manager Account Has Been Created. Activate Your Account!'
             message = (
-                f"Hello {manager.name},\n\nYour account has been created. Here is your password: {random_password}"
-                f"\nPlease change it after logging in."
-                f"Please activate your account using the following link:\n{activation_link}\n\n"
-                f"Make sure to change your password after logging in.")
+                f"Вітаємо, {manager.name}!\n\n"
+                f"Ваш обліковий запис було створено. Ось ваш тимчасовий пароль: {random_password}\n"
+                f"Для активації вашого акаунта перейдіть за наступним посиланням:\n{activation_link}\n\n"
+                f"Не забудьте змінити свій пароль після входу.")
 
             from_email = settings.EMAIL_HOST_USER
             recipient_list = [manager.email]
@@ -205,6 +235,13 @@ class CreateManagerView(APIView):
         """
         characters = string.ascii_letters + string.digits
         return ''.join(random.choice(characters) for i in range(length))
+
+    def generate_session_token(self, manager_id):
+        """
+        Generate a secure token with the manager's ID and timestamp.
+        """
+        serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
+        return serializer.dumps({"manager_id": manager_id, "timestamp": str(now())})
 
 
 class ChangePasswordView(APIView):
