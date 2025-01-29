@@ -8,5 +8,5 @@ isort==5.11.3
 flake8==6.1.0
 python-decouple==3.7
 drf-yasg
-django-cors-headers==3.14.0
 reportlab
+itsdangerous
