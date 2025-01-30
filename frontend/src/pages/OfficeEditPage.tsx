@@ -156,7 +156,7 @@ const OfficeEditPage = () => {
                 onChange={handleInputChange}
               />
               <CustomTextField
-                label="Адресса"
+                label="Адреса"
                 value={formData.address}
                 name="address"
                 onChange={handleInputChange}
