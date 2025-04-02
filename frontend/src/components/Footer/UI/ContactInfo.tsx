@@ -8,7 +8,7 @@ const ContactInfo: React.FC = () => (
       Зв'яжіться з нами
     </Typography>
     <Typography textAlign="center">
-      Email: contact@yourapp.com | Phone: +123 456 7890
+      Email: v.bill2003@example.com | Phone: +123 456 7890
     </Typography>
   </>
 );
