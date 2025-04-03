@@ -105,7 +105,7 @@ const CreateCompanyForm = () => {
               name="website"
               value={formData.website}
               onChange={handleInputChange}
-              type="password"
+              // type="password"
             />
 
             <ul>
