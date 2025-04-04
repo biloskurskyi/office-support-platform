@@ -142,7 +142,7 @@ class Office(models.Model):
         verbose_name_plural = "Offices"
 
     def __str__(self):
-        return f"Office for {self.company.name} on {self.address}, city: {self.city}, country: {self.country}"
+        return f"{self.company.name} за адресою {self.address}, місто: {self.city}, країна: {self.country}"
 
 
 class Utilities(models.Model):
