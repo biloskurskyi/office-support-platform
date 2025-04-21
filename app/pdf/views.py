@@ -81,8 +81,8 @@ class CompanyPDFView(APIView):
             item_fields=item_fields,
             statistics=statistics
         )
-        response = FileResponse(pdf_buffer, as_attachment=True, filename='company_report.pdf')
-        response['Content-Disposition'] = 'attachment; filename="company_report.pdf"'
+        response = FileResponse(pdf_buffer, as_attachment=True, filename='звіт_компанії.pdf')
+        response['Content-Disposition'] = 'attachment; filename="звіт_компанії.pdf"'
         response['Access-Control-Expose-Headers'] = 'Content-Disposition'
         print("Content-Disposition:", response['Content-Disposition'])
         return response
@@ -384,11 +384,11 @@ class OrdersPDFView(APIView):
         }
 
         for currency, count in orders_by_currency.items():
+            print(f"{currency}: {count}")
             statistics["Статистика по валютам"][currency] = [
                 f"Кількість замовлень за валютами {count}",
                 f"Сума витрат: {total_cost_by_currency[currency]:.2f} грн",
                 f"Середня сума замовлення: {total_cost_by_currency[currency] / count:.2f}"
-
             ]
 
         # Генерація звіту
