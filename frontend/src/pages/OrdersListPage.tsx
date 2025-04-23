@@ -7,7 +7,6 @@ import PageWrapper from '../components/MainPageComponents/PageWrapper.tsx';
 import InfoBlocks from '../components/MainPageComponents/UI/InfoBlocks.tsx';
 import OrderCard from '../components/OrdersComponents/UI/OrderCard.tsx';
 import ErrorMessage from '../components/OfficesListOwnerComponent/UI/ErrorMessage.tsx';
-import CreateOrderButton from '../components/OrdersComponents/UI/CreateOrderButton.tsx';
 import ActionButton from "../components/ActionButton/ActionButton.tsx";
 import DownloadPDFButton from "../components/DownloadPDFButton/DownloadPDFButton.tsx";
 
@@ -33,10 +32,10 @@ const OrdersListPage = () => {
         return (
             <NoExistCard
                 title="Замовлень не знайдено"
-                message="Здається, у ціього офісу ще немає замовлень. Ви можете створити нове замовленн
+                message="Здається, у цього офісу ще немає замовлень. Ви можете створити нове замовленн
                  за допомогою кнопки нижче."
                 buttonText="Створити замовлення"
-                buttonLink={`/provider-create/${id}`}
+                buttonLink={`/order-list/${id}`}
             />
         );
     }
