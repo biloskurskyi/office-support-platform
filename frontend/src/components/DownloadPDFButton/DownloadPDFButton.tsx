@@ -21,7 +21,7 @@ const DownloadPDFButton: React.FC<DownloadPDFButtonProps> = ({apiUrl}) => {
             if (response.status === 200) {
                 const contentDisposition = response.headers['content-disposition'];
                 console.log('Content-Disposition:', contentDisposition);
-                const fileName = contentDisposition?.split('filename=')[1]?.replace(/"/g, '') || 'default_filename.pdf';
+                const fileName = contentDisposition?.split('filename=')[1]?.replace(/"/g, '') || 'звіт.pdf';
 
                 const fileURL = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
