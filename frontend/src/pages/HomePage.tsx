@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import Header from '../components/Header/Header.tsx';
 import Footer from '../components/Footer/Footer.tsx';
 import BackgroundImage from '../components/BackgroundImage/BackgroundImage.tsx';
