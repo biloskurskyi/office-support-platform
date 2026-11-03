@@ -1,5 +1,3 @@
-import json
-import urllib.request
 from decimal import Decimal
 
 from django.db.models import Avg, Count, Max, Min, Q, Sum
@@ -20,6 +18,7 @@ from provider.serializers import ProviderSerializer
 from user.serializers import UserSerializer
 from utility.serializers import GetUtilitySerializer
 
+from .exchange_rates import ExchangeRateProvider
 from .static.template import generate_pdf
 
 
@@ -319,22 +318,7 @@ class ProvidersPDFView(APIView):
 class OrdersPDFView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get_exchange_rates(self):
-        # Отримання курсу валют з API ПриватБанку
-        url = "https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5"
-        try:
-            with urllib.request.urlopen(url) as response:
-                if response.status == 200:  # Використовується атрибут 'status', а не 'status_code'
-                    exchange_data = json.loads(response.read().decode('utf-8'))  # Декодуємо та парсимо JSON
-                    rates = {rate['ccy']: Decimal(rate['sale']) for rate in exchange_data}
-                    # print(rates)
-                    return rates
-        except Exception as e:
-            # Логування помилки для дебагу
-            print(f"Error fetching exchange rates: {e}")
-
-        # Повертаємо дефолтні курси у випадку помилки
-        return {"USD": Decimal(42.3), "EUR": Decimal(44.25)}
+    exchange_rate_provider = ExchangeRateProvider()
 
     def get(self, request, pk):
         user = request.user
@@ -350,7 +334,7 @@ class OrdersPDFView(APIView):
 
         serializer = OrderSerializer(orders, many=True)
 
-        exchange_rates = self.get_exchange_rates()
+        exchange_rates = self.exchange_rate_provider.get_rates()
 
         # Аналіз замовлень
         total_cost_uah = Decimal(0)
