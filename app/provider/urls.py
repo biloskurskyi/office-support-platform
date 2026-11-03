@@ -1,8 +1,13 @@
 from django.urls import path
 
-from .views import (CurrencyListView, GetOfficeProvidersView, GetProvidersView,
-                    ProviderAccessCheckAPIView, ProviderCreateView,
-                    ProviderDetailView)
+from .views import (
+                    CurrencyListView,
+                    GetOfficeProvidersView,
+                    GetProvidersView,
+                    ProviderAccessCheckAPIView,
+                    ProviderCreateView,
+                    ProviderDetailView,
+)
 
 app_name = 'provider'
 

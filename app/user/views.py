@@ -19,8 +19,7 @@ from app.settings import FRONTEND_BASE_URL
 from core.models import Company, User
 
 from .mixins import ManagerOwnershipMixin
-from .serializers import (ChangePasswordSerializer, GetManagerUserSerializer,
-                          GetOwnerUserSerializer, UserSerializer)
+from .serializers import ChangePasswordSerializer, GetManagerUserSerializer, GetOwnerUserSerializer, UserSerializer
 
 
 class RegisterView(APIView):
