@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 
 from company.serializers import CompanySerializer
 from core.models import Company, Office, Order, Provider, User, Utilities
+from core.permissions import IsOwner
 from office.serializers import OfficeSerializer
 from order.mixins import OfficePermissionMixin
 from order.serializers import OrderSerializer
@@ -23,13 +24,9 @@ from .static.template import generate_pdf
 
 
 class CompanyPDFView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsOwner)
 
     def get(self, request):
-        if request.user.user_type != User.OWNER_USER:
-            return Response({'detail': 'You do not have permission to get companies.'},
-                            status=status.HTTP_403_FORBIDDEN)
-
         companies = Company.objects.filter(owner=request.user.id)
         serializer = CompanySerializer(companies, many=True)
         if not companies.exists():
