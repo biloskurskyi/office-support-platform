@@ -2,7 +2,6 @@ import random
 import string
 
 from django.conf import settings
-from django.core.mail import send_mail
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
@@ -13,8 +12,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from app.settings import FRONTEND_BASE_URL
 from core.models import Company, User
+from user.activation_mailer import ActivationMailer
 from user.token_service import TokenService
 
 from .mixins import ManagerOwnershipMixin
@@ -41,39 +40,12 @@ class RegisterView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        email_message = ""
-
-        frontend_base_url = FRONTEND_BASE_URL
-
-        if user.email:
-            subject = 'Activate your account'
-            activation_token = self.generate_activation_token(user.id)
-            activation_link = f'{frontend_base_url}/activate-user/{activation_token}/'
-            message = (
-                f"Вітаємо, {user.name}!\n\n"
-                f"Для активації вашого акаунта, будь ласка, перейдіть за наступним посиланням:\n{activation_link}\n\n"
-                f"Якщо ви не створювали обліковий запис, просто проігноруйте цей лист.\n\n"
-            )
-            from_email = settings.EMAIL_HOST_USER
-            recipient_list = [user.email]
-
-            try:
-                send_mail(subject, message, from_email, recipient_list, fail_silently=False)
-                email_message = 'Email sent successfully.'
-            except Exception as e:
-                email_message = f'Error sending email: {e}'
+        email_message = ActivationMailer.send(user) if user.email else ""
 
         return Response(
             {"message": "User created successfully.", "email_status": email_message},
             status=status.HTTP_201_CREATED
         )
-
-    def generate_activation_token(self, user_id):
-        """
-        Generate a secure token for account activation.
-        """
-        serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
-        return serializer.dumps({"user_id": user_id})
 
 
 class ActivateUserView(APIView):
@@ -190,31 +162,11 @@ class CreateManagerView(RegisterView):
 
         data['password'] = random_password
 
-        frontend_base_url = FRONTEND_BASE_URL
-
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
             manager = serializer.save()
 
-            token = self.generate_activation_token(manager.id)
-
-            activation_link = f'{frontend_base_url}/activate-user/{token}/'
-
-            subject = 'Manager Account Has Been Created. Activate Your Account!'
-            message = (
-                f"Вітаємо, {manager.name}!\n\n"
-                f"Ваш обліковий запис було створено. Ось ваш тимчасовий пароль: {random_password}\n"
-                f"Для активації вашого акаунта перейдіть за наступним посиланням:\n{activation_link}\n\n"
-                f"Не забудьте змінити свій пароль після входу.")
-
-            from_email = settings.EMAIL_HOST_USER
-            recipient_list = [manager.email]
-
-            try:
-                send_mail(subject, message, from_email, recipient_list, fail_silently=False)
-                email_message = 'Email sent successfully.'
-            except Exception as e:
-                email_message = f'Error sending email: {e}'
+            email_message = ActivationMailer.send(manager, temporary_password=random_password)
 
             return Response({"message": "Manager created successfully.", "email_status": email_message},
                             status=status.HTTP_201_CREATED)
