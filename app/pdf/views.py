@@ -1,3 +1,4 @@
+import logging
 from decimal import Decimal
 
 from django.db.models import Avg, Count, Max, Min, Q, Sum
@@ -21,6 +22,8 @@ from utility.serializers import GetUtilitySerializer
 from .exchange_rates import ExchangeRateProvider
 from .static.template import generate_pdf
 
+logger = logging.getLogger(__name__)
+
 
 class CompanyPDFView(APIView):
     permission_classes = (IsAuthenticated, IsOwner)
@@ -37,22 +40,28 @@ class CompanyPDFView(APIView):
             "Компанії": {}
         }
 
+        companies = companies.annotate(offices_count=Count('office', distinct=True))
+        # User.company stores the company id as a string, so managers are counted in one grouped query
+        managers_stats = dict(
+            User.objects.filter(user_type=User.MANAGER_USER, company__in=[str(c.id) for c in companies])
+            .values_list('company').annotate(count=Count('id'))
+        )
+        orders_stats = {
+            row['office__company']: row
+            for row in Order.objects.filter(office__company__in=companies)
+            .values('office__company').annotate(count=Count('id'), total=Sum('deal_value'))
+        }
+        utilities_stats = dict(
+            Utilities.objects.filter(office__company__in=companies)
+            .values_list('office__company').annotate(count=Count('id'))
+        )
+
         for company in companies:
-            managers_count = User.objects.filter(
-                Q(user_type=User.MANAGER_USER) & Q(company=company.id)
-            ).count()
-
-            offices_count = Office.objects.filter(company=company).count()
-
-            total_deals_value = Order.objects.filter(
-                office__company=company
-            ).aggregate(total_value=Sum('deal_value'))['total_value'] or 0
-
-            # Кількість замовлень для компанії
-            orders_count = Order.objects.filter(office__company=company).count()
-
-            # Загальна кількість комунальних послуг
-            utilities_count = Utilities.objects.filter(office__company=company).count()
+            managers_count = managers_stats.get(str(company.id), 0)
+            offices_count = company.offices_count
+            total_deals_value = orders_stats.get(company.id, {}).get('total') or 0
+            orders_count = orders_stats.get(company.id, {}).get('count', 0)
+            utilities_count = utilities_stats.get(company.id, 0)
 
             statistics["Компанії"][company.name] = [
                 f"{managers_count} - кількість менеджерів",
@@ -62,7 +71,7 @@ class CompanyPDFView(APIView):
                 f"{total_deals_value} гривень - загальна вартість угод"
             ]
 
-        print(statistics)
+        logger.debug("Company report statistics: %s", statistics)
 
         item_fields = [
             ('name', 'Назва компанії'),
@@ -80,7 +89,6 @@ class CompanyPDFView(APIView):
         response = FileResponse(pdf_buffer, as_attachment=True, filename='звіт_компанії.pdf')
         response['Content-Disposition'] = 'attachment; filename="звіт_компанії.pdf"'
         response['Access-Control-Expose-Headers'] = 'Content-Disposition'
-        print("Content-Disposition:", response['Content-Disposition'])
         return response
 
 
@@ -221,7 +229,6 @@ class OfficeListForCompany(APIView):
             }
 
             for item in country_distribution:
-                print(item)
                 statistics["Розподіл за країнами"][item["country"]] = [f"Кількість офісів: {item['count']}"]
 
             # Generate PDF
@@ -365,7 +372,6 @@ class OrdersPDFView(APIView):
         }
 
         for currency, count in orders_by_currency.items():
-            print(f"{currency}: {count}")
             statistics["Статистика по валютам"][currency] = [
                 f"Кількість замовлень за валютами {count}",
                 f"Сума витрат: {total_cost_by_currency[currency]:.2f} грн",
@@ -463,7 +469,6 @@ class UtilitiesPDFView(APIView):
             statistics=statistics,
         )
 
-        print(utility_type_display)
         """((HEATING, 'Опалення'),
                               (WATER_SUPPLY, 'Водопостачання'),
                               (GAS_SUPPLY, 'Газопостачання'),
@@ -499,10 +504,7 @@ class OfficeListManagerPDFView(APIView):
 
         country_distribution = offices.values('country').annotate(count=Count('country')).order_by('-count')
 
-        print(country_distribution)
-
         for item in country_distribution:
-            print(item)
             statistics["Розподіл за країнами"][item["country"]] = [f"Кількість офісів: {item['count']}"]
 
         item_fields = [
