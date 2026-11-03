@@ -2,6 +2,7 @@ import jwt
 from rest_framework import authentication, exceptions
 
 from core.models import User
+from user.token_service import TokenService
 
 
 class JWTAuthentication(authentication.BaseAuthentication):
@@ -14,7 +15,7 @@ class JWTAuthentication(authentication.BaseAuthentication):
         token = auth_header.split(' ')[1]
 
         try:
-            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+            payload = TokenService.decode(token)
         except jwt.ExpiredSignatureError:
             raise exceptions.AuthenticationFailed('Token has expired')
         except jwt.InvalidTokenError:
