@@ -1,6 +1,6 @@
 Django==4.2
 djangorestframework==3.14.0
-drf-spectacular==0.26.1
+drf-spectacular==0.30.0
 psycopg2-binary==2.9.9
 PyJWT==2.6.0
 django-cors-headers==3.14.0
