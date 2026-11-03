@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import axios from 'axios';
+import api from '../api/client';
 import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Box, Snackbar} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 
@@ -23,8 +23,8 @@ const UseDeleteOrder = ({orderId}) => {
     const handleDelete = async () => {
         setLoading(true);
         try {
-            const response = await axios.delete(
-                `http://localhost:8765/api/order/${orderId}/`,
+            const response = await api.delete(
+                `/order/${orderId}/`,
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api/client';
 import FormPaper from '../RegisterForm/UI/FormPaper.tsx';
 import {Box, Grid, Typography} from '@mui/material';
 import TextFieldWithLabel from '../RegisterForm/UI/TextFieldWithLabel.tsx';
@@ -34,8 +34,8 @@ const CreateCompanyForm = () => {
         }
 
         try {
-            const response = await axios.post(
-                'http://localhost:8765/api/company/',
+            const response = await api.post(
+                '/company/',
                 formData,
                 {
                     headers: {

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/client';
 
 const useCheckOwnership = (companyId: string | undefined) => {
   const navigate = useNavigate();
@@ -14,8 +14,8 @@ const useCheckOwnership = (companyId: string | undefined) => {
 
     const checkCompanyOwnership = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8765/api/company/${companyId}/verify-ownership/`,
+        const response = await api.get(
+          `/company/${companyId}/verify-ownership/`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,

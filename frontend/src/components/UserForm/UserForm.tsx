@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {TextField, Grid, Box, Typography, Button} from '@mui/material';
 import useUserData from '../../hooks/useUserData.tsx'; // Хук для отримання даних користувача
 import FormPaper from '../../components/LoginForm/UI/FormPaper.tsx';
-import axios from 'axios';
+import api from '../../api/client';
 import UpdateButton from './UI/UpdateButton.tsx';
 import ChangePassword from './UI/ChangePassword.tsx';
 import CustomTextField from './UI/CustomTextField.tsx';
@@ -40,8 +40,8 @@ const UserForm = () => {
         e.preventDefault();
         try {
             // Надсилаємо запит на оновлення даних користувача
-            const response = await axios.patch(
-                'http://localhost:8765/api/update-user/',
+            const response = await api.patch(
+                '/update-user/',
                 formData,
                 {
                     headers: {

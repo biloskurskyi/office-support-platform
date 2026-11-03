@@ -14,7 +14,7 @@ interface OfficesListProps {
 }
 
 const OfficesList: React.FC<OfficesListProps> = ({offices, companyId}) => {
-    const pdf_url = `http://localhost:8765/api/company/${companyId}/offices/pdf/`;
+    const pdf_url = `/company/${companyId}/offices/pdf/`;
 
     return (
         <>

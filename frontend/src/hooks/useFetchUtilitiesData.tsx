@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios, { AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
+import api from '../api/client';
 import { useNavigate } from 'react-router-dom';
 import useFetchUtilityTypes from './useFetchUtilityTypes.tsx';
 
@@ -39,8 +40,8 @@ const UseFetchUtilitiesData = (
           return;
         }
 
-        const response: AxiosResponse<Utility[]> = await axios.get(
-          `http://localhost:8765/api/get-utility-by-type/${officeId}/${utilityId}/`,
+        const response: AxiosResponse<Utility[]> = await api.get(
+          `/get-utility-by-type/${officeId}/${utilityId}/`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

@@ -18,7 +18,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import UtilityListButton from './UI/UtilityListButton.tsx';
-import axios from 'axios';
+import api from '../../api/client';
 
 interface UtilityFormProps {
   formData: any;
@@ -40,8 +40,8 @@ const UtilityForm: React.FC<UtilityFormProps> = ({
   useEffect(() => {
     const token = localStorage.getItem('jwtToken');
 
-    axios
-      .get(`http://localhost:8765/api/utilities/types/${id}/`, {
+    api
+      .get(`/utilities/types/${id}/`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {

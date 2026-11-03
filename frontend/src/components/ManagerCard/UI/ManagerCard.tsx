@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Link, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../../api/client';
 
 interface ManagerCardProps {
   manager: {
@@ -29,8 +29,8 @@ const ManagerCard: React.FC<ManagerCardProps> = ({ manager }) => {
         return;
       }
 
-      const response = await axios.post(
-        `http://localhost:8765/api/change-manager-status/${manager.id}/`,
+      const response = await api.post(
+        `/change-manager-status/${manager.id}/`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },

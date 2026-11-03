@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/client';
 import { Alert, Box, Snackbar } from '@mui/material';
 import FormPaper from '../components/RegisterForm/UI/FormPaper.tsx';
 import UtilityForm from '../components/UtilitiesComponents/UtilityForm.tsx';
@@ -79,8 +79,8 @@ const UtilityCreatePage = () => {
     console.log(dataToSend);
 
     try {
-      const response = await axios.post(
-        `http://localhost:8765/api/utility/`,
+      const response = await api.post(
+        `/utility/`,
         dataToSend,
         {
           headers: {

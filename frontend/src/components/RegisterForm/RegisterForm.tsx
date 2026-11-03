@@ -4,7 +4,7 @@ import FormPaper from './UI/FormPaper';
 import TextFieldWithLabel from './UI/TextFieldWithLabel';
 import SubmitButton from './UI/SubmitButton';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api/client';
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -46,8 +46,8 @@ const RegisterForm = () => {
     }
 
     try {
-      const response = await axios.post(
-        'http://localhost:8765/api/register/',
+      const response = await api.post(
+        '/register/',
         formData
       );
       navigate('/login?message=User created successfully.');

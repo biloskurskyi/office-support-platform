@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Grid, TextField, Button, Box, Typography } from '@mui/material';
 import FormPaper from '../../components/LoginForm/UI/FormPaper.tsx';
-import axios from 'axios';
+import api from '../../api/client';
 import { Link } from 'react-router-dom';
 import { AccountCircle } from '@mui/icons-material';
 import UserPageButton from './UI/UserPageButton.tsx';
@@ -37,8 +37,8 @@ const ChangePasswordForm = () => {
     }
 
     try {
-      const response = await axios.post(
-        'http://localhost:8765/api/change-password/',
+      const response = await api.post(
+        '/change-password/',
         formData,
         {
           headers: {

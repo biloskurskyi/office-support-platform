@@ -40,7 +40,7 @@ const OrdersListPage = () => {
         );
     }
 
-    const pdf_url = `http://localhost:8765/api/order/pdf/${id}/`;
+    const pdf_url = `/order/pdf/${id}/`;
 
     return (
         <div>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/client';
 
 const useAccessToProvider = (companyId: string | undefined): boolean | null => {
   const navigate = useNavigate();
@@ -9,8 +9,8 @@ const useAccessToProvider = (companyId: string | undefined): boolean | null => {
   useEffect(() => {
     const checkAccessToProvider = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8765/api/access-provider-check/${companyId}`,
+        const response = await api.get(
+          `/access-provider-check/${companyId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,

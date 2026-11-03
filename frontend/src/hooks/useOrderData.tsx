@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/client';
 
 const UseOrderData = (id) => {
   const [order, setOrder] = useState<any>(null);
@@ -19,8 +19,8 @@ const UseOrderData = (id) => {
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8765/api/order/${id}/`,
+        const response = await api.get(
+          `/order/${id}/`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
@@ -53,8 +53,8 @@ const UseOrderData = (id) => {
     const { file, ...formDataWithoutFile } = formData;
     console.log('Sending form data:', formData);
     try {
-      const response = await axios.put(
-        `http://localhost:8765/api/order/${id}/`,
+      const response = await api.put(
+        `/order/${id}/`,
         formDataWithoutFile,
         {
           headers: {
