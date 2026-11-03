@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import Company, User
+from core.permissions import IsOwner
 from user.serializers import UserSerializer
 
 from .mixins import CompanyDetailMixin
@@ -17,13 +18,9 @@ class CompanyView(APIView):
     """
     View for creating and retrieving companies, restricted to owner users only.
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsOwner)
 
     def post(self, request):
-        if request.user.user_type != User.OWNER_USER:
-            return Response({'detail': 'You do not have permission to create a company.'},
-                            status=status.HTTP_403_FORBIDDEN)
-
         serializer = CompanySerializer(data=request.data)
 
         if serializer.is_valid():
@@ -32,10 +29,6 @@ class CompanyView(APIView):
         return Response(serializer.errors, status=400)
 
     def get(self, request):
-        if request.user.user_type != User.OWNER_USER:
-            return Response({'detail': 'You do not have permission to get a companies.'},
-                            status=status.HTTP_403_FORBIDDEN)
-
         companies = Company.objects.filter(owner=request.user.id)
         serializer = CompanySerializer(companies, many=True)
         if not companies.exists():
@@ -168,13 +161,9 @@ class StatisticsView(APIView):
     1. Кількість компаній для вказаного власника.
     2. Кількість менеджерів у кожній компанії.
     """
-    def get(self, request):
-        if request.user.user_type != User.OWNER_USER:
-            return Response(
-                {'detail': 'You do not have permission to access statistics.'},
-                status=status.HTTP_403_FORBIDDEN
-            )
+    permission_classes = (IsAuthenticated, IsOwner)
 
+    def get(self, request):
         try:
             # Отримуємо всі компанії власника
             companies = Company.objects.filter(owner=request.user.id)

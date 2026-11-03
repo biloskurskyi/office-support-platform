@@ -39,7 +39,7 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
-        extra_fields['user_type'] = 0
+        extra_fields['user_type'] = UserType.ADMIN
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
@@ -51,14 +51,20 @@ class UserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
+class UserType(models.IntegerChoices):
+    ADMIN = 0, 'admin user'
+    OWNER = 1, 'owner user'
+    MANAGER = 2, 'manager user'
+
+
 class User(AbstractUser):
     """
     Custom User model for the application.
     """
-    ADMIN_USER = 0
-    OWNER_USER = 1
-    MANAGER_USER = 2
-    USER_TYPE_CHOICES = ((ADMIN_USER, 'admin user'), (OWNER_USER, 'owner user'), (MANAGER_USER, 'manager user'),)
+    ADMIN_USER = UserType.ADMIN
+    OWNER_USER = UserType.OWNER
+    MANAGER_USER = UserType.MANAGER
+    USER_TYPE_CHOICES = UserType.choices
     name = models.CharField(max_length=255)
     surname = models.CharField(max_length=255)
     email = models.EmailField(max_length=255, unique=True)

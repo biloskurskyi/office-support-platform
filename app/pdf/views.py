@@ -1,5 +1,4 @@
-import json
-import urllib.request
+import logging
 from decimal import Decimal
 
 from django.db.models import Avg, Count, Max, Min, Q, Sum
@@ -11,6 +10,7 @@ from rest_framework.views import APIView
 
 from company.serializers import CompanySerializer
 from core.models import Company, Office, Order, Provider, User, Utilities
+from core.permissions import IsOwner
 from office.serializers import OfficeSerializer
 from order.mixins import OfficePermissionMixin
 from order.serializers import OrderSerializer
@@ -19,17 +19,16 @@ from provider.serializers import ProviderSerializer
 from user.serializers import UserSerializer
 from utility.serializers import GetUtilitySerializer
 
+from .exchange_rates import ExchangeRateProvider
 from .static.template import generate_pdf
+
+logger = logging.getLogger(__name__)
 
 
 class CompanyPDFView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsOwner)
 
     def get(self, request):
-        if request.user.user_type != User.OWNER_USER:
-            return Response({'detail': 'You do not have permission to get companies.'},
-                            status=status.HTTP_403_FORBIDDEN)
-
         companies = Company.objects.filter(owner=request.user.id)
         serializer = CompanySerializer(companies, many=True)
         if not companies.exists():
@@ -41,22 +40,28 @@ class CompanyPDFView(APIView):
             "Компанії": {}
         }
 
+        companies = companies.annotate(offices_count=Count('office', distinct=True))
+        # User.company stores the company id as a string, so managers are counted in one grouped query
+        managers_stats = dict(
+            User.objects.filter(user_type=User.MANAGER_USER, company__in=[str(c.id) for c in companies])
+            .values_list('company').annotate(count=Count('id'))
+        )
+        orders_stats = {
+            row['office__company']: row
+            for row in Order.objects.filter(office__company__in=companies)
+            .values('office__company').annotate(count=Count('id'), total=Sum('deal_value'))
+        }
+        utilities_stats = dict(
+            Utilities.objects.filter(office__company__in=companies)
+            .values_list('office__company').annotate(count=Count('id'))
+        )
+
         for company in companies:
-            managers_count = User.objects.filter(
-                Q(user_type=User.MANAGER_USER) & Q(company=company.id)
-            ).count()
-
-            offices_count = Office.objects.filter(company=company).count()
-
-            total_deals_value = Order.objects.filter(
-                office__company=company
-            ).aggregate(total_value=Sum('deal_value'))['total_value'] or 0
-
-            # Кількість замовлень для компанії
-            orders_count = Order.objects.filter(office__company=company).count()
-
-            # Загальна кількість комунальних послуг
-            utilities_count = Utilities.objects.filter(office__company=company).count()
+            managers_count = managers_stats.get(str(company.id), 0)
+            offices_count = company.offices_count
+            total_deals_value = orders_stats.get(company.id, {}).get('total') or 0
+            orders_count = orders_stats.get(company.id, {}).get('count', 0)
+            utilities_count = utilities_stats.get(company.id, 0)
 
             statistics["Компанії"][company.name] = [
                 f"{managers_count} - кількість менеджерів",
@@ -66,7 +71,7 @@ class CompanyPDFView(APIView):
                 f"{total_deals_value} гривень - загальна вартість угод"
             ]
 
-        print(statistics)
+        logger.debug("Company report statistics: %s", statistics)
 
         item_fields = [
             ('name', 'Назва компанії'),
@@ -84,7 +89,6 @@ class CompanyPDFView(APIView):
         response = FileResponse(pdf_buffer, as_attachment=True, filename='звіт_компанії.pdf')
         response['Content-Disposition'] = 'attachment; filename="звіт_компанії.pdf"'
         response['Access-Control-Expose-Headers'] = 'Content-Disposition'
-        print("Content-Disposition:", response['Content-Disposition'])
         return response
 
 
@@ -225,7 +229,6 @@ class OfficeListForCompany(APIView):
             }
 
             for item in country_distribution:
-                print(item)
                 statistics["Розподіл за країнами"][item["country"]] = [f"Кількість офісів: {item['count']}"]
 
             # Generate PDF
@@ -322,22 +325,7 @@ class ProvidersPDFView(APIView):
 class OrdersPDFView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get_exchange_rates(self):
-        # Отримання курсу валют з API ПриватБанку
-        url = "https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5"
-        try:
-            with urllib.request.urlopen(url) as response:
-                if response.status == 200:  # Використовується атрибут 'status', а не 'status_code'
-                    exchange_data = json.loads(response.read().decode('utf-8'))  # Декодуємо та парсимо JSON
-                    rates = {rate['ccy']: Decimal(rate['sale']) for rate in exchange_data}
-                    # print(rates)
-                    return rates
-        except Exception as e:
-            # Логування помилки для дебагу
-            print(f"Error fetching exchange rates: {e}")
-
-        # Повертаємо дефолтні курси у випадку помилки
-        return {"USD": Decimal(42.3), "EUR": Decimal(44.25)}
+    exchange_rate_provider = ExchangeRateProvider()
 
     def get(self, request, pk):
         user = request.user
@@ -353,7 +341,7 @@ class OrdersPDFView(APIView):
 
         serializer = OrderSerializer(orders, many=True)
 
-        exchange_rates = self.get_exchange_rates()
+        exchange_rates = self.exchange_rate_provider.get_rates()
 
         # Аналіз замовлень
         total_cost_uah = Decimal(0)
@@ -384,7 +372,6 @@ class OrdersPDFView(APIView):
         }
 
         for currency, count in orders_by_currency.items():
-            print(f"{currency}: {count}")
             statistics["Статистика по валютам"][currency] = [
                 f"Кількість замовлень за валютами {count}",
                 f"Сума витрат: {total_cost_by_currency[currency]:.2f} грн",
@@ -482,7 +469,6 @@ class UtilitiesPDFView(APIView):
             statistics=statistics,
         )
 
-        print(utility_type_display)
         """((HEATING, 'Опалення'),
                               (WATER_SUPPLY, 'Водопостачання'),
                               (GAS_SUPPLY, 'Газопостачання'),
@@ -518,10 +504,7 @@ class OfficeListManagerPDFView(APIView):
 
         country_distribution = offices.values('country').annotate(count=Count('country')).order_by('-count')
 
-        print(country_distribution)
-
         for item in country_distribution:
-            print(item)
             statistics["Розподіл за країнами"][item["country"]] = [f"Кількість офісів: {item['count']}"]
 
         item_fields = [

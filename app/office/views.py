@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import Company, Office, User
+from core.permissions import IsOwner
 from user.serializers import UserSerializer
 
 from .mixins import OfficeMixin
@@ -158,14 +159,10 @@ class OfficeListForManager(APIView):
 
 
 class OfficeListForCompany(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsOwner)
 
     def get(self, request, pk):
         user = request.user
-        if user.user_type != 1:
-            return Response({"message": "You do not have permission to view this resource."},
-                            status=status.HTTP_403_FORBIDDEN)
-
         try:
             company = Company.objects.get(id=pk)
         except Company.DoesNotExist:
