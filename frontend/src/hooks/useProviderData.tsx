@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/client';
 import { useNavigate } from 'react-router-dom';
 
 const useProviderData = (id) => {
@@ -21,8 +21,8 @@ const useProviderData = (id) => {
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8765/api/provider/${id}/`,
+        const response = await api.get(
+          `/provider/${id}/`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
@@ -54,8 +54,8 @@ const useProviderData = (id) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(
-        `http://localhost:8765/api/provider/${id}/`,
+      const response = await api.put(
+        `/provider/${id}/`,
         formData,
         {
           headers: {

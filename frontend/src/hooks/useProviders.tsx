@@ -1,6 +1,7 @@
 // hooks/useProviders.ts
 import { useState, useEffect } from 'react';
-import axios, { AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
+import api from '../api/client';
 import { useNavigate } from 'react-router-dom';
 
 interface Provider {
@@ -29,8 +30,8 @@ const useProviders = (companyId: string) => {
           return;
         }
 
-        const response: AxiosResponse<Provider[]> = await axios.get(
-          `http://localhost:8765/api/get-all-providers/${companyId}/`,
+        const response: AxiosResponse<Provider[]> = await api.get(
+          `/get-all-providers/${companyId}/`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import axios from 'axios';
+import api from '../api/client';
 import { Box } from '@mui/material';
 import FormPaper from '../components/RegisterForm/UI/FormPaper.tsx';
 import OrderForm from '../components/OrdersComponents/OrderForm.tsx';
@@ -67,7 +68,7 @@ const OrderCreatePage = () => {
     }
 
     try {
-      await axios.post(`http://localhost:8765/api/order/`, data, {
+      await api.post(`/order/`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,

@@ -1,5 +1,6 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
-import axios, {AxiosResponse} from 'axios';
+import type { AxiosResponse } from 'axios';
+import api from '../api/client';
 
 interface Company {
     id: number;
@@ -56,8 +57,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({
 
                 if (userType === '1') {
                     // Власник
-                    const response: AxiosResponse<Company[]> = await axios.get(
-                        'http://localhost:8765/api/company/',
+                    const response: AxiosResponse<Company[]> = await api.get(
+                        '/company/',
                         {
                             headers: {Authorization: `Bearer ${token}`},
                         }
@@ -65,8 +66,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({
                     setCompanies(response.data);
                 } else if (userType === '2') {
                     // Менеджер
-                    const response: AxiosResponse<Office[]> = await axios.get(
-                        'http://localhost:8765/api/office-list/',
+                    const response: AxiosResponse<Office[]> = await api.get(
+                        '/office-list/',
                         {
                             headers: {Authorization: `Bearer ${token}`},
                         }

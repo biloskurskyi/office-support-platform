@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios, { AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
+import api from '../api/client';
 import { useNavigate } from 'react-router-dom';
 
 export interface Office {
@@ -33,8 +34,8 @@ const useFetchOffices = (companyId: string | undefined) => {
           return;
         }
 
-        const response: AxiosResponse<Office[]> = await axios.get(
-          `http://localhost:8765/api/office-list-company/${companyId}/`,
+        const response: AxiosResponse<Office[]> = await api.get(
+          `/office-list-company/${companyId}/`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

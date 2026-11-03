@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import FormPaper from '../components/LoginForm/UI/FormPaper.tsx';
-import axios from 'axios';
+import api from '../api/client';
 import { Button, Grid, Box, Typography } from '@mui/material';
 import CustomTextField from '../components/UserForm/UI/CustomTextField.tsx';
 import UpdateButton from '../components/UserForm/UI/UpdateButton.tsx';
@@ -38,8 +38,8 @@ const CompanyEditPage = () => {
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8765/api/company/${id}/`,
+        const response = await api.get(
+          `/company/${id}/`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
@@ -78,8 +78,8 @@ const CompanyEditPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.patch(
-        `http://localhost:8765/api/company/${id}/`,
+      const response = await api.patch(
+        `/company/${id}/`,
         formData,
         {
           headers: {

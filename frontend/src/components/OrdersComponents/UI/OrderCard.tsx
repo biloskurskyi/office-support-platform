@@ -1,4 +1,5 @@
 import React from 'react';
+import api from '../../../api/client';
 import { Button, Typography } from '@mui/material';
 import { Link, Link as RouterLink } from 'react-router-dom';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
@@ -19,7 +20,7 @@ interface OrderCardProps {
 
 const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
   const handleFileDownload = () => {
-    const baseUrl = 'http://localhost:8765/';
+    const baseUrl = (api.defaults.baseURL ?? '').replace(/api\/?$/, '');
     const fileUrl = `${baseUrl}${order.file}`;
     console.log(fileUrl);
 

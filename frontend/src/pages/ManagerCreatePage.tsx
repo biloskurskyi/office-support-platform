@@ -5,7 +5,7 @@ import {
   useOutletContext,
   useParams,
 } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/client';
 import FormPaper from '../components/RegisterForm/UI/FormPaper.tsx';
 import { Box, Button, Grid, Typography } from '@mui/material';
 import TextFieldWithLabel from '../components/RegisterForm/UI/TextFieldWithLabel.tsx';
@@ -64,8 +64,8 @@ const ManagerCreatePage = () => {
     }
 
     try {
-      const response = await axios.post(
-        'http://localhost:8765/api/register-manager/',
+      const response = await api.post(
+        '/register-manager/',
         formData,
         {
           headers: {

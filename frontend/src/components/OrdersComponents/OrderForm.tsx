@@ -14,7 +14,7 @@ import TextFieldWithLabel from '../RegisterForm/UI/TextFieldWithLabel.tsx';
 import SubmitButton from '../RegisterForm/UI/SubmitButton.tsx';
 import OrderListButton from './UI/OrderListButton.tsx';
 import UseProvidersByOffice from '../../hooks/useProvidersByOffice.tsx';
-import axios from 'axios';
+import api from '../../api/client';
 
 interface OrderFormProps {
   formData: any;
@@ -48,8 +48,8 @@ const OrderForm: React.FC<OrderFormProps> = ({
   const [currencies, setCurrencies] = useState([]);
 
   useEffect(() => {
-    axios
-      .get('http://localhost:8765/api/currencies/')
+    api
+      .get('/currencies/')
       .then((response) => {
         // Log response to inspect its structure
         console.log(response.data);

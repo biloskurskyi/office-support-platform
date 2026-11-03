@@ -1,6 +1,7 @@
 // hooks/useFetchManagers.ts
 import { useEffect, useState } from 'react';
-import axios, { AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
+import api from '../api/client';
 import { useNavigate } from 'react-router-dom';
 
 interface Manager {
@@ -36,8 +37,8 @@ const useFetchManagers = (id: string | undefined) => {
           return;
         }
 
-        const response: AxiosResponse<Manager[]> = await axios.get(
-          `http://localhost:8765/api/company/${id}/managers/`,
+        const response: AxiosResponse<Manager[]> = await api.get(
+          `/company/${id}/managers/`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

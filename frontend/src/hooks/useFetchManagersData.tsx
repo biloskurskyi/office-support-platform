@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import axios, { AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
+import api from '../api/client';
 
 interface Manager {
   id: number;
@@ -33,7 +34,7 @@ const useFetchData = (url: string | null) => {
           return;
         }
 
-        const response: AxiosResponse<Manager[]> = await axios.get(url!, {
+        const response: AxiosResponse<Manager[]> = await api.get(url!, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

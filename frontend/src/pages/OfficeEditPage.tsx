@@ -5,7 +5,7 @@ import {
   useOutletContext,
   useParams,
 } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/client';
 import {
   Box,
   Button,
@@ -49,15 +49,15 @@ const OfficeEditPage = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const { managers, loading, error } = useFetchManagersData(
-    id ? `http://localhost:8765/api/office/${id}/managers/` : null
+    id ? `/office/${id}/managers/` : null
   );
 
   // Завантаження даних компанії
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8765/api/office/${id}/`,
+        const response = await api.get(
+          `/office/${id}/`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
@@ -99,8 +99,8 @@ const OfficeEditPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(
-        `http://localhost:8765/api/office/${id}/`,
+      const response = await api.put(
+        `/office/${id}/`,
         formData,
         {
           headers: {

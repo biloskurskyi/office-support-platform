@@ -4,7 +4,7 @@ import {Box, Grid, Typography} from '@mui/material';
 import FormPaper from './UI/FormPaper';
 import TextFieldWithLabel from './UI/TextFieldWithLabel';
 import SubmitButton from './UI/SubmitButton';
-import axios from 'axios';
+import api from '../../api/client';
 import {useNavigate, useLocation} from 'react-router-dom';
 
 const LoginForm = () => {
@@ -44,8 +44,8 @@ const LoginForm = () => {
         }
 
         try {
-            const response = await axios.post(
-                'http://localhost:8765/api/login/',
+            const response = await api.post(
+                '/login/',
                 formData
             );
             localStorage.setItem('jwtToken', response.data.jwt);

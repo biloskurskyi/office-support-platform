@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios, { AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
+import api from '../api/client';
 
 interface Provider {
   id: number;
@@ -26,8 +27,8 @@ const UseProvidersByOffice = (officeId: string) => {
           return;
         }
 
-        const response: AxiosResponse<Provider[]> = await axios.get(
-          `http://localhost:8765/api/get-all-providers-by-office/${officeId}/`,
+        const response: AxiosResponse<Provider[]> = await api.get(
+          `/get-all-providers-by-office/${officeId}/`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

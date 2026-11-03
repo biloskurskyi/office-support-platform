@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Office } from './useFetchOffices.tsx';
-import axios, { AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
+import api from '../api/client';
 import { useNavigate } from 'react-router-dom';
 
 export interface UtilityType {
@@ -25,8 +26,8 @@ const UseFetchUtilityTypes = (officeId: string | undefined) => {
           return;
         }
 
-        const response: AxiosResponse<UtilityType[]> = await axios.get(
-          `http://localhost:8765/api/utilities/types/${officeId}/`,
+        const response: AxiosResponse<UtilityType[]> = await api.get(
+          `/utilities/types/${officeId}/`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

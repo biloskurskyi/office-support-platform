@@ -14,7 +14,7 @@ import FormPaper from '../RegisterForm/UI/FormPaper.tsx';
 import UpdateButton from '../UserForm/UI/UpdateButton.tsx';
 import {Link} from 'react-router-dom';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import axios from 'axios';
+import api from '../../api/client';
 import UseDeleteOrder from "../../hooks/useDeleteOrder.tsx";
 
 interface OrderEditFormProps {
@@ -47,8 +47,8 @@ const OrderEditForm: React.FC<OrderEditFormProps> = ({
     );
 
     useEffect(() => {
-        axios
-            .get('http://localhost:8765/api/currencies/')
+        api
+            .get('/currencies/')
             .then((response) => {
                 if (Array.isArray(response.data)) {
                     setCurrencies(response.data);

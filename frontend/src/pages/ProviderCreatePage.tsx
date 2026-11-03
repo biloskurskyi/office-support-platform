@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/client';
 import { Box } from '@mui/material';
 import FormPaper from '../components/RegisterForm/UI/FormPaper.tsx';
 import useAccessToProvider from '../hooks/useAccessToProvider.tsx';
@@ -46,8 +46,8 @@ const ProviderCreatePage = () => {
     }
 
     try {
-      const response = await axios.post(
-        `http://localhost:8765/api/provider/`,
+      const response = await api.post(
+        `/provider/`,
         formData,
         {
           headers: {

@@ -5,7 +5,7 @@ import {
   useOutletContext,
   useParams,
 } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/client';
 import {
   Box,
   Button,
@@ -70,8 +70,8 @@ const OfficeCreatePage = () => {
     }
 
     try {
-      const response = await axios.post(
-        `http://localhost:8765/api/office/`,
+      const response = await api.post(
+        `/office/`,
         formData,
         {
           headers: {
@@ -94,7 +94,7 @@ const OfficeCreatePage = () => {
   };
 
   const { managers, loading, error } = useFetchManagersData(
-    id ? `http://localhost:8765/api/company/${id}/managers/` : null
+    id ? `/company/${id}/managers/` : null
   );
 
   return (

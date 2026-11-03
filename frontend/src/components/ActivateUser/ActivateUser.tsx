@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import axios, { AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
+import api from '../../api/client';
 import { useParams } from 'react-router-dom';
 import { Typography } from '@mui/material';
 
@@ -15,8 +16,8 @@ const ActivateUser = () => {
     hasFetched.current = true;
     const activateUser = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8765/api/activate/${id}/`
+        const response = await api.get(
+          `/activate/${id}/`
         );
         setActivationStatus(response.data.message);
       } catch (error) {

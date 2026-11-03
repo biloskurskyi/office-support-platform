@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button} from '@mui/material';
-import axios from "axios";
+import api from "../../api/client";
 import DownloadIcon from '@mui/icons-material/Download';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
@@ -13,7 +13,7 @@ const DownloadPDFButton: React.FC<DownloadPDFButtonProps> = ({apiUrl}) => {
         try {
             const token = localStorage.getItem('jwtToken');
 
-            const response = await axios.get(apiUrl, {
+            const response = await api.get(apiUrl, {
                 headers: {Authorization: `Bearer ${token}`},
                 responseType: 'blob',
             });

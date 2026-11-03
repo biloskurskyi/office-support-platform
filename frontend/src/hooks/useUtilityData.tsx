@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/client';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,8 +22,8 @@ const UseUtilityData = (id) => {
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8765/api/utility/${id}/`,
+        const response = await api.get(
+          `/utility/${id}/`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
@@ -62,8 +62,8 @@ const UseUtilityData = (id) => {
     console.log(formattedDate);
 
     try {
-      const response = await axios.put(
-        `http://localhost:8765/api/utility/${id}/`,
+      const response = await api.put(
+        `/utility/${id}/`,
         { ...formData, date: formattedDate },
         {
           headers: {

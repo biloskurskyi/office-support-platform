@@ -57,7 +57,7 @@ const ManagersListPage = () => {
         );
     }
 
-    const pdf_url = `http://localhost:8765/api/company/${id}/managers/pdf/`;
+    const pdf_url = `/company/${id}/managers/pdf/`;
 
     return (
         <div>

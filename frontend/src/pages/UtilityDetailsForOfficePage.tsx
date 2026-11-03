@@ -44,7 +44,7 @@ const UtilityDetailsForOfficePage = () => {
         );
     }
 
-    const pdf_url = `http://localhost:8765/api/utility/pdf/${officeId}/${utilityId}`;
+    const pdf_url = `/utility/pdf/${officeId}/${utilityId}`;
 
     return (
         <div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/client';
 
 const useUserData = () => {
   const [userData, setUserData] = useState(null);
@@ -16,8 +16,8 @@ const useUserData = () => {
     }
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(
-          'http://localhost:8765/api/get-user/',
+        const response = await api.get(
+          '/get-user/',
           {
             headers: {
               Authorization: `Bearer ${token}`,
