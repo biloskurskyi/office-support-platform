@@ -162,7 +162,7 @@ class OfficeListForCompany(APIView):
 
     def get(self, request, pk):
         user = request.user
-        if user.user_type != 1:
+        if user.user_type != User.OWNER_USER:
             return Response({"message": "You do not have permission to view this resource."},
                             status=status.HTTP_403_FORBIDDEN)
 

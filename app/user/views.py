@@ -255,9 +255,9 @@ class GetUserView(APIView):
 
     def get(self, request):
         user = request.user
-        if user.user_type == 1:
+        if user.user_type == User.OWNER_USER:
             serializer = GetOwnerUserSerializer(user)
-        elif user.user_type == 2:
+        elif user.user_type == User.MANAGER_USER:
             serializer = GetManagerUserSerializer(user)
         else:
             return Response({"error": "Invalid user type."}, status=status.HTTP_400_BAD_REQUEST)
@@ -273,9 +273,9 @@ class UpdateUserView(APIView):
 
         # Serialize the user data and validate the request data
 
-        if user.user_type == 1:
+        if user.user_type == User.OWNER_USER:
             serializer = GetOwnerUserSerializer(user, data=request.data, partial=True)
-        elif user.user_type == 2:
+        elif user.user_type == User.MANAGER_USER:
             serializer = GetManagerUserSerializer(user, data=request.data, partial=True)
         else:
             return Response({"error": "Invalid user type."}, status=status.HTTP_400_BAD_REQUEST)
