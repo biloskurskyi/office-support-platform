@@ -1,8 +1,14 @@
 from django.urls import path
 
-from .views import (CompanyManagersPDFView, CompanyPDFView,
-                    OfficeListForCompany, OfficeListManagerPDFView,
-                    OrdersPDFView, ProvidersPDFView, UtilitiesPDFView)
+from .views import (
+                    CompanyManagersPDFView,
+                    CompanyPDFView,
+                    OfficeListForCompany,
+                    OfficeListManagerPDFView,
+                    OrdersPDFView,
+                    ProvidersPDFView,
+                    UtilitiesPDFView,
+)
 
 app_name = 'pdf'
 

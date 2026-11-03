@@ -70,7 +70,7 @@ const MenuButton: React.FC = () => {
       {/* Main Menu */}
       <Menu
         anchorEl={anchorEl}
-        open={Boolean(!!anchorEl)}
+        open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
         {localStorage.getItem('jwtToken') ? (
@@ -156,7 +156,7 @@ const MenuButton: React.FC = () => {
       {/* Submenu for selected company */}
       <Menu
         anchorEl={submenuAnchorEl}
-        open={Boolean(!!submenuAnchorEl)}
+        open={Boolean(submenuAnchorEl)}
         onClose={handleSubmenuClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}

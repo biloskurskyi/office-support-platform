@@ -1,7 +1,6 @@
 from django.urls import path
 
-from .views import (GetOrdersForOfficeView, GetOrdersProviderOfficeView,
-                    OrderCreateView, OrderDetailView)
+from .views import GetOrdersForOfficeView, GetOrdersProviderOfficeView, OrderCreateView, OrderDetailView
 
 app_name = 'order'
 

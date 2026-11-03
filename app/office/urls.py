@@ -1,7 +1,6 @@
 from django.urls import path
 
-from .views import (OfficeDetailView, OfficeListForCompany,
-                    OfficeListForManager, OfficeManagersView, OfficeView)
+from .views import OfficeDetailView, OfficeListForCompany, OfficeListForManager, OfficeManagersView, OfficeView
 
 app_name = 'office'
 
