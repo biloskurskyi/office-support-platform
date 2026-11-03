@@ -1,8 +1,6 @@
-import datetime
 import random
 import string
 
-import jwt
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse, JsonResponse
@@ -17,6 +15,7 @@ from rest_framework.views import APIView
 
 from app.settings import FRONTEND_BASE_URL
 from core.models import Company, User
+from user.token_service import TokenService
 
 from .mixins import ManagerOwnershipMixin
 from .serializers import ChangePasswordSerializer, GetManagerUserSerializer, GetOwnerUserSerializer, UserSerializer
@@ -89,7 +88,7 @@ class ActivateUserView(APIView):
 
         try:
             # Розшифровуємо токен
-            data = serializer.loads(token, max_age=259200)  # 1 година (3600 секунд)
+            data = serializer.loads(token, max_age=259200)  # 3 дні (259200 секунд)
             user_id = data.get("user_id")
 
             # Знаходимо користувача
@@ -136,13 +135,7 @@ class LoginView(APIView):
         if not user or not user.check_password(password) or not user.is_active:
             raise AuthenticationFailed('User not found or password is incorrect')
 
-        payload = {
-            'id': user.id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
-            'iat': datetime.datetime.utcnow()
-        }
-
-        token = jwt.encode(payload, 'secret', algorithm='HS256')
+        token = TokenService.issue(user)
 
         return Response({'jwt': token, 'id': user.id, 'user_type': user.user_type})
 

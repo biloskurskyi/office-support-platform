@@ -5,11 +5,13 @@ from datetime import timedelta
 from decouple import config
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.db.models import Q, UniqueConstraint
 from django.utils import timezone
 
 from app import settings
+from core.validators import validate_pdf
 
 
 class UserManager(BaseUserManager):
@@ -232,7 +234,10 @@ class Order(models.Model):
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE, related_name="records")
     deal_value = models.DecimalField(max_digits=12, decimal_places=2, blank=True)
     currency = models.SmallIntegerField(choices=CURRENCY_TYPE_CHOICES, default=UAH)
-    file = models.FileField(upload_to=str(config('RECORDS_URL')))
+    file = models.FileField(
+        upload_to=str(config('RECORDS_URL')),
+        validators=[FileExtensionValidator(['pdf']), validate_pdf],
+    )
     office = models.ForeignKey(Office, on_delete=models.CASCADE, related_name="records")
 
     def __str__(self):
